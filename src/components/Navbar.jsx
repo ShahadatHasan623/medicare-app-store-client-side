@@ -19,15 +19,13 @@ const Navbar = () => {
         <Link to="/shop">Shop</Link>
       </li>
       <li>
-        <Link to="/cart">
-          <FaCartPlus className="inline mr-1" /> Cart
-        </Link>
+        <Link to="/Categories">Categories</Link>
       </li>
     </>
   );
 
   return (
-    <div className="navbar bg-base-100 shadow-md px-4">
+    <div className="navbar bg-base-100 shadow-md px-4 sticky z-50 top-0">
       {/* Navbar Start */}
       <div className="navbar-start">
         {/* Mobile Menu */}
@@ -57,7 +55,10 @@ const Navbar = () => {
         </div>
 
         {/* Logo */}
-        <Link to="/" className="btn btn-ghost text-xl font-bold text-purple-700">
+        <Link
+          to="/"
+          className="btn btn-ghost text-xl font-bold text-purple-700"
+        >
           MediStore
         </Link>
       </div>
@@ -70,6 +71,16 @@ const Navbar = () => {
       {/* Navbar End */}
       <div className="navbar-end gap-2">
         {/* Language Selector */}
+
+        <Link to="/cart" className="relative group">
+          <div className="p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition duration-300 ease-in-out shadow-md">
+            <FaCartPlus className="text-xl" />
+          </div>
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full animate-bounce">
+            3
+          </span>
+        </Link>
+
         <select className="border border-gray-300 rounded p-1 text-sm">
           <option>EN</option>
           <option>BN</option>
@@ -84,7 +95,10 @@ const Navbar = () => {
           <div className="dropdown dropdown-end">
             <div tabIndex={0} className="cursor-pointer">
               <img
-                src={user?.photoURL || "https://i.ibb.co/0y7VvYb/default-avatar.png"}
+                src={
+                  user?.photoURL ||
+                  "https://i.ibb.co/0y7VvYb/default-avatar.png"
+                }
                 alt="User Avatar"
                 className="h-10 w-10 rounded-full border"
               />
@@ -96,9 +110,7 @@ const Navbar = () => {
               <li>
                 <Link to="/update-profile">Update Profile</Link>
               </li>
-              <li>
-                <Link to="/dashboard">Dashboard</Link>
-              </li>
+              <Link to="/dashboard">Dashboard</Link>
               <li>
                 <button onClick={handleSignOut}>Logout</button>
               </li>

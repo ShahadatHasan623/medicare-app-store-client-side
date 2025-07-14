@@ -1,6 +1,6 @@
 import React from 'react';
 
-const useAxiosSecure = () => {
+const DashBoardLayouts = () => {
     return (
         <div>
             
@@ -8,4 +8,4 @@ const useAxiosSecure = () => {
     );
 };
 
-export default useAxiosSecure;
+export default DashBoardLayouts;
