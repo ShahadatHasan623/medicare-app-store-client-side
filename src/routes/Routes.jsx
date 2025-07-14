@@ -8,6 +8,7 @@ import Shop from "../pages/Shop/Shop";
 import ManageUsers from "../pages/DashBoard/Admin/ManageUsers";
 import ManageMedicines from "../pages/DashBoard/Seller/ManageMedicines";
 import MyOrder from "../pages/DashBoard/user/MyOrder";
+import CartPage from "../pages/CartPage/CartPage";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
         path: "shop",
         Component: Shop,
       },
+      {
+        path:'cart',
+        Component:CartPage
+      }
     ],
   },
   {
