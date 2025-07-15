@@ -1,6 +1,6 @@
 // src/pages/Dashboard/Seller/PaymentHistory.jsx
 
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAxiosSecure from "../../../hooks/useAxioseSecure";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
 

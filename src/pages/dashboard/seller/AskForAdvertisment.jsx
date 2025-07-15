@@ -1,6 +1,6 @@
 // src/pages/Dashboard/Seller/AskForAdvertisement.jsx
 
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAxiosSecure from "../../../hooks/useAxioseSecure";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
 import { useForm } from "react-hook-form";
