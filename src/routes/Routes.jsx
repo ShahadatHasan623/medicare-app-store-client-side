@@ -7,6 +7,7 @@ import Shop from "../pages/Shop/Shop";
 import Categories from "../pages/Categories/Categories";
 import CategoryDetails from "../pages/CategoryDetails/CategoryDetails";
 import CartPage from "../pages/CartPage/CartPage";
+import Checkout from "../pages/Checkout/Checkout";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
       {
         path:'cart',
         Component:CartPage
+      },
+      {
+        path:'checkout',
+        Component:Checkout
       }
     ],
   }

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   FaTrash,
   FaPlus,
@@ -6,23 +7,33 @@ import {
   FaTrashRestoreAlt,
 } from "react-icons/fa";
 import { useLocalStorageCart } from "../../utils/useLocalStorageCart";
+import { useNavigate } from "react-router";
 
-export default function ShoppingCartPage() {
+export default function CartPage() {
   const { cart, addToCart, removeItem, clearCart, updateQuantity } =
     useLocalStorageCart();
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const navigate = useNavigate();
+
+  const totalItems = cart.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
   const totalPrice = cart.reduce(
-    (sum, item) => sum + item.quantity * item.price,
+    (sum, item) => sum + (item.quantity ?? 0) * (item.price ?? 0),
     0
   );
   const totalDiscount = cart.reduce(
-    (sum, item) => sum + item.quantity * (item.originalPrice - item.price || 0),
+    (sum, item) =>
+      sum +
+      (item.quantity ?? 0) * ((item.originalPrice ?? 0) - (item.price ?? 0)),
     0
   );
   const subtotal = totalPrice;
   const tax = parseFloat((subtotal * 0.08).toFixed(2));
   const total = parseFloat((subtotal + tax).toFixed(2));
+
+  const handleProceedToCheckout = () => {
+    localStorage.setItem("cartData", JSON.stringify(cart));
+    navigate("/checkout");
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 my-10">
@@ -62,16 +73,24 @@ export default function ShoppingCartPage() {
 
                 <div className="flex flex-col md:flex-row items-end md:items-center justify-between w-full md:w-1/2">
                   <div className="text-right md:text-left md:mr-6">
-                    <p className="line-through text-sm text-gray-400">${item.originalPrice}</p>
-                    <p className="text-green-600 text-lg font-bold">${item.price}</p>
-                    <p className="text-xs text-red-500 font-medium">
-                      {Math.round(
-                        ((item.originalPrice - item.price) / item.originalPrice) * 100
-                      )}% OFF
+                    <p className="line-through text-sm text-gray-400">
+                      ${(item.originalPrice ?? 0).toFixed(2)}
                     </p>
-                    <p className="text-sm text-gray-500 mt-2">Stock: {item.stock}</p>
+                    <p className="text-green-600 text-lg font-bold">
+                      ${(item.price ?? 0).toFixed(2)}
+                    </p>
+                    <p className="text-xs text-red-500 font-medium">
+                      {item.originalPrice && item.price
+                        ? Math.round(
+                            ((item.originalPrice - item.price) / item.originalPrice) *
+                              100
+                          )
+                        : 0}
+                      % OFF
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">Stock: {item.stock ?? 0}</p>
                     <p className="font-semibold text-slate-700">
-                      Total: ${(item.quantity * item.price).toFixed(2)}
+                      Total: ${((item.quantity ?? 0) * (item.price ?? 0)).toFixed(2)}
                     </p>
                   </div>
 
@@ -149,7 +168,10 @@ export default function ShoppingCartPage() {
             <span>${total.toFixed(2)}</span>
           </div>
 
-          <button className="bg-blue-600 hover:bg-blue-700 transition text-white w-full py-2 rounded-lg text-lg font-medium">
+          <button
+            onClick={handleProceedToCheckout}
+            className="bg-blue-600 btn hover:bg-blue-700 transition text-white w-full py-2 rounded-lg text-lg font-medium"
+          >
             🛒 Proceed to Checkout
           </button>
           <button
