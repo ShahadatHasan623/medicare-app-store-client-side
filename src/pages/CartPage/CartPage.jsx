@@ -1,4 +1,10 @@
-import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
+import {
+  FaTrash,
+  FaPlus,
+  FaMinus,
+  FaArrowLeft,
+  FaTrashRestoreAlt,
+} from "react-icons/fa";
 import { useLocalStorageCart } from "../../utils/useLocalStorageCart";
 
 export default function ShoppingCartPage() {
@@ -11,8 +17,7 @@ export default function ShoppingCartPage() {
     0
   );
   const totalDiscount = cart.reduce(
-    (sum, item) =>
-      sum + item.quantity * (item.originalPrice - item.price || 0),
+    (sum, item) => sum + item.quantity * (item.originalPrice - item.price || 0),
     0
   );
   const subtotal = totalPrice;
@@ -22,7 +27,9 @@ export default function ShoppingCartPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 my-10">
       <h2 className="text-4xl font-extrabold mb-3 text-slate-800">🛒 Shopping Cart</h2>
-      <p className="mb-8 text-gray-500 text-lg">Review your selected medicines before checkout</p>
+      <p className="mb-8 text-gray-500 text-lg">
+        Review your selected medicines before checkout
+      </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cart Items */}
@@ -33,19 +40,18 @@ export default function ShoppingCartPage() {
             cart.map((item) => (
               <div
                 key={item._id}
-                className="flex items-center justify-between p-5 bg-white rounded-2xl shadow-md transition hover:shadow-lg"
+                className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white rounded-2xl shadow-md gap-4 border border-gray-100"
               >
-                {/* Left Part */}
-                <div className="flex items-start gap-4">
+                <div className="flex items-center gap-4 w-full md:w-1/2">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-20 h-20 object-contain rounded-lg border"
+                    className="w-24 h-24 object-contain border rounded-lg"
                   />
                   <div>
-                    <h3 className="font-semibold text-xl text-slate-800">{item.name}</h3>
+                    <h3 className="text-lg md:text-xl font-semibold text-slate-800">{item.name}</h3>
                     <p className="text-sm text-gray-500">{item.generic}</p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-xs text-gray-400">
                       {item.company} | {item.type} | {item.strength}
                     </p>
                     <span className="text-xs mt-1 inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full capitalize">
@@ -54,50 +60,66 @@ export default function ShoppingCartPage() {
                   </div>
                 </div>
 
-                {/* Right Part */}
-                <div className="text-right space-y-1">
-                  <div>
+                <div className="flex flex-col md:flex-row items-end md:items-center justify-between w-full md:w-1/2">
+                  <div className="text-right md:text-left md:mr-6">
                     <p className="line-through text-sm text-gray-400">${item.originalPrice}</p>
                     <p className="text-green-600 text-lg font-bold">${item.price}</p>
                     <p className="text-xs text-red-500 font-medium">
                       {Math.round(
                         ((item.originalPrice - item.price) / item.originalPrice) * 100
-                      )}
-                      % OFF
+                      )}% OFF
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">Stock: {item.stock}</p>
+                    <p className="font-semibold text-slate-700">
+                      Total: ${(item.quantity * item.price).toFixed(2)}
                     </p>
                   </div>
 
-                  {/* Quantity */}
-                  <div className="flex items-center justify-end mt-2">
+                  <div className="flex flex-col items-center gap-2 mt-3">
+                    <span className="text-xs text-gray-500 font-medium">Quantity</span>
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => updateQuantity(item._id, -1)}
+                        className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-l text-sm"
+                      >
+                        <FaMinus />
+                      </button>
+                      <span className="px-4 border-y text-sm">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item._id, 1)}
+                        className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-r text-sm"
+                      >
+                        <FaPlus />
+                      </button>
+                    </div>
                     <button
-                      onClick={() => updateQuantity(item._id, -1)}
-                      className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-l text-sm"
+                      onClick={() => removeItem(item._id)}
+                      className="text-red-500 hover:text-white hover:bg-red-500 border border-red-500 rounded-full p-2 transition"
                     >
-                      <FaMinus />
-                    </button>
-                    <span className="px-4 border-y text-sm">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item._id, 1)}
-                      className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-r text-sm"
-                    >
-                      <FaPlus />
+                      <FaTrash />
                     </button>
                   </div>
-                  <p className="text-sm text-gray-500">Stock: {item.stock}</p>
-
-                  <p className="mt-2 font-semibold text-slate-700">
-                    Total: ${(item.quantity * item.price).toFixed(2)}
-                  </p>
-
-                  <button
-                    className="text-red-500 hover:text-red-700 text-xl mt-2"
-                    onClick={() => removeItem(item._id)}
-                  >
-                    <FaTrash />
-                  </button>
                 </div>
               </div>
             ))
+          )}
+
+          {cart.length > 0 && (
+            <div className="flex justify-between items-center pt-6 border-t">
+              <button
+                onClick={clearCart}
+                className="flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 px-4 py-2 rounded-lg font-medium transition"
+              >
+                <FaTrashRestoreAlt /> Clear All
+              </button>
+
+              <a
+                href="/shop"
+                className="flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg font-medium transition"
+              >
+                <FaArrowLeft /> Continue Shopping
+              </a>
+            </div>
           )}
         </div>
 

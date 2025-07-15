@@ -1,6 +1,7 @@
 import { useParams } from "react-router";
 import { useState } from "react";
 import { FaEye, FaCartPlus } from "react-icons/fa";
+import { useLocalStorageCart } from "../../utils/useLocalStorageCart";
 
 const demoMedicines = [
   {
@@ -109,6 +110,10 @@ const CategoryDetails = () => {
   const { name } = useParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const { addToCart } = useLocalStorageCart();
+
+  const [selectedMedicine, setSelectedMedicine] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const filteredMedicines = demoMedicines
     .filter(
@@ -187,18 +192,22 @@ const CategoryDetails = () => {
                     <button
                       title="View"
                       className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                      onClick={() => {
+                        setSelectedMedicine(med);
+                        setShowModal(true);
+                      }}
                     >
                       <FaEye />
                     </button>
                     <button
                       title="Add to Cart"
                       disabled={med.stock === 0}
+                      onClick={() => addToCart(med)}
                       className={`p-2 rounded text-white ${
                         med.stock === 0
                           ? "bg-gray-400 cursor-not-allowed"
                           : "bg-green-600 hover:bg-green-700"
                       }`}
-                      onClick={() => alert(`Added ${med.name} to cart`)}
                     >
                       <FaCartPlus />
                     </button>
@@ -207,6 +216,54 @@ const CategoryDetails = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Modal */}
+      {showModal && selectedMedicine && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl"
+            >
+              &times;
+            </button>
+            <img
+              src={selectedMedicine.image}
+              alt={selectedMedicine.name}
+              className="w-24 h-24 object-contain mx-auto mb-4"
+            />
+            <h2 className="text-xl font-bold text-center mb-2">
+              {selectedMedicine.name}
+            </h2>
+            <p className="text-center text-gray-600 mb-1">
+              Company: {selectedMedicine.company}
+            </p>
+            <p className="text-center text-gray-600 mb-1">
+              Unit: {selectedMedicine.unit}
+            </p>
+            <p className="text-center text-gray-600 mb-1">
+              Category: {selectedMedicine.category}
+            </p>
+            <p className="text-center text-green-600 text-lg font-semibold mb-2">
+              ৳{selectedMedicine.price}
+            </p>
+            <button
+              onClick={() => {
+                addToCart(selectedMedicine);
+                setShowModal(false);
+              }}
+              disabled={selectedMedicine.stock === 0}
+              className={`w-full py-2 rounded font-medium text-white ${
+                selectedMedicine.stock === 0
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              Add to Cart
+            </button>
+          </div>
         </div>
       )}
     </div>
