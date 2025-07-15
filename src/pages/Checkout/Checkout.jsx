@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { FaUser, FaMapMarkerAlt, FaShoppingCart } from "react-icons/fa";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import axios from "axios";
 import Swal from "sweetalert2";
 import useAxioseSecure from "../../hooks/useAxioseSecure";
 

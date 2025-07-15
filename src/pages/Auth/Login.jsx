@@ -4,6 +4,7 @@ import { useNavigate, useLocation, NavLink } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import Lottie from "lottie-react";
 import loginAnimation from "../../assets/Login.json";
+import axios from "axios";
 
 const Login = () => {
   const { loginUser } = useAuth();
@@ -15,12 +16,33 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       const { email, password } = data;
-      const result = await loginUser(email, password);
+
+      // ১. Firebase Authentication দিয়ে লগিন
+      await loginUser(email, password);
+
+      // ২. ব্যাকএন্ড থেকে ইউজারের role নিয়ে আসা
+      const res = await axios.get(`/users?email=${email}`);
+
+      if (!res.data || !res.data.role) {
+        throw new Error("User role not found");
+      }
+
+      const userRole = res.data.role;
+
+      // ৩. role অনুযায়ী রিডাইরেক্ট
+      if (userRole === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (userRole === "seller") {
+        navigate("/seller/dashboard", { replace: true });
+      } else {
+        // normal user
+        navigate(from, { replace: true });
+      }
+
       Swal.fire("Success!", "Logged in successfully", "success");
-      navigate(from, { replace: true });
     } catch (err) {
-      console.error(err.message);
-      Swal.fire("Login Failed", err.message, "error");
+      console.error(err);
+      Swal.fire("Login Failed", err.message || "Something went wrong", "error");
     }
   };
 
@@ -68,10 +90,10 @@ const Login = () => {
             </button>
           </form>
           <p>
-            Don't have an account{" "}
-            <NavLink to='/signup'>
+            Don't have an account?{" "}
+            <NavLink to="/signup">
               <span className="hover:underline text-blue-500">SignUp</span>
-            </NavLink>{" "}
+            </NavLink>
           </p>
         </div>
       </div>
