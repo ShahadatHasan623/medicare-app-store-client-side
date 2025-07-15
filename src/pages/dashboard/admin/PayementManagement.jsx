@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 
-export default function PaymentManagement() {
+export default function PayementManagement() {
   const axiosSecure = useAxioseSecure();
   const queryClient = useQueryClient();
 
