@@ -5,27 +5,25 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { FaShoppingCart, FaInfoCircle } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
+import useAxioseSecure from "../../../hooks/useAxioseSecure";
 
-const demoData = [
-  {
-    _id: "1",
-    name: "Napa Extra",
-    description: "Fast relief from headache and fever.",
-    price: 10,
-    originalPrice: 20,
-    image: "https://i.ibb.co/N3YqGhC/napa-extra.jpg",
-  },
-  {
-    _id: "2",
-    name: "Seclo",
-    description: "Used for acidity and stomach issues.",
-    price: 20,
-    originalPrice: 35,
-    image: "https://i.ibb.co/rH0fs2y/seclo.jpg",
-  },
-];
 
 const BannerSlider = () => {
+  const axiosSecure =useAxioseSecure()
+
+  const {
+    data: sliderData = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["slider-products"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/advertisements");
+      return res.data.filter((item) => item.inSlider === true);
+    },
+  });
+
   const handleViewDetails = (product) => {
     console.log("View Details:", product);
   };
@@ -34,22 +32,22 @@ const BannerSlider = () => {
     console.log("Added to Cart:", product);
   };
 
+  if (isLoading) return <p className="text-center">Loading banners...</p>;
+  if (error) return <p className="text-red-500">Failed to load banners</p>;
+
   return (
     <div className="max-w-7xl mx-auto">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         navigation={true}
         loop={true}
         modules={[Autoplay, Pagination, Navigation]}
         className="rounded-xl"
       >
-        {demoData.map((product) => {
+        {sliderData.map((product) => {
           const savedAmount = product.originalPrice - product.price;
 
           return (
@@ -62,17 +60,14 @@ const BannerSlider = () => {
                   backgroundPosition: "center",
                 }}
               >
-                {/* Dark overlay for text readability */}
                 <div className="absolute inset-0 bg-black bg-opacity-50"></div>
 
-                {/* Save ৳ Sticker */}
                 {savedAmount > 0 && (
                   <div className="absolute top-4 left-4 z-20 bg-green-500 text-white text-sm font-semibold px-3 py-1 rounded-full shadow-md animate-pulse">
                     Save ৳{savedAmount}
                   </div>
                 )}
 
-                {/* Left Content Overlay */}
                 <div className="absolute top-0 left-0 z-20 flex flex-col justify-center h-full px-8 md:px-16 max-w-lg text-white">
                   <h2 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
                     {product.name}
@@ -81,7 +76,7 @@ const BannerSlider = () => {
                     {product.description}
                   </p>
                   <p className="text-3xl font-semibold mb-8 drop-shadow-md">
-                    Now ৳{product.price}{" "}
+                    Now ৳{product.price} {" "}
                     <span className="line-through text-gray-300 text-xl ml-3">
                       ৳{product.originalPrice}
                     </span>
