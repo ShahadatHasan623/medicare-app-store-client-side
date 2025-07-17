@@ -23,7 +23,7 @@ export default function MyPaymentHistory() {
   } = useQuery({
     queryKey: ["user-payments", user?.email],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/user-payments/${user?.email}`);
+      const res = await axiosSecure.get(`/payments/user/${user.email}`);
       return res.data;
     },
     enabled: !!user?.email,

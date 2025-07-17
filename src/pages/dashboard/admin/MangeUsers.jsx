@@ -8,41 +8,37 @@ export default function ManageUsers() {
   const queryClient = useQueryClient();
 
   // Fetch users
-  const { data: users = [], isLoading, error } = useQuery(
-    ["users"],
-    async () => {
+  const { data: users = [], isLoading, error } = useQuery({
+    queryKey: ["users"],
+    queryFn: async () => {
       const res = await axiosSecure.get("/users");
       return res.data;
-    }
-  );
+    },
+  });
 
-  // Update role mutation
-  const updateRoleMutation = useMutation(
-    ({ id, role }) => axiosSecure.patch(`/users/role/${id}`, { role }),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["users"]);
-        Swal.fire("Updated!", "User role updated successfully.", "success");
-      },
-      onError: () => {
-        Swal.fire("Error!", "Failed to update user role.", "error");
-      },
-    }
-  );
+  // Update role mutation - changed to object signature
+  const updateRoleMutation = useMutation({
+    mutationFn: ({ id, role }) => axiosSecure.patch(`/users/role/${id}`, { role }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      Swal.fire("Updated!", "User role updated successfully.", "success");
+    },
+    onError: () => {
+      Swal.fire("Error!", "Failed to update user role.", "error");
+    },
+  });
 
-  // Delete user mutation
-  const deleteUserMutation = useMutation(
-    (id) => axiosSecure.delete(`/users/${id}`),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["users"]);
-        Swal.fire("Deleted!", "User has been deleted.", "success");
-      },
-      onError: () => {
-        Swal.fire("Error!", "Failed to delete user.", "error");
-      },
-    }
-  );
+  // Delete user mutation - changed to object signature
+  const deleteUserMutation = useMutation({
+    mutationFn: (id) => axiosSecure.delete(`/users/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      Swal.fire("Deleted!", "User has been deleted.", "success");
+    },
+    onError: () => {
+      Swal.fire("Error!", "Failed to delete user.", "error");
+    },
+  });
 
   if (isLoading) return <p>Loading users...</p>;
   if (error) return <p>Error loading users</p>;

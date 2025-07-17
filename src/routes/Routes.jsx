@@ -9,58 +9,62 @@ import CategoryDetails from "../pages/CategoryDetails/CategoryDetails";
 import CartPage from "../pages/CartPage/CartPage";
 import Checkout from "../pages/Checkout/Checkout";
 import DashboardLayouts from "../layouts/DashBoardLayouts";
-import SellerRoute from "./SellerRoute";
 import AdminRoute from "./AdminRoute";
-import MyPaymentHistory from "../pages/dashboard/user/MyPaymentHistory";
+import ManageUsers from "../pages/dashboard/admin/MangeUsers";
+import PaymentManagement from "../pages/dashboard/admin/PayementManagement";
+import ManageBanners from "../pages/dashboard/admin/ManageBanners";
+import SellerRoute from "./SellerRoute";
 import MyMedicines from "../pages/dashboard/seller/MyMedicines";
 import PaymentHistory from "../pages/dashboard/seller/PaymentHistory";
-import AskForAdvertisment from "../pages/dashboard/seller/AskForAdvertisment";
+import AskForAdvertisement from "../pages/dashboard/seller/AskForAdvertisment";
+import MyPaymentHistory from "../pages/dashboard/user/MyPaymentHistory";
 import ManageCategories from "../pages/DashBoard/Admin/ManageCategories";
-import PayementManagement from "../pages/dashboard/admin/PayementManagement";
-import ManageBanners from "../pages/dashboard/admin/ManageBanners";
 import PrivateRoutes from "../components/PrivateRoutes";
-import MangeUsers from "../pages/dashboard/admin/MangeUsers";
+import AdminHome from "../pages/dashboard/admin/AdminHome";
+
+
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: MainLayouts,
+    element: <MainLayouts />,
     children: [
       {
         index: true,
-        path: "/",
-        Component: Home,
+        element: <Home />,
       },
       {
         path: "login",
-        Component: Login,
+        element: <Login />,
       },
       {
         path: "signup",
-        Component: Signup,
+        element: <Signup />,
       },
       {
         path: "shop",
-        Component: Shop,
+        element: <Shop />,
       },
       {
-        path: "Categories",
-        Component: Categories,
+        path: "categories",
+        element: <Categories />,
       },
       {
-        path: "/category/:name",
+        path: "category/:name",
         element: <CategoryDetails />,
       },
       {
         path: "cart",
-        Component: CartPage,
+        element: <CartPage />,
       },
       {
         path: "checkout",
-        Component: Checkout,
+        element: <Checkout />,
       },
+      
     ],
   },
+
   {
     path: "/dashboard",
     element: (
@@ -71,10 +75,19 @@ export const router = createBrowserRouter([
     children: [
       // ✅ Admin Routes
       {
+        path:'dashboard',
+        element:(
+          <AdminRoute>
+            <AdminHome></AdminHome>
+          </AdminRoute>
+        )
+
+      },
+      {
         path: "manage-users",
         element: (
           <AdminRoute>
-            <MangeUsers></MangeUsers>
+            <ManageUsers/>
           </AdminRoute>
         ),
       },
@@ -82,7 +95,7 @@ export const router = createBrowserRouter([
         path: "manage-category",
         element: (
           <AdminRoute>
-            <ManageCategories />
+            <ManageCategories/>
           </AdminRoute>
         ),
       },
@@ -90,7 +103,7 @@ export const router = createBrowserRouter([
         path: "payments",
         element: (
           <AdminRoute>
-            <PayementManagement />
+            <PaymentManagement/>
           </AdminRoute>
         ),
       },
@@ -98,7 +111,7 @@ export const router = createBrowserRouter([
         path: "manage-banner",
         element: (
           <AdminRoute>
-            <ManageBanners />
+            <ManageBanners/>
           </AdminRoute>
         ),
       },
@@ -116,7 +129,7 @@ export const router = createBrowserRouter([
         path: "payment-history",
         element: (
           <SellerRoute>
-            <PaymentHistory></PaymentHistory>
+            <PaymentHistory />
           </SellerRoute>
         ),
       },
@@ -124,7 +137,7 @@ export const router = createBrowserRouter([
         path: "advertise-request",
         element: (
           <SellerRoute>
-            <AskForAdvertisment></AskForAdvertisment>
+            <AskForAdvertisement />
           </SellerRoute>
         ),
       },
@@ -132,7 +145,11 @@ export const router = createBrowserRouter([
       // ✅ User Routes
       {
         path: "user-payments",
-        element: <PrivateRoutes><MyPaymentHistory></MyPaymentHistory></PrivateRoutes>,
+        element: (
+          <PrivateRoutes>
+            <MyPaymentHistory />
+          </PrivateRoutes>
+        ),
       },
     ],
   },

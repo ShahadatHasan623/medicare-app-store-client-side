@@ -12,7 +12,6 @@ import { useNavigate } from "react-router";
 export default function CartPage() {
   const { cart, addToCart, removeItem, clearCart, updateQuantity } =
     useLocalStorageCart();
-
   const navigate = useNavigate();
 
   const totalItems = cart.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
@@ -32,6 +31,7 @@ export default function CartPage() {
 
   const handleProceedToCheckout = () => {
     localStorage.setItem("cartData", JSON.stringify(cart));
+    localStorage.setItem("cartTotal", JSON.stringify(total));
     navigate("/checkout");
   };
 
@@ -98,14 +98,16 @@ export default function CartPage() {
                     <span className="text-xs text-gray-500 font-medium">Quantity</span>
                     <div className="flex items-center">
                       <button
-                        onClick={() => updateQuantity(item._id, -1)}
+                        onClick={() =>
+                          updateQuantity(item._id, item.quantity > 1 ? item.quantity - 1 : 1)
+                        }
                         className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-l text-sm"
                       >
                         <FaMinus />
                       </button>
                       <span className="px-4 border-y text-sm">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item._id, 1)}
+                        onClick={() => updateQuantity(item._id, item.quantity + 1)}
                         className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-r text-sm"
                       >
                         <FaPlus />
@@ -170,7 +172,7 @@ export default function CartPage() {
 
           <button
             onClick={handleProceedToCheckout}
-            className="bg-blue-600 btn hover:bg-blue-700 transition text-white w-full py-2 rounded-lg text-lg font-medium"
+            className="bg-blue-600 hover:bg-blue-700 transition text-white w-full py-2 rounded-lg text-lg font-medium"
           >
             🛒 Proceed to Checkout
           </button>

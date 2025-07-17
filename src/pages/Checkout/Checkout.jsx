@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { FaUser, FaMapMarkerAlt, FaShoppingCart } from "react-icons/fa";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
 import Swal from "sweetalert2";
 import useAxioseSecure from "../../hooks/useAxioseSecure";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 function PaymentForm({ amount, onPaymentSuccess }) {
-    const axioseSecure =useAxioseSecure()
+  const axioseSecure = useAxioseSecure();
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -25,7 +30,9 @@ function PaymentForm({ amount, onPaymentSuccess }) {
     }
 
     try {
-      const response = await axioseSecure.post("/create-payment-intent", { amount });
+      const response = await axioseSecure.post("/create-payment-intent", {
+        amount,
+      });
       const clientSecret = response.data.clientSecret;
 
       const cardElement = elements.getElement(CardElement);
@@ -36,7 +43,6 @@ function PaymentForm({ amount, onPaymentSuccess }) {
       if (paymentResult.error) {
         setError(paymentResult.error.message);
         setLoading(false);
-
         Swal.fire({
           icon: "error",
           title: "Payment Failed",
@@ -51,15 +57,15 @@ function PaymentForm({ amount, onPaymentSuccess }) {
             timer: 3000,
             showConfirmButton: false,
           });
-          onPaymentSuccess();
+          onPaymentSuccess(paymentResult.paymentIntent.id);
           setLoading(false);
         }
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || "Payment failed";
+      const errorMessage =
+        err.response?.data?.message || err.message || "Payment failed";
       setError(errorMessage);
       setLoading(false);
-
       Swal.fire({
         icon: "error",
         title: "Payment Failed",
@@ -69,7 +75,7 @@ function PaymentForm({ amount, onPaymentSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 mt-4">
       <CardElement
         options={{
           style: {
@@ -83,7 +89,11 @@ function PaymentForm({ amount, onPaymentSuccess }) {
         }}
       />
       {error && <div className="text-red-600">{error}</div>}
-      <button type="submit" disabled={!stripe || loading} className="btn btn-primary w-full">
+      <button
+        type="submit"
+        disabled={!stripe || loading}
+        className="btn btn-primary w-full"
+      >
         {loading ? "Processing..." : `Pay $${(amount / 100).toFixed(2)}`}
       </button>
     </form>
@@ -91,6 +101,8 @@ function PaymentForm({ amount, onPaymentSuccess }) {
 }
 
 export default function Checkout() {
+  const axioseSecure = useAxioseSecure();
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -114,9 +126,14 @@ export default function Checkout() {
   }, []);
 
   const totalItems = cart.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
-  const subtotal = cart.reduce((sum, item) => sum + (item.quantity ?? 0) * (item.price ?? 0), 0);
+  const subtotal = cart.reduce(
+    (sum, item) => sum + (item.quantity ?? 0) * (item.price ?? 0),
+    0
+  );
   const totalDiscount = cart.reduce(
-    (sum, item) => sum + (item.quantity ?? 0) * ((item.originalPrice ?? 0) - (item.price ?? 0)),
+    (sum, item) =>
+      sum +
+      (item.quantity ?? 0) * ((item.originalPrice ?? 0) - (item.price ?? 0)),
     0
   );
   const totalAmount = subtotal * 100; // Stripe expects cents
@@ -130,9 +147,38 @@ export default function Checkout() {
     setShowPayment(true);
   };
 
-  const handlePaymentSuccess = () => {
-    setPaymentDone(true);
-    localStorage.removeItem("cartData");
+  const handlePaymentSuccess = async (paymentIntentId) => {
+    try {
+      const paymentInfo = {
+        buyerEmail: formData.email,
+        transactionId: paymentIntentId,
+        totalPrice: subtotal,
+        status: "pending",
+        date: new Date(),
+        cartItems: cart.map((item) => ({
+          medicineId: item._id,
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          sellerEmail: item.sellerEmail || "unknown",
+        })),
+      };
+
+      const res = await axioseSecure.post("/payments", paymentInfo);
+      if (res.data.insertedId || res.data.acknowledged) {
+        Swal.fire({
+          icon: "success",
+          title: "Order Confirmed",
+          text: `Your order has been placed successfully.`,
+        });
+        setPaymentDone(true);
+        localStorage.removeItem("cartData");
+        localStorage.removeItem("cartTotal");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Failed to save payment info", "error");
+    }
   };
 
   if (paymentDone) {
@@ -147,14 +193,15 @@ export default function Checkout() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
       {!showPayment ? (
-        <form onSubmit={handleContinueToPayment} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <form
+          onSubmit={handleContinueToPayment}
+          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+        >
           <div className="bg-white p-6 rounded-xl shadow space-y-6">
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
               <FaUser /> Customer Information
             </h3>
-            {/* Customer Info Inputs */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Full Name */}
               <label className="form-control">
                 <span className="label-text">Full Name</span>
                 <input
@@ -167,7 +214,6 @@ export default function Checkout() {
                   required
                 />
               </label>
-              {/* Email */}
               <label className="form-control">
                 <span className="label-text">Email Address</span>
                 <input
@@ -180,7 +226,6 @@ export default function Checkout() {
                   required
                 />
               </label>
-              {/* Phone */}
               <label className="form-control">
                 <span className="label-text">Phone Number</span>
                 <input
@@ -193,7 +238,6 @@ export default function Checkout() {
                   required
                 />
               </label>
-              {/* DOB */}
               <label className="form-control">
                 <span className="label-text">Date of Birth</span>
                 <input
@@ -210,7 +254,6 @@ export default function Checkout() {
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2 mt-6">
               <FaMapMarkerAlt /> Shipping Address
             </h3>
-            {/* Address */}
             <label className="form-control">
               <span className="label-text">Street Address</span>
               <input
@@ -223,7 +266,6 @@ export default function Checkout() {
                 required
               />
             </label>
-            {/* City, State, Zip */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <label className="form-control">
                 <span className="label-text">City</span>
@@ -268,26 +310,37 @@ export default function Checkout() {
             </button>
           </div>
 
-          {/* Order Summary */}
           <div className="bg-white p-6 rounded-xl shadow space-y-6 h-fit">
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
               <FaShoppingCart /> Order Summary
             </h3>
-
             <div className="divide-y divide-gray-200">
               {cart.map((item) => (
-                <div key={item._id} className="flex justify-between items-start py-4">
+                <div
+                  key={item._id}
+                  className="flex justify-between items-start py-4"
+                >
                   <div className="flex items-center gap-3">
-                    <img src={item.image} alt={item.name} className="w-12 h-12 object-contain rounded border" />
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-12 h-12 object-contain rounded border"
+                    />
                     <div>
                       <h4 className="font-semibold text-sm">{item.name}</h4>
-                      <p className="text-xs text-gray-500">{item.company} • {item.strength}</p>
+                      <p className="text-xs text-gray-500">
+                        {item.company} • {item.strength}
+                      </p>
                       <p className="text-xs">Qty: {item.quantity ?? 0}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="line-through text-xs text-gray-400">${(item.originalPrice ?? 0).toFixed(2)}</p>
-                    <p className="text-green-600 font-bold">${(item.price ?? 0).toFixed(2)}</p>
+                    <p className="line-through text-xs text-gray-400">
+                      ${(item.originalPrice ?? 0).toFixed(2)}
+                    </p>
+                    <p className="text-green-600 font-bold">
+                      ${(item.price ?? 0).toFixed(2)}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -308,16 +361,28 @@ export default function Checkout() {
       ) : (
         <div className="bg-white p-6 rounded-xl shadow max-w-md mx-auto">
           <h3 className="text-xl font-bold mb-4">Payment Summary</h3>
-          <p><strong>Name:</strong> {formData.fullName}</p>
-          <p><strong>Email:</strong> {formData.email}</p>
-          <p><strong>Phone:</strong> {formData.phone}</p>
           <p>
-            <strong>Shipping Address:</strong> {formData.address}, {formData.city}, {formData.state} - {formData.zip}
+            <strong>Name:</strong> {formData.fullName}
           </p>
-          <p className="mt-4 text-lg font-bold">Total Payment: ${subtotal.toFixed(2)}</p>
+          <p>
+            <strong>Email:</strong> {formData.email}
+          </p>
+          <p>
+            <strong>Phone:</strong> {formData.phone}
+          </p>
+          <p>
+            <strong>Shipping Address:</strong> {formData.address},{" "}
+            {formData.city}, {formData.state} - {formData.zip}
+          </p>
+          <p className="mt-4 text-lg font-bold">
+            Total Payment: ${subtotal.toFixed(2)}
+          </p>
 
           <Elements stripe={stripePromise}>
-            <PaymentForm amount={totalAmount} onPaymentSuccess={handlePaymentSuccess} />
+            <PaymentForm
+              amount={totalAmount}
+              onPaymentSuccess={handlePaymentSuccess}
+            />
           </Elements>
         </div>
       )}

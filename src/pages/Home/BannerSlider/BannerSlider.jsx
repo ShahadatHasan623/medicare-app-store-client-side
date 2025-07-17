@@ -8,9 +8,8 @@ import { FaShoppingCart, FaInfoCircle } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 
-
 const BannerSlider = () => {
-  const axiosSecure =useAxioseSecure()
+  const axiosSecure = useAxioseSecure();
 
   const {
     data: sliderData = [],
@@ -26,14 +25,19 @@ const BannerSlider = () => {
 
   const handleViewDetails = (product) => {
     console.log("View Details:", product);
+    // TODO: Modal বা route navigation করতে পারো
   };
 
   const handleAddToCart = (product) => {
     console.log("Added to Cart:", product);
+    // TODO: Add to localStorage/cart logic
   };
 
-  if (isLoading) return <p className="text-center">Loading banners...</p>;
-  if (error) return <p className="text-red-500">Failed to load banners</p>;
+  if (isLoading) return <p className="text-center py-10">Loading banners...</p>;
+  if (error)
+    return (
+      <p className="text-center text-red-500 py-10">Failed to load banners</p>
+    );
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -43,12 +47,15 @@ const BannerSlider = () => {
         autoplay={{ delay: 3000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         navigation={true}
-        loop={true}
+        loop={sliderData.length > 2} // ✅ Loop only if 3 or more slides
         modules={[Autoplay, Pagination, Navigation]}
         className="rounded-xl"
       >
         {sliderData.map((product) => {
-          const savedAmount = product.originalPrice - product.price;
+          const savedAmount = Math.max(
+            (product.originalPrice || 0) - (product.price || 0),
+            0
+          );
 
           return (
             <SwiperSlide key={product._id}>
@@ -73,10 +80,10 @@ const BannerSlider = () => {
                     {product.name}
                   </h2>
                   <p className="text-lg md:text-xl mb-6 drop-shadow-md">
-                    {product.description}
+                    {product.description || ""}
                   </p>
                   <p className="text-3xl font-semibold mb-8 drop-shadow-md">
-                    Now ৳{product.price} {" "}
+                    Now ৳{product.price}
                     <span className="line-through text-gray-300 text-xl ml-3">
                       ৳{product.originalPrice}
                     </span>

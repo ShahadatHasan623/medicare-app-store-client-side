@@ -1,91 +1,112 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 
-
 export default function SalesReport() {
-  const axiosSecure = useAxioseSecure();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const { data: sales = [], isLoading, error, refetch } = useQuery(
-    ["sales-report", startDate, endDate],
-    async () => {
-      const params = new URLSearchParams();
-      if (startDate) params.append("startDate", startDate);
-      if (endDate) params.append("endDate", endDate);
+  const axiosSecure = useAxioseSecure();
 
-      const res = await axiosSecure.get(`/sales-report?${params.toString()}`);
-      return res.data;
-    },
-    {
-      enabled: false, // auto fetch off, manual refetch with button
+  const fetchReport = async () => {
+    if (!startDate || !endDate) {
+      Swal.fire({
+        icon: "warning",
+        title: "Please select both start and end dates",
+      });
+      return;
     }
-  );
 
-  const handleFilter = () => {
-    if (!startDate || !endDate) return alert("Both start and end dates are required");
-    refetch();
+    setLoading(true);
+    try {
+      const res = await axiosSecure.get("/sales-report", {
+        params: { startDate, endDate },
+      });
+      setPayments(res.data);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Failed to fetch report",
+        text: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <div>
-      <h2>Sales Report</h2>
+  const totalAmount = payments.reduce((sum, p) => sum + (p.totalPrice || 0), 0);
 
-      <div style={{ marginBottom: "1rem" }}>
-        <label>
-          Start Date:{" "}
+  return (
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-4">Sales Report</h2>
+
+      <div className="mb-4 flex flex-wrap gap-4 items-end">
+        <div>
+          <label className="block mb-1 font-medium">Start Date</label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
+            className="border p-2 rounded"
           />
-        </label>
-        <label style={{ marginLeft: "1rem" }}>
-          End Date:{" "}
+        </div>
+
+        <div>
+          <label className="block mb-1 font-medium">End Date</label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
+            className="border p-2 rounded"
           />
-        </label>
-        <button onClick={handleFilter} style={{ marginLeft: "1rem" }}>
-          Filter
+        </div>
+
+        <button
+          onClick={fetchReport}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          {loading ? "Loading..." : "Fetch Report"}
         </button>
       </div>
 
-      {isLoading && <p>Loading sales report...</p>}
-      {error && <p>Error loading sales report</p>}
+      {payments.length > 0 && (
+        <>
+          <div className="mb-4 font-semibold text-lg">
+            Total Sales: ${totalAmount.toFixed(2)}
+          </div>
 
-      <table border="1" cellPadding="8" cellSpacing="0" style={{ width: "100%" }}>
-        <thead>
-          <tr>
-            <th>Payment ID</th>
-            <th>Seller Email</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sales.length === 0 && (
-            <tr>
-              <td colSpan={5} style={{ textAlign: "center" }}>
-                No sales found.
-              </td>
-            </tr>
-          )}
-          {sales.map(({ _id, sellerEmail, amount, status, date }) => (
-            <tr key={_id}>
-              <td>{_id}</td>
-              <td>{sellerEmail}</td>
-              <td>${amount}</td>
-              <td>{status}</td>
-              <td>{new Date(date).toLocaleDateString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          <table className="min-w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-300 p-2">Buyer Email</th>
+                <th className="border border-gray-300 p-2">Seller Email</th>
+                <th className="border border-gray-300 p-2">Total Price</th>
+                <th className="border border-gray-300 p-2">Status</th>
+                <th className="border border-gray-300 p-2">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payments.map((payment) => (
+                <tr key={payment._id} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 p-2">{payment.buyerEmail}</td>
+                  <td className="border border-gray-300 p-2">{payment.sellerEmail}</td>
+                  <td className="border border-gray-300 p-2">${payment.totalPrice?.toFixed(2)}</td>
+                  <td className="border border-gray-300 p-2 capitalize">{payment.status}</td>
+                  <td className="border border-gray-300 p-2">
+                    {new Date(payment.date).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {!loading && payments.length === 0 && (
+        <p className="text-center mt-8 text-gray-600">No data to display.</p>
+      )}
     </div>
   );
 }

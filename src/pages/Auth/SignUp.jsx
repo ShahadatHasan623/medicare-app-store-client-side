@@ -22,7 +22,7 @@ const SignUp = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    const { email, password, name } = data;
+    const { email, password, name, role } = data;
 
     try {
       const result = await createUser(email, password);
@@ -30,7 +30,8 @@ const SignUp = () => {
       // upload user info to db
       const userInfo = {
         email,
-        role: "user",
+        name:name,
+        role, // 'user' or 'seller'
         created_at: new Date().toISOString(),
         last_log_in: new Date().toISOString(),
       };
@@ -41,7 +42,6 @@ const SignUp = () => {
         displayName: name,
         photoURL: photourl || "https://i.ibb.co/0y7VvYb/default-avatar.png",
       };
-
       await updateProfileUser(userProfile);
 
       Swal.fire("Success!", "Account created successfully", "success");
@@ -141,6 +141,19 @@ const SignUp = () => {
                   Password must be at least 6 characters
                 </p>
               )}
+            </div>
+
+            {/* Role */}
+            <div>
+              <label className="label">Register As</label>
+              <select
+                {...register("role", { required: true })}
+                defaultValue="user"
+                className="select select-bordered w-full"
+              >
+                <option value="user">User</option>
+                <option value="seller">Seller</option>
+              </select>
             </div>
 
             {/* Submit Button */}

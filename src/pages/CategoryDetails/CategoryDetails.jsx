@@ -1,124 +1,49 @@
 import { useParams } from "react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FaEye, FaCartPlus } from "react-icons/fa";
+import useAxioseSecure from "../../hooks/useAxioseSecure";
 import { useLocalStorageCart } from "../../utils/useLocalStorageCart";
 
-const demoMedicines = [
-  {
-    _id: "1",
-    name: "Napa Extra",
-    company: "Beximco Pharma",
-    unit: "1 strip",
-    category: "Pain Relief",
-    price: 10,
-    stock: 50,
-    image: "https://i.ibb.co/N3YqGhC/napa-extra.jpg",
-  },
-  {
-    _id: "2",
-    name: "Ace 500",
-    company: "ACI Limited",
-    unit: "1 strip",
-    category: "Pain Relief",
-    price: 8,
-    stock: 30,
-    image: "https://i.ibb.co/3Tm7pyF/ace.jpg",
-  },
-  {
-    _id: "3",
-    name: "Seclo",
-    company: "Square Pharma",
-    unit: "1 capsule",
-    category: "Antibiotics",
-    price: 20,
-    stock: 25,
-    image: "https://i.ibb.co/rH0fs2y/seclo.jpg",
-  },
-  {
-    _id: "4",
-    name: "Maxpro",
-    company: "Opsonin",
-    unit: "1 capsule",
-    category: "Antibiotics",
-    price: 22,
-    stock: 0,
-    image: "https://i.ibb.co/TWbKk1z/maxpro.jpg",
-  },
-  {
-    _id: "5",
-    name: "Ceevit",
-    company: "Square Pharma",
-    unit: "1 tablet",
-    category: "Vitamins",
-    price: 12,
-    stock: 40,
-    image: "https://i.ibb.co/hgTN1KR/ceevit.jpg",
-  },
-  {
-    _id: "6",
-    name: "Rupa Vitamin C",
-    company: "Renata",
-    unit: "1 tablet",
-    category: "Vitamins",
-    price: 15,
-    stock: 80,
-    image: "https://i.ibb.co/mS44sYw/vitamin-c.jpg",
-  },
-  {
-    _id: "7",
-    name: "Orsaline-N",
-    company: "SMC",
-    unit: "1 sachet",
-    category: "Digestive",
-    price: 5,
-    stock: 100,
-    image: "https://i.ibb.co/qF6p0Bz/orsaline.jpg",
-  },
-  {
-    _id: "8",
-    name: "Eno Lemon",
-    company: "GSK",
-    unit: "1 bottle",
-    category: "Digestive",
-    price: 18,
-    stock: 65,
-    image: "https://i.ibb.co/yhkbp1W/eno.jpg",
-  },
-  {
-    _id: "9",
-    name: "Bepanthen",
-    company: "Bayer",
-    unit: "1 tube",
-    category: "Skin Care",
-    price: 35,
-    stock: 10,
-    image: "https://i.ibb.co/wMTh3PX/bepanthen.jpg",
-  },
-  {
-    _id: "10",
-    name: "Baby Derma Cream",
-    company: "Himalaya",
-    unit: "1 tube",
-    category: "Baby Care",
-    price: 28,
-    stock: 5,
-    image: "https://i.ibb.co/Bzt3T3c/baby-cream.jpg",
-  },
-];
-
 const CategoryDetails = () => {
-  const { name } = useParams();
+  const { id } = useParams(); // id = categoryId
+  const axiosSecure = useAxioseSecure();
+  const { addToCart } = useLocalStorageCart();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const { addToCart } = useLocalStorageCart();
 
   const [selectedMedicine, setSelectedMedicine] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const filteredMedicines = demoMedicines
-    .filter(
-      (med) => med.category.toLowerCase() === name.toLowerCase()
-    )
+  // ✅ Fetch category & medicines by ID
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["category-medicines", id],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/categories/${id}/medicines`);
+      return res.data;
+    },
+    enabled: !!id,
+  });
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center py-10">
+        <span className="loading loading-spinner text-primary text-4xl"></span>
+      </div>
+    );
+
+  if (error)
+    return (
+      <p className="text-red-500 text-center text-lg">
+        ❌ Failed to load medicines
+      </p>
+    );
+
+  const { category, medicines = [] } = data || {};
+
+  // ✅ Filter & Sort
+  const filteredMedicines = medicines
     .filter((med) =>
       med.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -131,7 +56,7 @@ const CategoryDetails = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 my-10">
       <h2 className="text-3xl font-bold mb-6 text-blue-700">
-        Category: {name}
+        Category: {category?.categoryName}
       </h2>
 
       {/* Search & Sort */}
@@ -158,7 +83,7 @@ const CategoryDetails = () => {
 
       {/* Table */}
       {filteredMedicines.length === 0 ? (
-        <p className="text-red-500">No matching medicines found.</p>
+        <p className="text-red-500">No medicines found.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full border rounded-lg shadow-md text-sm md:text-base">
@@ -168,7 +93,6 @@ const CategoryDetails = () => {
                 <th className="px-4 py-3 text-left">Name</th>
                 <th className="px-4 py-3 text-left">Company</th>
                 <th className="px-4 py-3 text-left">Unit</th>
-                <th className="px-4 py-3 text-left">Category</th>
                 <th className="px-4 py-3 text-left">Price</th>
                 <th className="px-4 py-3 text-left">Actions</th>
               </tr>
@@ -186,8 +110,9 @@ const CategoryDetails = () => {
                   <td className="px-4 py-3 font-semibold">{med.name}</td>
                   <td className="px-4 py-3">{med.company}</td>
                   <td className="px-4 py-3">{med.unit}</td>
-                  <td className="px-4 py-3">{med.category}</td>
-                  <td className="px-4 py-3 text-green-600 font-medium">৳{med.price}</td>
+                  <td className="px-4 py-3 text-green-600 font-medium">
+                    ৳{med.price}
+                  </td>
                   <td className="px-4 py-3 flex gap-2">
                     <button
                       title="View"
@@ -242,9 +167,6 @@ const CategoryDetails = () => {
             </p>
             <p className="text-center text-gray-600 mb-1">
               Unit: {selectedMedicine.unit}
-            </p>
-            <p className="text-center text-gray-600 mb-1">
-              Category: {selectedMedicine.category}
             </p>
             <p className="text-center text-green-600 text-lg font-semibold mb-2">
               ৳{selectedMedicine.price}

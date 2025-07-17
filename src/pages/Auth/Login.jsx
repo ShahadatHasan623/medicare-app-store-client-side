@@ -4,10 +4,10 @@ import { useNavigate, useLocation, NavLink } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import Lottie from "lottie-react";
 import loginAnimation from "../../assets/Login.json";
-import axios from "axios";
+
 
 const Login = () => {
-  const { loginUser } = useAuth();
+  const { signIn } = useAuth();
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,27 +18,10 @@ const Login = () => {
       const { email, password } = data;
 
       // ১. Firebase Authentication দিয়ে লগিন
-      await loginUser(email, password);
+      await signIn(email, password);
 
       // ২. ব্যাকএন্ড থেকে ইউজারের role নিয়ে আসা
-      const res = await axios.get(`/users?email=${email}`);
-
-      if (!res.data || !res.data.role) {
-        throw new Error("User role not found");
-      }
-
-      const userRole = res.data.role;
-
-      // ৩. role অনুযায়ী রিডাইরেক্ট
-      if (userRole === "admin") {
-        navigate("/admin/dashboard", { replace: true });
-      } else if (userRole === "seller") {
-        navigate("/seller/dashboard", { replace: true });
-      } else {
-        // normal user
-        navigate(from, { replace: true });
-      }
-
+    
       Swal.fire("Success!", "Logged in successfully", "success");
     } catch (err) {
       console.error(err);
