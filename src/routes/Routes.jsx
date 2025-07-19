@@ -73,8 +73,8 @@ export const router = createBrowserRouter([
     children: [
       // ✅ Admin Routes
       {
-        index: true,
-        path: "dashboard",
+        
+        index:true,
         element: (
           <AdminRoute>
             <AdminHome />

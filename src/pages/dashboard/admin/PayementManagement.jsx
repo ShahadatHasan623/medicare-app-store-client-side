@@ -44,13 +44,11 @@ export default function PaymentManagement() {
         try {
           const res = await axiosSecure.patch(`/payments/${id}`);
           if (res.status === 200) {
-            // success, আপডেট হয়েছে ধরে নিও
             setPayments((prevPayments) =>
               prevPayments.map((p) =>
                 p._id === id ? { ...p, status: "paid" } : p
               )
             );
-
             Swal.fire("Updated!", "Payment marked as paid.", "success");
           } else {
             Swal.fire("Oops!", "No changes made.", "info");
@@ -65,66 +63,86 @@ export default function PaymentManagement() {
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Payment Management</h2>
+    <div className="p-6 min-h-screen bg-[var(--color-bg)]">
+      <h2 className="text-3xl font-bold mb-6 text-[var(--color-primary)]">
+        Payment Management
+      </h2>
       {loading ? (
-        <p>Loading payments...</p>
+        <p className="text-[var(--color-primary)] font-semibold">Loading payments...</p>
       ) : (
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 p-2">Buyer Email</th>
-              <th className="border border-gray-300 p-2">Seller Email</th>
-              <th className="border border-gray-300 p-2">Total Price</th>
-              <th className="border border-gray-300 p-2">Status</th>
-              <th className="border border-gray-300 p-2">Date</th>
-              <th className="border border-gray-300 p-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {payments.length === 0 && (
-              <tr>
-                <td colSpan={6} className="text-center p-4">
-                  No payments found.
-                </td>
+        <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-[var(--color-primary)] text-white">
+                <th className="p-3 text-left">Buyer Email</th>
+                <th className="p-3 text-left">Seller Email(s)</th>
+                <th className="p-3 text-left">Total Price</th>
+                <th className="p-3 text-left">Status</th>
+                <th className="p-3 text-left">Date</th>
+                <th className="p-3 text-left">Action</th>
               </tr>
-            )}
-            {payments.map((payment) => (
-              <tr key={payment._id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 p-2">
-                  {payment.buyerEmail}
-                </td>
-                <td className="border border-gray-300 p-2">
-                  {payment.sellerEmail}
-                </td>
-                <td className="border border-gray-300 p-2">
-                  ${payment.totalPrice?.toFixed(2)}
-                </td>
-                <td className="border border-gray-300 p-2 capitalize">
-                  {payment.status}
-                </td>
-                <td className="border border-gray-300 p-2">
-                  {new Date(payment.date).toLocaleDateString()}
-                </td>
-                <td className="border border-gray-300 p-2">
-                  {payment.status === "pending" ? (
-                    <button
-                      disabled={updatingId === payment._id}
-                      onClick={() => markAsPaid(payment._id)}
-                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 disabled:opacity-50"
+            </thead>
+            <tbody>
+              {payments.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="text-center p-4 text-gray-500 font-medium"
+                  >
+                    No payments found.
+                  </td>
+                </tr>
+              )}
+              {payments.map((payment, index) => (
+                <tr
+                  key={payment._id}
+                  className={`${
+                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  } hover:bg-gray-100 transition`}
+                >
+                  <td className="p-3">{payment.buyerEmail}</td>
+                  <td className="p-3 text-sm text-gray-700">
+                    {Array.isArray(payment.sellerEmails)
+                      ? payment.sellerEmails.join(", ")
+                      : "N/A"}
+                  </td>
+                  <td className="p-3 font-semibold text-[var(--color-secondary)]">
+                    ${payment.totalPrice?.toFixed(2)}
+                  </td>
+                  <td className="p-3">
+                    <span
+                      className={`px-2 py-1 rounded text-white text-sm ${
+                        payment.status === "paid"
+                          ? "bg-green-500"
+                          : "bg-yellow-500"
+                      }`}
                     >
-                      {updatingId === payment._id
-                        ? "Updating..."
-                        : "Mark as Paid"}
-                    </button>
-                  ) : (
-                    <span className="text-green-700 font-semibold">Paid</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      {payment.status}
+                    </span>
+                  </td>
+                  <td className="p-3">
+                    {new Date(payment.date).toLocaleDateString()}
+                  </td>
+                  <td className="p-3">
+                    {payment.status === "pending" ? (
+                      <button
+                        disabled={updatingId === payment._id}
+                        onClick={() => markAsPaid(payment._id)}
+                        className="bg-[var(--color-secondary)] text-white px-4 py-1 rounded hover:opacity-90 transition disabled:opacity-50"
+                      >
+                        {updatingId === payment._id
+                          ? "Updating..."
+                          : "Mark as Paid"}
+                      </button>
+                    ) : (
+                      <span className="text-green-600 font-semibold">Paid</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

@@ -28,7 +28,7 @@ export default function DashboardLayout() {
       case "admin":
         return (
           <>
-            <SidebarLink to="dashboard" icon={<FaHome />} label="Admin Home" />
+            <SidebarLink to="/dashboard" icon={<FaHome />} label="Admin Home" />
             <SidebarLink to="/dashboard/manage-users" icon={<FaUser />} label="Manage Users" />
             <SidebarLink to="/dashboard/manage-category" icon={<FaClipboardList />} label="Manage Categories" />
             <SidebarLink to="/dashboard/payments" icon={<FaMoneyBill />} label="Payment Management" />
@@ -84,7 +84,7 @@ export default function DashboardLayout() {
         </div>
 
         {/* Content Outlet */}
-        <main className="p-6 flex-1 overflow-auto">{<Outlet />}</main>
+        <main className="p-6 flex-1 overflow-auto"><Outlet /></main>
       </div>
 
       {/* Sidebar */}
@@ -129,12 +129,16 @@ export default function DashboardLayout() {
   );
 }
 
-// SidebarLink component with better spacing, hover & active styles
+// SidebarLink component with exact active match for home route
 function SidebarLink({ to, icon, label }) {
+  // Home route should be exact match only (end prop true)
+  const isExact = to === "/dashboard";
+
   return (
     <li>
       <NavLink
         to={to}
+        end={isExact}  // <-- This makes '/dashboard' active only on exact match
         className={({ isActive }) =>
           `flex items-center gap-3 px-4 py-3 rounded-md transition-colors duration-200 cursor-pointer
           ${
