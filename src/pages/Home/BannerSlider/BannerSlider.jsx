@@ -4,7 +4,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import { FaShoppingCart, FaInfoCircle } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 
@@ -18,96 +17,73 @@ const BannerSlider = () => {
   } = useQuery({
     queryKey: ["slider-products"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/advertisements");
-      return res.data.filter((item) => item.inSlider === true);
+      const res = await axiosSecure.get("/advertisements/slider");
+      return res.data;
     },
   });
 
-  const handleViewDetails = (product) => {
-    console.log("View Details:", product);
-    // TODO: Modal বা route navigation করতে পারো
-  };
+  console.log(sliderData);
 
-  const handleAddToCart = (product) => {
-    console.log("Added to Cart:", product);
-    // TODO: Add to localStorage/cart logic
-  };
+  if (isLoading)
+    return (
+      <p className="text-center py-10 text-gray-500 text-lg font-medium">
+        Loading banners...
+      </p>
+    );
 
-  if (isLoading) return <p className="text-center py-10">Loading banners...</p>;
   if (error)
     return (
-      <p className="text-center text-red-500 py-10">Failed to load banners</p>
+      <p className="text-center text-red-500 py-10 font-semibold">
+        Failed to load banners
+      </p>
+    );
+
+  if (sliderData.length === 0)
+    return (
+      <p className="text-center py-10 text-gray-600 font-medium">
+        No banners to display
+      </p>
     );
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
+        autoplay={{ delay: 3500, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         navigation={true}
-        loop={sliderData.length > 2} // ✅ Loop only if 3 or more slides
+        loop={sliderData.length > 2}
         modules={[Autoplay, Pagination, Navigation]}
-        className="rounded-xl"
+        className="rounded-2xl shadow-xl"
       >
-        {sliderData.map((product) => {
-          const savedAmount = Math.max(
-            (product.originalPrice || 0) - (product.price || 0),
-            0
-          );
+        {sliderData.map((product) => (
+          <SwiperSlide key={product._id}>
+            <div
+              className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-lg"
+              style={{
+                backgroundImage: `url(${
+                  product.medicineImage || "/default-banner.jpg"
+                })`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
 
-          return (
-            <SwiperSlide key={product._id}>
-              <div
-                className="relative w-full h-[500px] rounded-xl overflow-hidden"
-                style={{
-                  backgroundImage: `url(${product.image})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-
-                {savedAmount > 0 && (
-                  <div className="absolute top-4 left-4 z-20 bg-green-500 text-white text-sm font-semibold px-3 py-1 rounded-full shadow-md animate-pulse">
-                    Save ৳{savedAmount}
-                  </div>
-                )}
-
-                <div className="absolute top-0 left-0 z-20 flex flex-col justify-center h-full px-8 md:px-16 max-w-lg text-white">
-                  <h2 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
-                    {product.name}
-                  </h2>
-                  <p className="text-lg md:text-xl mb-6 drop-shadow-md">
-                    {product.description || ""}
-                  </p>
-                  <p className="text-3xl font-semibold mb-8 drop-shadow-md">
-                    Now ৳{product.price}
-                    <span className="line-through text-gray-300 text-xl ml-3">
-                      ৳{product.originalPrice}
-                    </span>
-                  </p>
-
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => handleViewDetails(product)}
-                      className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-full transition-shadow shadow-lg"
-                    >
-                      <FaInfoCircle /> View Details
-                    </button>
-                    <button
-                      onClick={() => handleAddToCart(product)}
-                      className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 rounded-full transition-shadow shadow-lg"
-                    >
-                      <FaShoppingCart /> Add to Cart
-                    </button>
-                  </div>
-                </div>
+              {/* Text Section */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 text-white">
+                <h2 className="text-3xl md:text-5xl font-extrabold mb-4 drop-shadow-lg leading-tight">
+                  {product.medicineName}
+                </h2>
+                <p className="text-sm md:text-lg drop-shadow-md opacity-90 max-w-2xl">
+                  {product.description || "No description available."}
+                </p>
               </div>
-            </SwiperSlide>
-          );
-        })}
+            </div>
+          </SwiperSlide>
+        ))}
       </Swiper>
     </div>
   );

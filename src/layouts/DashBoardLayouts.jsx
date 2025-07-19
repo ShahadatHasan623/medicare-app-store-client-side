@@ -6,18 +6,19 @@ import {
   FaMoneyBill,
   FaClipboardList,
   FaBars,
+  FaSignOutAlt,
 } from "react-icons/fa";
 import useAuth from "../hooks/useAuth";
 import { useRole } from "../hooks/useRool";
 
 export default function DashboardLayout() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { role, isLoadingRole } = useRole();
 
   if (isLoadingRole) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <span className="loading loading-spinner text-purple-600"></span>
+        <span className="loading loading-spinner text-primary"></span>
       </div>
     );
   }
@@ -27,7 +28,7 @@ export default function DashboardLayout() {
       case "admin":
         return (
           <>
-            <SidebarLink to="/dashboard" icon={<FaHome />} label="Admin Home" />
+            <SidebarLink to="dashboard" icon={<FaHome />} label="Admin Home" />
             <SidebarLink to="/dashboard/manage-users" icon={<FaUser />} label="Manage Users" />
             <SidebarLink to="/dashboard/manage-category" icon={<FaClipboardList />} label="Manage Categories" />
             <SidebarLink to="/dashboard/payments" icon={<FaMoneyBill />} label="Payment Management" />
@@ -55,46 +56,72 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="drawer lg:drawer-open min-h-screen">
+    <div className="drawer lg:drawer-open min-h-screen bg-base-100">
       <input id="dashboard-drawer" type="checkbox" className="drawer-toggle" />
+
+      {/* Main content */}
       <div className="drawer-content flex flex-col">
         {/* Mobile Topbar */}
-        <div className="bg-white shadow flex justify-between items-center p-4 sticky top-0 z-50 lg:hidden">
-          <label htmlFor="dashboard-drawer" className="btn btn-ghost drawer-button text-xl">
-            <FaBars />
-          </label>
-          <h2 className="text-xl font-bold text-purple-700">Dashboard</h2>
-          <div className="flex items-center gap-2">
+        <div className="navbar bg-white shadow-md sticky top-0 z-50 lg:hidden">
+          <div className="flex-none">
+            <label
+              htmlFor="dashboard-drawer"
+              className="btn btn-square btn-ghost"
+              title="Open sidebar"
+            >
+              <FaBars size={22} />
+            </label>
+          </div>
+          <div className="flex-1 px-4 text-xl font-bold text-primary">Dashboard</div>
+          <div className="flex-none">
             <img
               src={user?.photoURL || "/user.png"}
-              alt="User"
-              className="w-9 h-9 rounded-full border object-cover"
+              alt={user?.displayName || "User"}
+              title={user?.displayName || "User"}
+              className="w-10 h-10 rounded-full border border-primary object-cover"
             />
           </div>
         </div>
 
-        <div className="p-4 flex-1 bg-gray-100 overflow-auto">
-          <Outlet />
-        </div>
+        {/* Content Outlet */}
+        <main className="p-6 flex-1 overflow-auto">{<Outlet />}</main>
       </div>
 
-      <div className="drawer-side">
+      {/* Sidebar */}
+      <div className="drawer-side border-r border-base-300 bg-white">
         <label htmlFor="dashboard-drawer" className="drawer-overlay"></label>
-        <aside className="w-72 h-full bg-white border-r flex flex-col justify-between">
-          <div className="overflow-y-auto px-4 py-6">
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-purple-700">Dashboard</h2>
-              <p className="text-sm text-gray-600 capitalize">Welcome, {role}!</p>
+        <aside className="w-72 flex flex-col justify-between min-h-screen">
+          <div>
+            {/* Header */}
+            <div className="p-6 border-b border-base-300 text-center">
+              <h2 className="text-3xl font-extrabold text-primary">Dashboard</h2>
+              <p className="mt-1 text-sm text-gray-500 capitalize">
+                Welcome, <span className="font-semibold">{role}</span>!
+              </p>
             </div>
-            <ul className="space-y-2 text-[16px] font-medium">{renderLinks()}</ul>
+
+            {/* Navigation Links */}
+            <ul className="menu p-4 space-y-2">
+              {renderLinks()}
+            </ul>
           </div>
-          <div className="p-4 border-t">
+
+          {/* Footer with logout & home */}
+          <div className="p-4 border-t border-base-300 space-y-3">
             <Link
               to="/"
-              className="flex items-center justify-center gap-2 text-purple-700 font-semibold hover:text-purple-900"
+              className="btn btn-outline btn-primary w-full flex items-center justify-center gap-2"
             >
               <FaHome /> Back to Home
             </Link>
+
+            <button
+              onClick={() => logout()}
+              className="btn btn-error w-full flex items-center justify-center gap-2"
+              title="Logout"
+            >
+              <FaSignOutAlt /> Logout
+            </button>
           </div>
         </aside>
       </div>
@@ -102,21 +129,23 @@ export default function DashboardLayout() {
   );
 }
 
-// ✅ Reusable Sidebar Link Component
+// SidebarLink component with better spacing, hover & active styles
 function SidebarLink({ to, icon, label }) {
   return (
     <li>
       <NavLink
         to={to}
         className={({ isActive }) =>
-          `flex items-center gap-2 px-3 py-2 rounded-md transition ${
+          `flex items-center gap-3 px-4 py-3 rounded-md transition-colors duration-200 cursor-pointer
+          ${
             isActive
-              ? "bg-purple-100 text-purple-800 font-semibold"
-              : "hover:bg-gray-100 text-gray-700"
+              ? "bg-primary text-primary-content font-semibold shadow-md"
+              : "text-base-content hover:bg-primary hover:text-primary-content"
           }`
         }
       >
-        {icon} {label}
+        <span className="text-lg">{icon}</span>
+        <span>{label}</span>
       </NavLink>
     </li>
   );

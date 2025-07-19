@@ -5,7 +5,7 @@ import { useRole } from "../hooks/useRool";
 
 export default function AdminRoute({ children }) {
   const { user, loading } = useAuth();
-  const { role, isLoadingRole } = useRole(); // ✅ Role নিচ্ছি আলাদা হুক থেকে
+  const { role, isLoadingRole } = useRole();
 
   if (loading || isLoadingRole) {
     return (
@@ -13,6 +13,9 @@ export default function AdminRoute({ children }) {
         <span className="loading loading-spinner text-purple-600"></span>
       </div>
     );
+  }
+  if(loading){
+    return "loading";
   }
 
   if (user && role === "admin") {

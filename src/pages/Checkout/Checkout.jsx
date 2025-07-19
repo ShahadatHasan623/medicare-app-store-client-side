@@ -8,12 +8,13 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import Swal from "sweetalert2";
-import useAxioseSecure from "../../hooks/useAxioseSecure";
+import useAxiosSecure from "../../hooks/useAxioseSecure";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
+// ✅ Payment Form Component
 function PaymentForm({ amount, onPaymentSuccess }) {
-  const axioseSecure = useAxioseSecure();
+  const axiosSecure = useAxiosSecure();
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -30,47 +31,40 @@ function PaymentForm({ amount, onPaymentSuccess }) {
     }
 
     try {
-      const response = await axioseSecure.post("/create-payment-intent", {
+      // ✅ Create PaymentIntent from Backend
+      const { data } = await axiosSecure.post("/create-payment-intent", {
         amount,
       });
-      const clientSecret = response.data.clientSecret;
+      const clientSecret = data.clientSecret;
 
       const cardElement = elements.getElement(CardElement);
-      const paymentResult = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card: cardElement },
-      });
 
-      if (paymentResult.error) {
-        setError(paymentResult.error.message);
-        setLoading(false);
-        Swal.fire({
-          icon: "error",
-          title: "Payment Failed",
-          text: paymentResult.error.message,
+      // ✅ Confirm Payment
+      const { paymentIntent, error: confirmError } =
+        await stripe.confirmCardPayment(clientSecret, {
+          payment_method: { card: cardElement },
         });
-      } else {
-        if (paymentResult.paymentIntent.status === "succeeded") {
-          Swal.fire({
-            icon: "success",
-            title: "Payment Successful",
-            text: `Your payment of $${(amount / 100).toFixed(2)} was successful!`,
-            timer: 3000,
-            showConfirmButton: false,
-          });
-          onPaymentSuccess(paymentResult.paymentIntent.id);
-          setLoading(false);
-        }
+
+      if (confirmError) {
+        setError(confirmError.message);
+        Swal.fire("Payment Failed", confirmError.message, "error");
+      } else if (paymentIntent.status === "succeeded") {
+        Swal.fire({
+          icon: "success",
+          title: "Payment Successful",
+          text: `Payment of $${(amount / 100).toFixed(2)} completed!`,
+          timer: 2500,
+          showConfirmButton: false,
+        });
+        onPaymentSuccess(paymentIntent.id);
       }
     } catch (err) {
-      const errorMessage =
+      const message =
         err.response?.data?.message || err.message || "Payment failed";
-      setError(errorMessage);
+      setError(message);
+      Swal.fire("Payment Failed", message, "error");
+    } finally {
       setLoading(false);
-      Swal.fire({
-        icon: "error",
-        title: "Payment Failed",
-        text: errorMessage,
-      });
     }
   };
 
@@ -88,7 +82,7 @@ function PaymentForm({ amount, onPaymentSuccess }) {
           },
         }}
       />
-      {error && <div className="text-red-600">{error}</div>}
+      {error && <p className="text-red-600">{error}</p>}
       <button
         type="submit"
         disabled={!stripe || loading}
@@ -100,8 +94,9 @@ function PaymentForm({ amount, onPaymentSuccess }) {
   );
 }
 
+// ✅ Main Checkout Component
 export default function Checkout() {
-  const axioseSecure = useAxioseSecure();
+  const axiosSecure = useAxiosSecure();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -118,6 +113,7 @@ export default function Checkout() {
   const [showPayment, setShowPayment] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
 
+  // ✅ Load Cart from LocalStorage
   useEffect(() => {
     const savedCart = localStorage.getItem("cartData");
     if (savedCart) {
@@ -153,7 +149,7 @@ export default function Checkout() {
         buyerEmail: formData.email,
         transactionId: paymentIntentId,
         totalPrice: subtotal,
-        status: "pending",
+        payment_status: "paid",
         date: new Date(),
         cartItems: cart.map((item) => ({
           medicineId: item._id,
@@ -164,16 +160,11 @@ export default function Checkout() {
         })),
       };
 
-      const res = await axioseSecure.post("/payments", paymentInfo);
+      const res = await axiosSecure.post("/payments", paymentInfo);
       if (res.data.insertedId || res.data.acknowledged) {
-        Swal.fire({
-          icon: "success",
-          title: "Order Confirmed",
-          text: `Your order has been placed successfully.`,
-        });
+        Swal.fire("Order Confirmed", "Your order is successfully placed!", "success");
         setPaymentDone(true);
         localStorage.removeItem("cartData");
-        localStorage.removeItem("cartTotal");
       }
     } catch (err) {
       console.error(err);
@@ -183,9 +174,9 @@ export default function Checkout() {
 
   if (paymentDone) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-green-100 rounded">
+      <div className="max-w-xl mx-auto p-6 bg-green-100 rounded text-center">
         <h2 className="text-2xl font-bold mb-4">Thank you for your order!</h2>
-        <p>Your payment of ${(subtotal).toFixed(2)} was successful.</p>
+        <p>Your payment of ${subtotal.toFixed(2)} was successful.</p>
       </div>
     );
   }
@@ -197,58 +188,32 @@ export default function Checkout() {
           onSubmit={handleContinueToPayment}
           className="grid grid-cols-1 md:grid-cols-2 gap-8"
         >
+          {/* ✅ Customer Info Form */}
           <div className="bg-white p-6 rounded-xl shadow space-y-6">
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
               <FaUser /> Customer Information
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <label className="form-control">
-                <span className="label-text">Full Name</span>
-                <input
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  type="text"
-                  placeholder="Full Name"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </label>
-              <label className="form-control">
-                <span className="label-text">Email Address</span>
-                <input
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  type="email"
-                  placeholder="Email Address"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </label>
-              <label className="form-control">
-                <span className="label-text">Phone Number</span>
-                <input
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  type="tel"
-                  placeholder="Phone Number"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </label>
-              <label className="form-control">
-                <span className="label-text">Date of Birth</span>
-                <input
-                  name="dob"
-                  value={formData.dob}
-                  onChange={handleChange}
-                  type="date"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </label>
+              {["fullName", "email", "phone", "dob"].map((field, index) => (
+                <label key={index} className="form-control">
+                  <span className="label-text">
+                    {field === "fullName"
+                      ? "Full Name"
+                      : field === "dob"
+                      ? "Date of Birth"
+                      : field.charAt(0).toUpperCase() + field.slice(1)}
+                  </span>
+                  <input
+                    name={field}
+                    value={formData[field]}
+                    onChange={handleChange}
+                    type={field === "dob" ? "date" : field === "email" ? "email" : "text"}
+                    placeholder={field}
+                    className="input input-bordered w-full"
+                    required
+                  />
+                </label>
+              ))}
             </div>
 
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2 mt-6">
@@ -267,42 +232,20 @@ export default function Checkout() {
               />
             </label>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <label className="form-control">
-                <span className="label-text">City</span>
-                <input
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  type="text"
-                  placeholder="City"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </label>
-              <label className="form-control">
-                <span className="label-text">State</span>
-                <input
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  type="text"
-                  placeholder="State"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </label>
-              <label className="form-control">
-                <span className="label-text">ZIP Code</span>
-                <input
-                  name="zip"
-                  value={formData.zip}
-                  onChange={handleChange}
-                  type="text"
-                  placeholder="ZIP Code"
-                  className="input input-bordered w-full"
-                  required
-                />
-              </label>
+              {["city", "state", "zip"].map((field, index) => (
+                <label key={index} className="form-control">
+                  <span className="label-text">{field.toUpperCase()}</span>
+                  <input
+                    name={field}
+                    value={formData[field]}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder={field}
+                    className="input input-bordered w-full"
+                    required
+                  />
+                </label>
+              ))}
             </div>
 
             <button type="submit" className="btn btn-primary mt-6 w-full">
@@ -310,6 +253,7 @@ export default function Checkout() {
             </button>
           </div>
 
+          {/* ✅ Order Summary */}
           <div className="bg-white p-6 rounded-xl shadow space-y-6 h-fit">
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
               <FaShoppingCart /> Order Summary

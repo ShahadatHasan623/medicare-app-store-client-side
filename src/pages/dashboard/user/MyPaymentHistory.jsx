@@ -7,8 +7,10 @@ import { useState } from "react";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 import useAuth from "../../../hooks/useAuth";
 
+
 export default function MyPaymentHistory() {
   const { user } = useAuth();
+  console.log(user)
   const axiosSecure = useAxioseSecure();
 
   const [filter, setFilter] = useState("all");
@@ -23,11 +25,16 @@ export default function MyPaymentHistory() {
   } = useQuery({
     queryKey: ["user-payments", user?.email],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/payments/user/${user.email}`);
+      if (!user?.email) return [];
+      const res = await axiosSecure.get(
+        `/payments/user/${user.email}`
+      );
+      console.log("API response data:", res.data);
       return res.data;
     },
     enabled: !!user?.email,
   });
+  console.log(payments);
 
   const filteredPayments =
     filter === "all"
@@ -72,8 +79,10 @@ export default function MyPaymentHistory() {
     XLSX.writeFile(workbook, "payment-history.xlsx");
   };
 
-  if (isLoading) return <p className="text-center">Loading payment history...</p>;
-  if (error) return <p className="text-red-500 text-center">Failed to fetch data</p>;
+  if (isLoading)
+    return <p className="text-center">Loading payment history...</p>;
+  if (error)
+    return <p className="text-red-500 text-center">Failed to fetch data</p>;
 
   return (
     <div className="p-4">
@@ -157,7 +166,9 @@ export default function MyPaymentHistory() {
             >
               Prev
             </button>
-            <span className="px-2">Page {currentPage} of {totalPages}</span>
+            <span className="px-2">
+              Page {currentPage} of {totalPages}
+            </span>
             <button
               onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
               disabled={currentPage === totalPages}
@@ -174,10 +185,20 @@ export default function MyPaymentHistory() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded w-full max-w-md">
             <h3 className="text-lg font-bold mb-4">Invoice Details</h3>
-            <p><strong>Amount:</strong> ${selectedPayment.amount}</p>
-            <p><strong>Status:</strong> {selectedPayment.status}</p>
-            <p><strong>Transaction ID:</strong> {selectedPayment.transactionId || "N/A"}</p>
-            <p><strong>Date:</strong> {new Date(selectedPayment.date).toLocaleDateString()}</p>
+            <p>
+              <strong>Amount:</strong> ${selectedPayment.amount}
+            </p>
+            <p>
+              <strong>Status:</strong> {selectedPayment.status}
+            </p>
+            <p>
+              <strong>Transaction ID:</strong>{" "}
+              {selectedPayment.transactionId || "N/A"}
+            </p>
+            <p>
+              <strong>Date:</strong>{" "}
+              {new Date(selectedPayment.date).toLocaleDateString()}
+            </p>
             <div className="mt-4 text-right">
               <button
                 onClick={() => setSelectedPayment(null)}

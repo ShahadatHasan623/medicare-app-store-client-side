@@ -43,13 +43,19 @@ export default function PaymentManagement() {
         setUpdatingId(id);
         try {
           const res = await axiosSecure.patch(`/payments/${id}`);
-          if (res.data.modifiedCount > 0) {
+          if (res.status === 200) {
+            // success, আপডেট হয়েছে ধরে নিও
+            setPayments((prevPayments) =>
+              prevPayments.map((p) =>
+                p._id === id ? { ...p, status: "paid" } : p
+              )
+            );
+
             Swal.fire("Updated!", "Payment marked as paid.", "success");
-            fetchPayments();
           } else {
             Swal.fire("Oops!", "No changes made.", "info");
           }
-        } catch{
+        } catch {
           Swal.fire("Error!", "Failed to update payment status.", "error");
         } finally {
           setUpdatingId(null);
@@ -85,10 +91,18 @@ export default function PaymentManagement() {
             )}
             {payments.map((payment) => (
               <tr key={payment._id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 p-2">{payment.buyerEmail}</td>
-                <td className="border border-gray-300 p-2">{payment.sellerEmail}</td>
-                <td className="border border-gray-300 p-2">${payment.totalPrice?.toFixed(2)}</td>
-                <td className="border border-gray-300 p-2 capitalize">{payment.status}</td>
+                <td className="border border-gray-300 p-2">
+                  {payment.buyerEmail}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {payment.sellerEmail}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  ${payment.totalPrice?.toFixed(2)}
+                </td>
+                <td className="border border-gray-300 p-2 capitalize">
+                  {payment.status}
+                </td>
                 <td className="border border-gray-300 p-2">
                   {new Date(payment.date).toLocaleDateString()}
                 </td>
@@ -99,7 +113,9 @@ export default function PaymentManagement() {
                       onClick={() => markAsPaid(payment._id)}
                       className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 disabled:opacity-50"
                     >
-                      {updatingId === payment._id ? "Updating..." : "Mark as Paid"}
+                      {updatingId === payment._id
+                        ? "Updating..."
+                        : "Mark as Paid"}
                     </button>
                   ) : (
                     <span className="text-green-700 font-semibold">Paid</span>

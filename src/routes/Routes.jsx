@@ -22,8 +22,6 @@ import ManageCategories from "../pages/DashBoard/Admin/ManageCategories";
 import PrivateRoutes from "../components/PrivateRoutes";
 import AdminHome from "../pages/dashboard/admin/AdminHome";
 
-
-
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -61,7 +59,6 @@ export const router = createBrowserRouter([
         path: "checkout",
         element: <Checkout />,
       },
-      
     ],
   },
 
@@ -75,19 +72,19 @@ export const router = createBrowserRouter([
     children: [
       // ✅ Admin Routes
       {
-        path:'dashboard',
-        element:(
+        index: true,
+        path: "dashboard",
+        element: (
           <AdminRoute>
-            <AdminHome></AdminHome>
+            <AdminHome />
           </AdminRoute>
-        )
-
+        ),
       },
       {
         path: "manage-users",
         element: (
           <AdminRoute>
-            <ManageUsers/>
+            <ManageUsers />
           </AdminRoute>
         ),
       },
@@ -95,7 +92,7 @@ export const router = createBrowserRouter([
         path: "manage-category",
         element: (
           <AdminRoute>
-            <ManageCategories/>
+            <ManageCategories />
           </AdminRoute>
         ),
       },
@@ -103,7 +100,7 @@ export const router = createBrowserRouter([
         path: "payments",
         element: (
           <AdminRoute>
-            <PaymentManagement/>
+            <PaymentManagement />
           </AdminRoute>
         ),
       },
@@ -111,7 +108,7 @@ export const router = createBrowserRouter([
         path: "manage-banner",
         element: (
           <AdminRoute>
-            <ManageBanners/>
+            <ManageBanners />
           </AdminRoute>
         ),
       },
