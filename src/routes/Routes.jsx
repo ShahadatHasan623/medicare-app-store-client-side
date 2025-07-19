@@ -21,6 +21,7 @@ import MyPaymentHistory from "../pages/dashboard/user/MyPaymentHistory";
 import ManageCategories from "../pages/DashBoard/Admin/ManageCategories";
 import PrivateRoutes from "../components/PrivateRoutes";
 import AdminHome from "../pages/dashboard/admin/AdminHome";
+import SalesReport from "../pages/DashBoard/Admin/SalesReport";
 
 export const router = createBrowserRouter([
   {
@@ -111,6 +112,14 @@ export const router = createBrowserRouter([
             <ManageBanners />
           </AdminRoute>
         ),
+      },
+      {
+        path:"sales-report",
+        element:(
+          <AdminRoute>
+            <SalesReport></SalesReport>
+          </AdminRoute>
+        )
       },
 
       // ✅ Seller Routes

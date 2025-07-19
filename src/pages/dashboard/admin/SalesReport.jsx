@@ -1,112 +1,125 @@
 import React, { useState } from "react";
-import Swal from "sweetalert2";
+import { useQuery } from "@tanstack/react-query";
+import DataTable from "react-data-table-component";
+import { CSVLink } from "react-csv";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 
 export default function SalesReport() {
+  const axiosSecure = useAxioseSecure();
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  const axiosSecure = useAxioseSecure();
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10; // প্রতি পেজে কত ডাটা দেখাবে
 
-  const fetchReport = async () => {
-    if (!startDate || !endDate) {
-      Swal.fire({
-        icon: "warning",
-        title: "Please select both start and end dates",
-      });
-      return;
-    }
+  // Fetch sales report
+  const { data: sales = [], isLoading } = useQuery({
+    queryKey: ["salesReport", startDate, endDate],
+    queryFn: async () => {
+      let url = "/payments/report";
+      if (startDate && endDate) {
+        url += `?startDate=${startDate}&endDate=${endDate}`;
+      }
+      const res = await axiosSecure.get(url);
+      return res.data;
+    },
+  });
 
-    setLoading(true);
-    try {
-      const res = await axiosSecure.get("/sales-report", {
-        params: { startDate, endDate },
-      });
-      setPayments(res.data);
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Failed to fetch report",
-        text: error.message,
-      });
-    } finally {
-      setLoading(false);
-    }
+  // Table columns
+  const columns = [
+    { name: "Medicine", selector: (row) => row.medicineName, sortable: true },
+    { name: "Seller", selector: (row) => row.sellerEmail, sortable: true },
+    { name: "Buyer", selector: (row) => row.buyerEmail, sortable: true },
+    { name: "Qty", selector: (row) => row.quantity, sortable: true },
+    { name: "Unit Price", selector: (row) => `$${row.unitPrice}`, sortable: true },
+    { name: "Total", selector: (row) => `$${row.totalPrice}`, sortable: true },
+    { name: "Status", selector: (row) => row.status, sortable: true },
+    { name: "Date", selector: (row) => new Date(row.date).toLocaleDateString(), sortable: true },
+  ];
+
+  // Pagination logic
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = sales.slice(indexOfFirstRow, indexOfLastRow);
+
+  const totalPages = Math.ceil(sales.length / rowsPerPage);
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  const totalAmount = payments.reduce((sum, p) => sum + (p.totalPrice || 0), 0);
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  // Export to Excel
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(sales);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "sales_report.xlsx");
+  };
+
+  // Export to PDF
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Sales Report", 14, 16);
+    const tableData = sales.map((s) => [
+      s.medicineName,
+      s.sellerEmail,
+      s.buyerEmail,
+      s.quantity,
+      s.unitPrice,
+      s.totalPrice,
+      s.status,
+      new Date(s.date).toLocaleDateString(),
+    ]);
+    doc.autoTable({
+      head: [["Medicine", "Seller", "Buyer", "Qty", "Unit Price", "Total", "Status", "Date"]],
+      body: tableData,
+    });
+    doc.save("sales_report.pdf");
+  };
+
+  if (isLoading) return <p className="text-center">Loading sales report...</p>;
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Sales Report</h2>
+      <h2 className="text-3xl font-bold mb-4">Sales Report</h2>
 
-      <div className="mb-4 flex flex-wrap gap-4 items-end">
-        <div>
-          <label className="block mb-1 font-medium">Start Date</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="border p-2 rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">End Date</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="border p-2 rounded"
-          />
-        </div>
-
-        <button
-          onClick={fetchReport}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          {loading ? "Loading..." : "Fetch Report"}
-        </button>
+      {/* Filter & Export Buttons */}
+      <div className="flex flex-wrap gap-4 mb-4 items-center">
+        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border p-2 rounded" />
+        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border p-2 rounded" />
+        <CSVLink data={sales} filename="sales_report.csv" className="btn btn-primary">
+          Export CSV
+        </CSVLink>
+        <button onClick={exportToExcel} className="btn btn-success">Export Excel</button>
+        <button onClick={exportToPDF} className="btn btn-error">Export PDF</button>
       </div>
 
-      {payments.length > 0 && (
-        <>
-          <div className="mb-4 font-semibold text-lg">
-            Total Sales: ${totalAmount.toFixed(2)}
-          </div>
+      {/* Data Table */}
+      <DataTable columns={columns} data={currentRows} highlightOnHover striped />
 
-          <table className="min-w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 p-2">Buyer Email</th>
-                <th className="border border-gray-300 p-2">Seller Email</th>
-                <th className="border border-gray-300 p-2">Total Price</th>
-                <th className="border border-gray-300 p-2">Status</th>
-                <th className="border border-gray-300 p-2">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((payment) => (
-                <tr key={payment._id} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-2">{payment.buyerEmail}</td>
-                  <td className="border border-gray-300 p-2">{payment.sellerEmail}</td>
-                  <td className="border border-gray-300 p-2">${payment.totalPrice?.toFixed(2)}</td>
-                  <td className="border border-gray-300 p-2 capitalize">{payment.status}</td>
-                  <td className="border border-gray-300 p-2">
-                    {new Date(payment.date).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
-
-      {!loading && payments.length === 0 && (
-        <p className="text-center mt-8 text-gray-600">No data to display.</p>
-      )}
+      {/* Custom Pagination */}
+      <div className="flex justify-between items-center mt-4">
+        <button onClick={handlePrev} disabled={currentPage === 1} className="btn btn-outline btn-sm">
+          Prev
+        </button>
+        <span className="text-sm font-semibold">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button onClick={handleNext} disabled={currentPage === totalPages} className="btn btn-outline btn-sm">
+          Next
+        </button>
+      </div>
     </div>
   );
 }
