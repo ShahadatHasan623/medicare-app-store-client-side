@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaEye, FaCartPlus } from "react-icons/fa";
+import { FaEye, FaCartPlus, FaTimes } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios";
 import { toast } from "react-toastify";
@@ -120,7 +120,9 @@ const Shop = () => {
 
       {/* Medicines Table */}
       {isLoading ? (
-        <p className="text-center text-gray-600 text-lg">Loading medicines...</p>
+        <p className="text-center text-gray-600 text-lg">
+          Loading medicines...
+        </p>
       ) : (
         <div className="overflow-x-auto rounded-lg shadow-lg border border-gray-200">
           <table className="min-w-full text-left text-gray-700">
@@ -213,15 +215,15 @@ const Shop = () => {
 
       {/* Modal */}
       {modalData && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-6">
+        <div className="fixed inset-0 shadow-2xs bg-opacity-60 flex justify-center items-center z-50 p-6">
           <div className="bg-white rounded-2xl max-w-lg w-full shadow-xl p-8 relative">
             <button
               onClick={() => setModalData(null)}
-              className="absolute top-5 right-5 text-gray-500 hover:text-gray-900 text-3xl font-bold leading-none"
+              className="absolute top-5 right-5 bg-gray-200 hover:bg-gray-400 text-gray-700 hover:text-gray-900 rounded-full p-2 shadow-md transition duration-300 ease-in-out"
               title="Close"
               aria-label="Close modal"
             >
-              &times;
+              <FaTimes size={24} />
             </button>
 
             <img
@@ -249,7 +251,7 @@ const Shop = () => {
                 {modalData.category ?? "N/A"}
               </p>
               <p>
-                <span className="font-semibold">Price:</span> ৳
+                <span className="font-semibold">Price:</span>$
                 {modalData.price ?? modalData.perUnitPrice ?? "N/A"}
               </p>
               <p>
