@@ -14,13 +14,14 @@ export const useLocalStorageCart = () => {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }, [cart]);
 
+  // Add item to cart or increment quantity
   const addToCart = (medicine) => {
     setCart((prevCart) => {
       const exist = prevCart.find((item) => item._id === medicine._id);
       if (exist) {
         return prevCart.map((item) =>
           item._id === medicine._id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: (item.quantity || 1) + 1 }
             : item
         );
       } else {
@@ -29,21 +30,25 @@ export const useLocalStorageCart = () => {
     });
   };
 
+  // Remove item from cart
   const removeItem = (id) => {
     setCart((prevCart) => prevCart.filter((item) => item._id !== id));
   };
 
+  // Clear entire cart
   const clearCart = () => {
     setCart([]);
   };
 
+  // Update item quantity (+/-)
   const updateQuantity = (id, delta) => {
     setCart((prevCart) =>
-      prevCart.map((item) =>
-        item._id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
+      prevCart
+        .map((item) =>
+          item._id === id
+            ? { ...item, quantity: Math.max(1, (item.quantity || 1) + delta) }
+            : item
+        )
     );
   };
 

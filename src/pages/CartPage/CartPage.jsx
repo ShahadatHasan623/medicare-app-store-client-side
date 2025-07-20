@@ -10,8 +10,7 @@ import { useLocalStorageCart } from "../../utils/useLocalStorageCart";
 import { useNavigate } from "react-router";
 
 export default function CartPage() {
-  const { cart, addToCart, removeItem, clearCart, updateQuantity } =
-    useLocalStorageCart();
+  const { cart, removeItem, clearCart, updateQuantity } = useLocalStorageCart();
   const navigate = useNavigate();
 
   const totalItems = cart.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
@@ -35,9 +34,30 @@ export default function CartPage() {
     navigate("/checkout");
   };
 
+  if (cart.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-center px-4">
+        <h2 className="text-4xl font-extrabold mb-3 text-[var(--color-text)]">
+          🛒 Your Cart is Empty
+        </h2>
+        <p className="mb-6 text-gray-500 text-lg">
+          Looks like you haven't added any medicines yet.
+        </p>
+        <button
+          onClick={() => navigate("/shop")}
+          className="bg-[var(--color-primary)] hover:bg-[var(--color-secondary)] text-white px-8 py-3 rounded-lg font-semibold transition"
+        >
+          🛍️ Go to Shop
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 my-10">
-      <h2 className="text-4xl font-extrabold mb-3 text-slate-800">🛒 Shopping Cart</h2>
+      <h2 className="text-4xl font-extrabold mb-3 text-[var(--color-text)]">
+        🛒 Shopping Cart
+      </h2>
       <p className="mb-8 text-gray-500 text-lg">
         Review your selected medicines before checkout
       </p>
@@ -45,108 +65,112 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-5">
-          {cart.length === 0 ? (
-            <p className="text-gray-500 text-lg">Your cart is empty.</p>
-          ) : (
-            cart.map((item) => (
-              <div
-                key={item._id}
-                className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white rounded-2xl shadow-md gap-4 border border-gray-100"
-              >
-                <div className="flex items-center gap-4 w-full md:w-1/2">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-24 h-24 object-contain border rounded-lg"
-                  />
-                  <div>
-                    <h3 className="text-lg md:text-xl font-semibold text-slate-800">{item.name}</h3>
-                    <p className="text-sm text-gray-500">{item.generic}</p>
-                    <p className="text-xs text-gray-400">
-                      {item.company} | {item.type} | {item.strength}
-                    </p>
-                    <span className="text-xs mt-1 inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full capitalize">
-                      {item.type}
-                    </span>
-                  </div>
+          {cart.map((item) => (
+            <div
+              key={item._id}
+              className="flex flex-col md:flex-row md:items-center justify-between p-5 bg-white rounded-xl shadow-md gap-4 border border-gray-100 hover:shadow-lg transition"
+            >
+              <div className="flex items-center gap-4 w-full md:w-1/2">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-24 h-24 object-contain border rounded-lg"
+                />
+                <div>
+                  <h3 className="text-lg md:text-xl font-semibold text-[var(--color-text)]">
+                    {item.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">{item.generic}</p>
+                  <p className="text-xs text-gray-400">
+                    {item.company} | {item.type} | {item.strength}
+                  </p>
+                  <span className="text-xs mt-1 inline-block bg-[var(--color-primary)] text-white px-2 py-0.5 rounded-full capitalize">
+                    {item.type}
+                  </span>
                 </div>
+              </div>
 
-                <div className="flex flex-col md:flex-row items-end md:items-center justify-between w-full md:w-1/2">
-                  <div className="text-right md:text-left md:mr-6">
+              <div className="flex flex-col md:flex-row items-end md:items-center justify-between w-full md:w-1/2">
+                <div className="text-right md:text-left md:mr-6">
+                  {item.originalPrice && item.originalPrice > item.price && (
                     <p className="line-through text-sm text-gray-400">
                       ${(item.originalPrice ?? 0).toFixed(2)}
                     </p>
-                    <p className="text-green-600 text-lg font-bold">
-                      ${(item.price ?? 0).toFixed(2)}
-                    </p>
+                  )}
+                  <p className="text-[var(--color-secondary)] text-lg font-bold">
+                    ${(item.price ?? 0).toFixed(2)}
+                  </p>
+                  {item.originalPrice && (
                     <p className="text-xs text-red-500 font-medium">
                       {item.originalPrice && item.price
                         ? Math.round(
-                            ((item.originalPrice - item.price) / item.originalPrice) *
+                            ((item.originalPrice - item.price) /
+                              item.originalPrice) *
                               100
                           )
                         : 0}
                       % OFF
                     </p>
-                    <p className="text-sm text-gray-500 mt-2">Stock: {item.stock ?? 0}</p>
-                    <p className="font-semibold text-slate-700">
-                      Total: ${((item.quantity ?? 0) * (item.price ?? 0)).toFixed(2)}
-                    </p>
-                  </div>
+                  )}
+                  <p className="text-sm text-gray-500 mt-2">
+                    Stock: {item.stock ?? 0}
+                  </p>
+                  <p className="font-semibold text-slate-700">
+                    Total: $
+                    {((item.quantity ?? 0) * (item.price ?? 0)).toFixed(2)}
+                  </p>
+                </div>
 
-                  <div className="flex flex-col items-center gap-2 mt-3">
-                    <span className="text-xs text-gray-500 font-medium">Quantity</span>
-                    <div className="flex items-center">
-                      <button
-                        onClick={() =>
-                          updateQuantity(item._id, item.quantity > 1 ? item.quantity - 1 : 1)
-                        }
-                        className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-l text-sm"
-                      >
-                        <FaMinus />
-                      </button>
-                      <span className="px-4 border-y text-sm">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                        className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-r text-sm"
-                      >
-                        <FaPlus />
-                      </button>
-                    </div>
+                <div className="flex flex-col items-center gap-2 mt-3">
+                  <span className="text-xs text-gray-500 font-medium">
+                    Quantity
+                  </span>
+                  <div className="flex items-center border rounded overflow-hidden">
                     <button
-                      onClick={() => removeItem(item._id)}
-                      className="text-red-500 hover:text-white hover:bg-red-500 border border-red-500 rounded-full p-2 transition"
+                      onClick={() => updateQuantity(item._id, -1)}
+                      className="bg-[var(--color-primary)] text-white hover:opacity-80 px-2 py-1"
                     >
-                      <FaTrash />
+                      <FaMinus />
+                    </button>
+                    <span className="px-4">{item.quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(item._id, 1)}
+                      className="bg-[var(--color-primary)] text-white hover:opacity-80 px-2 py-1"
+                    >
+                      <FaPlus />
                     </button>
                   </div>
+                  <button
+                    onClick={() => removeItem(item._id)}
+                    className="flex items-center gap-1 text-red-500 hover:bg-red-500 hover:text-white border border-red-500 rounded-full p-2 transition"
+                  >
+                    <FaTrash /> Remove
+                  </button>
                 </div>
               </div>
-            ))
-          )}
-
-          {cart.length > 0 && (
-            <div className="flex justify-between items-center pt-6 border-t">
-              <button
-                onClick={clearCart}
-                className="flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 px-4 py-2 rounded-lg font-medium transition"
-              >
-                <FaTrashRestoreAlt /> Clear All
-              </button>
-
-              <a
-                href="/shop"
-                className="flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg font-medium transition"
-              >
-                <FaArrowLeft /> Continue Shopping
-              </a>
             </div>
-          )}
+          ))}
+
+          <div className="flex justify-between items-center pt-6 border-t">
+            <button
+              onClick={clearCart}
+              className="flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 px-4 py-2 rounded-lg font-medium transition"
+            >
+              <FaTrashRestoreAlt /> Clear All
+            </button>
+
+            <a
+              href="/shop"
+              className="flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 px-4 py-2 rounded-lg font-medium transition"
+            >
+              <FaArrowLeft /> Continue Shopping
+            </a>
+          </div>
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white rounded-2xl shadow-md p-6 space-y-4 h-fit">
-          <h3 className="text-2xl font-bold text-slate-700 flex items-center gap-2">
+        <div className="bg-white rounded-2xl shadow-md p-6 space-y-4 h-fit border border-gray-100">
+          <h3 className="text-2xl font-bold text-[var(--color-text)] flex items-center gap-2">
             🧾 Order Summary
           </h3>
           <div className="flex justify-between text-gray-700">
@@ -165,20 +189,20 @@ export default function CartPage() {
             <span>Tax (8%)</span>
             <span>${tax.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-lg font-bold text-slate-900 border-t pt-3">
+          <div className="flex justify-between text-lg font-bold text-[var(--color-text)] border-t pt-3">
             <span>Total</span>
             <span>${total.toFixed(2)}</span>
           </div>
 
           <button
             onClick={handleProceedToCheckout}
-            className="bg-blue-600 hover:bg-blue-700 transition text-white w-full py-2 rounded-lg text-lg font-medium"
+            className="bg-[var(--color-primary)] hover:opacity-90 transition text-white w-full py-2 rounded-lg text-lg font-medium"
           >
             🛒 Proceed to Checkout
           </button>
           <button
             onClick={clearCart}
-            className="bg-red-600 hover:bg-red-700 transition text-white w-full py-2 rounded-lg text-lg font-medium"
+            className="bg-[var(--color-secondary)] hover:opacity-90 transition text-white w-full py-2 rounded-lg text-lg font-medium"
           >
             🗑️ Clear Cart
           </button>
