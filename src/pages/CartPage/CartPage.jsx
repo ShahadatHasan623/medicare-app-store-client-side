@@ -6,11 +6,12 @@ import {
   FaArrowLeft,
   FaTrashRestoreAlt,
 } from "react-icons/fa";
-import { useLocalStorageCart } from "../../utils/useLocalStorageCart";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import { useCart } from "../../utils/CartContext";
 
 export default function CartPage() {
-  const { cart, removeItem, clearCart, updateQuantity } = useLocalStorageCart();
+  const { cart, removeItem, clearCart, updateQuantity } = useCart(); 
   const navigate = useNavigate();
 
   const totalItems = cart.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
@@ -27,6 +28,16 @@ export default function CartPage() {
   const subtotal = totalPrice;
   const tax = parseFloat((subtotal * 0.08).toFixed(2));
   const total = parseFloat((subtotal + tax).toFixed(2));
+
+  const handleRemoveItem = (id, name) => {
+    removeItem(id);
+    toast.success(`${name} removed from cart!`);
+  };
+
+  const handleClearCart = () => {
+    clearCart();
+    toast.success("All items cleared from cart!");
+  };
 
   const handleProceedToCheckout = () => {
     localStorage.setItem("cartData", JSON.stringify(cart));
@@ -52,7 +63,6 @@ export default function CartPage() {
       </div>
     );
   }
-
   return (
     <div className="max-w-7xl mx-auto px-4 my-10">
       <h2 className="text-4xl font-extrabold mb-3 text-[var(--color-text)]">
@@ -141,7 +151,7 @@ export default function CartPage() {
                     </button>
                   </div>
                   <button
-                    onClick={() => removeItem(item._id)}
+                    onClick={() => handleRemoveItem(item._id, item.name)}
                     className="flex items-center gap-1 text-red-500 hover:bg-red-500 hover:text-white border border-red-500 rounded-full p-2 transition"
                   >
                     <FaTrash /> Remove
@@ -153,7 +163,7 @@ export default function CartPage() {
 
           <div className="flex justify-between items-center pt-6 border-t">
             <button
-              onClick={clearCart}
+              onClick={handleClearCart}
               className="flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 px-4 py-2 rounded-lg font-medium transition"
             >
               <FaTrashRestoreAlt /> Clear All
@@ -201,7 +211,7 @@ export default function CartPage() {
             🛒 Proceed to Checkout
           </button>
           <button
-            onClick={clearCart}
+            onClick={handleClearCart}
             className="bg-[var(--color-secondary)] hover:opacity-90 transition text-white w-full py-2 rounded-lg text-lg font-medium"
           >
             🗑️ Clear Cart

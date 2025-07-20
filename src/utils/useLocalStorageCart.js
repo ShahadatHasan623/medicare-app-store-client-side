@@ -4,51 +4,37 @@ const CART_KEY = "medicine_cart";
 
 export const useLocalStorageCart = () => {
   const [cart, setCart] = useState(() => {
-    // lazy initial load from localStorage
     const stored = localStorage.getItem(CART_KEY);
     return stored ? JSON.parse(stored) : [];
   });
 
-  // Update localStorage whenever cart changes
   useEffect(() => {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }, [cart]);
 
-  // Add item to cart or increment quantity
   const addToCart = (medicine) => {
-    setCart((prevCart) => {
-      const exist = prevCart.find((item) => item._id === medicine._id);
+    setCart((prev) => {
+      const exist = prev.find((item) => item._id === medicine._id);
       if (exist) {
-        return prevCart.map((item) =>
+        return prev.map((item) =>
           item._id === medicine._id
             ? { ...item, quantity: (item.quantity || 1) + 1 }
             : item
         );
-      } else {
-        return [...prevCart, { ...medicine, quantity: 1 }];
       }
+      return [...prev, { ...medicine, quantity: 1 }];
     });
   };
 
-  // Remove item from cart
-  const removeItem = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item._id !== id));
-  };
-
-  // Clear entire cart
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  // Update item quantity (+/-)
+  const removeItem = (id) => setCart((prev) => prev.filter((item) => item._id !== id));
+  const clearCart = () => setCart([]);
   const updateQuantity = (id, delta) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) =>
-          item._id === id
-            ? { ...item, quantity: Math.max(1, (item.quantity || 1) + delta) }
-            : item
-        )
+    setCart((prev) =>
+      prev.map((item) =>
+        item._id === id
+          ? { ...item, quantity: Math.max(1, (item.quantity || 1) + delta) }
+          : item
+      )
     );
   };
 

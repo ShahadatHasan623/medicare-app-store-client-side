@@ -15,7 +15,7 @@ export default function Checkout() {
 
   const [formData, setFormData] = useState({
     fullName: "",
-    email: user?.email || "",  // Optional: prefill with user email
+    email: user?.email || "",
     phone: "",
     dob: "",
     address: "",
@@ -44,7 +44,7 @@ export default function Checkout() {
       (item.quantity ?? 0) * ((item.originalPrice ?? 0) - (item.price ?? 0)),
     0
   );
-  const totalAmount = subtotal * 100; // Stripe expects cents
+  const totalAmount = subtotal * 100;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -72,8 +72,6 @@ export default function Checkout() {
         })),
       };
 
-      console.log("Sending paymentInfo:", paymentInfo); // ডিবাগের জন্য
-
       const res = await axiosSecure.post("/payments", paymentInfo);
 
       if (res.data.insertedId || res.data.acknowledged) {
@@ -81,99 +79,110 @@ export default function Checkout() {
         setPaymentDone(true);
         localStorage.removeItem("cartData");
       }
-    } catch (err) {
-      console.error("Payment save error:", err);
+    } catch {
       Swal.fire("Error", "Failed to save payment info", "error");
     }
   };
 
   if (paymentDone) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-green-100 rounded text-center">
-        <h2 className="text-2xl font-bold mb-4">Thank you for your order!</h2>
-        <p>Your payment of ${subtotal.toFixed(2)} was successful.</p>
+      <div className="max-w-xl mx-auto p-8 bg-green-50 rounded-xl text-center mt-10 shadow-md">
+        <h2 className="text-3xl font-bold mb-4 text-green-700">Thank you! 🎉</h2>
+        <p className="text-gray-700 text-lg">
+          Your payment of <strong>${subtotal.toFixed(2)}</strong> was successful.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10">
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <h2 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
+        🧾 Checkout
+      </h2>
+
       {!showPayment ? (
-        <form onSubmit={handleContinueToPayment} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Customer Info Form */}
-          <div className="bg-white p-6 rounded-xl shadow space-y-6">
+        <form
+          onSubmit={handleContinueToPayment}
+          className="grid grid-cols-1 md:grid-cols-2 gap-10"
+        >
+          {/* Customer Info */}
+          <div className="bg-white p-8 rounded-xl shadow-lg space-y-6 border border-gray-100">
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <FaUser /> Customer Information
+              <FaUser className="text-blue-600" /> Customer Information
             </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {["fullName", "email", "phone", "dob"].map((field, index) => (
-                <label key={index} className="form-control">
-                  <span className="label-text">
-                    {field === "fullName"
-                      ? "Full Name"
-                      : field === "dob"
-                      ? "Date of Birth"
-                      : field.charAt(0).toUpperCase() + field.slice(1)}
-                  </span>
+              {["fullName", "email", "phone", "dob"].map((field) => (
+                <label key={field} className="text-sm font-medium text-gray-600">
+                  {field === "fullName"
+                    ? "Full Name"
+                    : field === "dob"
+                    ? "Date of Birth"
+                    : field.charAt(0).toUpperCase() + field.slice(1)}
                   <input
                     name={field}
                     value={formData[field]}
                     onChange={handleChange}
                     type={field === "dob" ? "date" : field === "email" ? "email" : "text"}
-                    placeholder={field}
-                    className="input input-bordered w-full"
+                    className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 input input-bordered"
                     required
-                    disabled={field === "email"} // user email disable editing for safety
+                    disabled={field === "email"}
                   />
                 </label>
               ))}
             </div>
 
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2 mt-6">
-              <FaMapMarkerAlt /> Shipping Address
+              <FaMapMarkerAlt className="text-green-600" /> Shipping Address
             </h3>
-            <label className="form-control">
-              <span className="label-text">Street Address</span>
+            <label className="text-sm font-medium text-gray-600">
+              Street Address
               <input
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
                 type="text"
-                placeholder="Street Address"
-                className="input input-bordered w-full"
+                className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 input input-bordered"
                 required
               />
             </label>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {["city", "state", "zip"].map((field, index) => (
-                <label key={index} className="form-control">
-                  <span className="label-text">{field.toUpperCase()}</span>
+              {["city", "state", "zip"].map((field) => (
+                <label key={field} className="text-sm font-medium text-gray-600">
+                  {field.toUpperCase()}
                   <input
                     name={field}
                     value={formData[field]}
                     onChange={handleChange}
                     type="text"
-                    placeholder={field}
-                    className="input input-bordered w-full"
+                    className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 input input-bordered"
                     required
                   />
                 </label>
               ))}
             </div>
 
-            <button type="submit" className="btn btn-primary mt-6 w-full">
+            <button
+              type="submit"
+              className="btn bg-blue-600 text-white hover:bg-blue-700 w-full mt-6 py-2 rounded-lg text-lg font-semibold transition"
+            >
               Continue to Payment
             </button>
           </div>
 
           {/* Order Summary */}
-          <div className="bg-white p-6 rounded-xl shadow space-y-6 h-fit">
+          <div className="bg-white p-8 rounded-xl shadow-lg space-y-6 h-fit border border-gray-100">
             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <FaShoppingCart /> Order Summary
+              <FaShoppingCart className="text-orange-500" /> Order Summary
             </h3>
             <div className="divide-y divide-gray-200">
               {cart.map((item) => (
-                <div key={item._id} className="flex justify-between items-start py-4">
+                <div
+                  key={item._id}
+                  className="flex justify-between items-start py-4 hover:bg-gray-50 rounded-lg px-2"
+                >
                   <div className="flex items-center gap-3">
                     <img
                       src={item.image}
@@ -181,11 +190,11 @@ export default function Checkout() {
                       className="w-12 h-12 object-contain rounded border"
                     />
                     <div>
-                      <h4 className="font-semibold text-sm">{item.name}</h4>
+                      <h4 className="font-semibold text-sm text-gray-800">{item.name}</h4>
                       <p className="text-xs text-gray-500">
                         {item.company} • {item.strength}
                       </p>
-                      <p className="text-xs">Qty: {item.quantity ?? 0}</p>
+                      <p className="text-xs text-gray-600">Qty: {item.quantity ?? 0}</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -213,15 +222,17 @@ export default function Checkout() {
           </div>
         </form>
       ) : (
-        <div className="bg-white p-6 rounded-xl shadow max-w-md mx-auto">
-          <h3 className="text-xl font-bold mb-4">Payment Summary</h3>
+        <div className="bg-white p-8 rounded-xl shadow-lg max-w-md mx-auto">
+          <h3 className="text-2xl font-bold mb-4 text-gray-800">💳 Payment Summary</h3>
           <p><strong>Name:</strong> {formData.fullName}</p>
           <p><strong>Email:</strong> {formData.email}</p>
           <p><strong>Phone:</strong> {formData.phone}</p>
-          <p>
+          <p className="mb-4">
             <strong>Shipping Address:</strong> {formData.address}, {formData.city}, {formData.state} - {formData.zip}
           </p>
-          <p className="mt-4 text-lg font-bold">Total Payment: ${subtotal.toFixed(2)}</p>
+          <p className="mt-4 text-lg font-bold text-blue-600">
+            Total Payment: ${subtotal.toFixed(2)}
+          </p>
 
           <Elements stripe={stripePromise}>
             <PaymentForm amount={totalAmount} onPaymentSuccess={handlePaymentSuccess} />

@@ -2,9 +2,13 @@ import React from "react";
 import { Link } from "react-router";
 import { FaCartPlus } from "react-icons/fa";
 import useAuth from "../hooks/useAuth";
+import { useCart } from "../utils/CartContext";
+
 
 const Navbar = () => {
   const { user, signOutUser } = useAuth();
+  const { cart } = useCart();
+  console.log(cart)
 
   const handleSignOut = () => {
     signOutUser();
@@ -70,17 +74,19 @@ const Navbar = () => {
 
       {/* Navbar End */}
       <div className="navbar-end gap-2">
-        {/* Language Selector */}
-
+        {/* Cart Icon with badge */}
         <Link to="/cart" className="relative group">
           <div className="p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition duration-300 ease-in-out shadow-md">
             <FaCartPlus className="text-xl" />
           </div>
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full animate-bounce">
-            3
-          </span>
+       
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full animate-bounce">
+             {cart.length}
+            </span>
+          
         </Link>
 
+        {/* Language Selector */}
         <select className="border border-gray-300 rounded p-1 text-sm">
           <option>EN</option>
           <option>BN</option>
@@ -110,7 +116,9 @@ const Navbar = () => {
               <li>
                 <Link to="/update-profile">Update Profile</Link>
               </li>
-              <Link to="/dashboard">Dashboard</Link>
+              <li>
+                <Link to="/dashboard">Dashboard</Link>
+              </li>
               <li>
                 <button onClick={handleSignOut}>Logout</button>
               </li>
