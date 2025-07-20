@@ -7,7 +7,6 @@ export default function ManageBanner() {
   const axiosSecure = useAxioseSecure();
   const queryClient = useQueryClient();
 
-  // সকল বিজ্ঞাপন আনার query
   const { data: ads = [], isLoading } = useQuery({
     queryKey: ["allAdvertisements"],
     queryFn: async () => {
@@ -16,7 +15,7 @@ export default function ManageBanner() {
     },
   });
 
-  // Toggle slider status করার mutation
+  // Toggle slider status
   const toggleSliderMutation = useMutation({
     mutationFn: (adId) =>
       axiosSecure.patch(`/advertisements/admin/toggle-slider/${adId}`),
@@ -29,58 +28,70 @@ export default function ManageBanner() {
     },
   });
 
-  if (isLoading) return <p>Loading advertisements...</p>;
+  if (isLoading)
+    return <p className="text-[var(--color-primary)] font-semibold">Loading advertisements...</p>;
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-6">Manage Advertisement Banners</h2>
+    <div className="p-6 min-h-screen bg-[var(--color-bg)]">
+      <h2 className="text-3xl font-bold mb-6 text-[var(--color-primary)]">
+        Manage Advertisement Banners
+      </h2>
 
       {ads.length === 0 ? (
-        <p>No advertisements found.</p>
+        <p className="text-[var(--color-text)] font-medium">No advertisements found.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-300 border-collapse">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border border-gray-300 px-4 py-2">Image</th>
-                <th className="border border-gray-300 px-4 py-2">Medicine Name</th>
-                <th className="border border-gray-300 px-4 py-2">Description</th>
-                <th className="border border-gray-300 px-4 py-2">Seller Email</th>
-                <th className="border border-gray-300 px-4 py-2">On Slider</th>
-                <th className="border border-gray-300 px-4 py-2">Action</th>
+        <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
+          <table className="min-w-full border-collapse">
+            <thead>
+              <tr className="bg-[var(--color-primary)] text-white">
+                <th className="p-3 text-left">Image</th>
+                <th className="p-3 text-left">Medicine Name</th>
+                <th className="p-3 text-left">Description</th>
+                <th className="p-3 text-left">Seller Email</th>
+                <th className="p-3 text-center">On Slider</th>
+                <th className="p-3 text-center">Action</th>
               </tr>
             </thead>
             <tbody>
-              {ads.map((ad) => (
-                <tr key={ad._id} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-4 py-2">
+              {ads.map((ad, index) => (
+                <tr
+                  key={ad._id}
+                  className={`${
+                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  } hover:bg-[var(--color-bg)] transition`}
+                >
+                  <td className="p-3">
                     <img
                       src={ad.medicineImage}
                       alt={ad.medicineName}
-                      className="w-20 h-16 object-cover rounded"
+                      className="w-20 h-16 object-cover rounded shadow"
                     />
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">{ad.medicineName}</td>
-                  <td className="border border-gray-300 px-4 py-2">{ad.description}</td>
-                  <td className="border border-gray-300 px-4 py-2">{ad.sellerEmail}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
+                  <td className="p-3 font-medium text-[var(--color-text)]">{ad.medicineName}</td>
+                  <td className="p-3 text-gray-600">{ad.description}</td>
+                  <td className="p-3 text-sm text-gray-700">{ad.sellerEmail}</td>
+                  <td className="p-3 text-center">
                     {ad.isOnSlider ? (
-                      <span className="text-green-600 font-semibold">Yes</span>
+                      <span className="px-2 py-1 rounded bg-green-100 text-green-700 font-semibold text-sm">
+                        Yes
+                      </span>
                     ) : (
-                      <span className="text-red-600 font-semibold">No</span>
+                      <span className="px-2 py-1 rounded bg-red-100 text-red-700 font-semibold text-sm">
+                        No
+                      </span>
                     )}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">
+                  <td className="p-3 text-center">
                     <button
                       onClick={() => toggleSliderMutation.mutate(ad._id)}
                       disabled={toggleSliderMutation.isLoading}
-                      className={`px-3 py-1 rounded text-white ${
+                      className={`px-4 py-1 rounded text-white font-medium shadow-md transition ${
                         ad.isOnSlider
-                          ? "bg-red-600 hover:bg-red-700"
-                          : "bg-green-600 hover:bg-green-700"
+                          ? "bg-[var(--color-secondary)] hover:bg-orange-600"
+                          : "bg-[var(--color-primary)] hover:bg-indigo-700"
                       } disabled:opacity-50`}
                     >
-                      {ad.isOnSlider ? "Remove from Slider" : "Add to Slider"}
+                      {ad.isOnSlider ? "Remove" : "Add"}
                     </button>
                   </td>
                 </tr>

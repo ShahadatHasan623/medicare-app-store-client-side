@@ -1,4 +1,4 @@
-import { Outlet, NavLink, Link } from "react-router";
+import { Outlet, NavLink, Link } from "react-router"; // react-router-dom ঠিক করো
 import {
   FaHome,
   FaUser,
@@ -8,8 +8,8 @@ import {
   FaBars,
   FaSignOutAlt,
 } from "react-icons/fa";
-import useAuth from "../hooks/useAuth";
 import { useRole } from "../hooks/useRool";
+import useAuth from "../hooks/useAuth";
 
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
@@ -28,26 +28,71 @@ export default function DashboardLayout() {
       case "admin":
         return (
           <>
-            <SidebarLink to="/dashboard" icon={<FaHome />} label="Admin Home" />
-            <SidebarLink to="/dashboard/manage-users" icon={<FaUser />} label="Manage Users" />
-            <SidebarLink to="/dashboard/manage-category" icon={<FaClipboardList />} label="Manage Categories" />
-            <SidebarLink to="/dashboard/payments" icon={<FaMoneyBill />} label="Payment Management" />
-            <SidebarLink to="/dashboard/sales-report" icon={<FaClipboardList />} label="Sales Report" />
-            <SidebarLink to="/dashboard/manage-banner" icon={<FaPills />} label="Manage Banners" />
+            <SidebarLink
+              to="/dashboard/admin-home"
+              icon={<FaHome />}
+              label="Admin Home"
+            />
+            <SidebarLink
+              to="/dashboard/manage-users"
+              icon={<FaUser />}
+              label="Manage Users"
+            />
+            <SidebarLink
+              to="/dashboard/manage-category"
+              icon={<FaClipboardList />}
+              label="Manage Categories"
+            />
+            <SidebarLink
+              to="/dashboard/payments"
+              icon={<FaMoneyBill />}
+              label="Payment Management"
+            />
+            <SidebarLink
+              to="/dashboard/sales-report"
+              icon={<FaClipboardList />}
+              label="Sales Report"
+            />
+            <SidebarLink
+              to="/dashboard/manage-banner"
+              icon={<FaPills />}
+              label="Manage Banners"
+            />
           </>
         );
       case "seller":
         return (
           <>
-            <SidebarLink to="/dashboard/my-medicines" icon={<FaPills />} label="Manage Medicines" />
-            <SidebarLink to="/dashboard/payment-history" icon={<FaMoneyBill />} label="Payment History" />
-            <SidebarLink to="/dashboard/advertise-request" icon={<FaClipboardList />} label="Ask for Advertisement" />
+            <SidebarLink
+              to="/dashboard/seller-home"
+              icon={<FaHome />}
+              label="Seller Dashboard"
+            />
+            <SidebarLink
+              to="/dashboard/my-medicines"
+              icon={<FaPills />}
+              label="Manage Medicines"
+            />
+            <SidebarLink
+              to="/dashboard/payment-history"
+              icon={<FaMoneyBill />}
+              label="Payment History"
+            />
+            <SidebarLink
+              to="/dashboard/advertise-request"
+              icon={<FaClipboardList />}
+              label="Ask for Advertisement"
+            />
           </>
         );
       case "user":
         return (
           <>
-            <SidebarLink to="/dashboard/user-payments" icon={<FaMoneyBill />} label="My Payment History" />
+            <SidebarLink
+              to="/dashboard/user-payments"
+              icon={<FaMoneyBill />}
+              label="My Payment History"
+            />
           </>
         );
       default:
@@ -72,7 +117,9 @@ export default function DashboardLayout() {
               <FaBars size={22} />
             </label>
           </div>
-          <div className="flex-1 px-4 text-xl font-bold text-primary">Dashboard</div>
+          <div className="flex-1 px-4 text-xl font-bold text-primary">
+            Dashboard
+          </div>
           <div className="flex-none">
             <img
               src={user?.photoURL || "/user.png"}
@@ -84,7 +131,9 @@ export default function DashboardLayout() {
         </div>
 
         {/* Content Outlet */}
-        <main className="p-6 flex-1 overflow-auto"><Outlet /></main>
+        <main className="p-6 flex-1 overflow-auto">
+          <Outlet />
+        </main>
       </div>
 
       {/* Sidebar */}
@@ -94,16 +143,16 @@ export default function DashboardLayout() {
           <div>
             {/* Header */}
             <div className="p-6 border-b border-base-300 text-center">
-              <h2 className="text-3xl font-extrabold text-primary">Dashboard</h2>
+              <h2 className="text-3xl font-extrabold text-primary">
+                Dashboard
+              </h2>
               <p className="mt-1 text-sm text-gray-500 capitalize">
                 Welcome, <span className="font-semibold">{role}</span>!
               </p>
             </div>
 
             {/* Navigation Links */}
-            <ul className="menu p-4 space-y-2">
-              {renderLinks()}
-            </ul>
+            <ul className="menu p-4 space-y-2">{renderLinks()}</ul>
           </div>
 
           {/* Footer with logout & home */}
@@ -129,16 +178,11 @@ export default function DashboardLayout() {
   );
 }
 
-// SidebarLink component with exact active match for home route
 function SidebarLink({ to, icon, label }) {
-  // Home route should be exact match only (end prop true)
-  const isExact = to === "/dashboard";
-
   return (
     <li>
       <NavLink
         to={to}
-        end={isExact}  // <-- This makes '/dashboard' active only on exact match
         className={({ isActive }) =>
           `flex items-center gap-3 px-4 py-3 rounded-md transition-colors duration-200 cursor-pointer
           ${

@@ -22,6 +22,8 @@ import ManageCategories from "../pages/DashBoard/Admin/ManageCategories";
 import PrivateRoutes from "../components/PrivateRoutes";
 import AdminHome from "../pages/dashboard/admin/AdminHome";
 import SalesReport from "../pages/DashBoard/Admin/SalesReport";
+import SellerDashboard from "../pages/dashboard/seller/SellerDashboard";
+import DashboardRedirect from "../hooks/DashboardRedirect";
 
 export const router = createBrowserRouter([
   {
@@ -71,10 +73,14 @@ export const router = createBrowserRouter([
       </PrivateRoutes>
     ),
     children: [
+      {
+        index: true,
+        element: <DashboardRedirect />,
+      },
+
       // ✅ Admin Routes
       {
-        
-        index:true,
+        path: "admin-home",
         element: (
           <AdminRoute>
             <AdminHome />
@@ -114,15 +120,23 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path:"sales-report",
-        element:(
+        path: "sales-report",
+        element: (
           <AdminRoute>
-            <SalesReport></SalesReport>
+            <SalesReport />
           </AdminRoute>
-        )
+        ),
       },
 
       // ✅ Seller Routes
+      {
+        path: "seller-home",
+        element: (
+          <SellerRoute>
+            <SellerDashboard />
+          </SellerRoute>
+        ),
+      },
       {
         path: "my-medicines",
         element: (

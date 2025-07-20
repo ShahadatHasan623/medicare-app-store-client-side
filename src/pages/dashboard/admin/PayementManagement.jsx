@@ -124,7 +124,7 @@ export default function PaymentManagement() {
                     {new Date(payment.date).toLocaleDateString()}
                   </td>
                   <td className="p-3">
-                    {payment.status === "pending" ? (
+                    {(payment.status === "pending" || payment.status === "unpaid") ? (
                       <button
                         disabled={updatingId === payment._id}
                         onClick={() => markAsPaid(payment._id)}
