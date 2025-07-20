@@ -16,13 +16,9 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       const { email, password } = data;
-
-      // ১. Firebase Authentication দিয়ে লগিন
       await signIn(email, password);
-
-      // ২. ব্যাকএন্ড থেকে ইউজারের role নিয়ে আসা
-    
       Swal.fire("Success!", "Logged in successfully", "success");
+      navigate(from)
     } catch (err) {
       console.error(err);
       Swal.fire("Login Failed", err.message || "Something went wrong", "error");

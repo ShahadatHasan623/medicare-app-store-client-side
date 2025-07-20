@@ -8,12 +8,14 @@ import GoogleLogin from "./soicalLogin/GoogleLogin";
 import signUpLottie from "../../assets/register.json";
 import Lottie from "lottie-react";
 import Swal from "sweetalert2";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SignUp = () => {
   const { createUser, updateProfileUser } = useAuth();
   const [photourl, setPhotoUrl] = useState("");
   const axiosUser = useAxios();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -30,8 +32,8 @@ const SignUp = () => {
       // upload user info to db
       const userInfo = {
         email,
-        name:name,
-        role, // 'user' or 'seller'
+        name: name,
+        role,
         created_at: new Date().toISOString(),
         last_log_in: new Date().toISOString(),
       };
@@ -43,8 +45,11 @@ const SignUp = () => {
         photoURL: photourl || "https://i.ibb.co/0y7VvYb/default-avatar.png",
       };
       await updateProfileUser(userProfile);
-
-      Swal.fire("Success!", "Account created successfully", "success");
+      Swal.fire({
+        title: "Signup successfully",
+        icon: "success",
+        draggable: true,
+      });
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -65,13 +70,9 @@ const SignUp = () => {
       const res = await axios.post(imageUrl, formData);
       if (res.data?.success) {
         setPhotoUrl(res.data.data.url);
-        Swal.fire("Uploaded!", "Image uploaded successfully!", "success");
-      } else {
-        Swal.fire("Failed", "Image upload failed!", "error");
       }
     } catch (error) {
       console.error("Image upload error:", error);
-      Swal.fire("Error", "Image upload failed!", "error");
     }
   };
 
@@ -80,7 +81,11 @@ const SignUp = () => {
       <div className="bg-white rounded-2xl shadow-xl grid md:grid-cols-2 gap-10 p-8 max-w-5xl w-full">
         {/* Left Side: Lottie */}
         <div className="hidden md:flex items-center justify-center">
-          <Lottie animationData={signUpLottie} loop={true} className="w-full h-96" />
+          <Lottie
+            animationData={signUpLottie}
+            loop={true}
+            className="w-full h-96"
+          />
         </div>
 
         {/* Right Side: Form */}
@@ -99,7 +104,9 @@ const SignUp = () => {
                 className="input input-bordered w-full"
                 placeholder="Your Name"
               />
-              {errors.name && <p className="text-red-500 text-sm">Name is required</p>}
+              {errors.name && (
+                <p className="text-red-500 text-sm">Name is required</p>
+              )}
             </div>
 
             {/* Photo Upload */}
@@ -121,24 +128,40 @@ const SignUp = () => {
                 className="input input-bordered w-full"
                 placeholder="Email"
               />
-              {errors.email && <p className="text-red-500 text-sm">Email is required</p>}
+              {errors.email && (
+                <p className="text-red-500 text-sm">Email is required</p>
+              )}
             </div>
 
             {/* Password */}
-            <div>
+            <div className="relative">
               <label className="label">Password</label>
               <input
-                type="password"
-                {...register("password", { required: true, minLength: 6 })}
-                className="input input-bordered w-full"
+                type={showPassword ? "text" : "password"}
+                {...register("password", {
+                  required: true,
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+                })}
+                className="input input-bordered w-full pr-10"
                 placeholder="Password"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute top-9 right-3 text-gray-600 hover:text-gray-900 focus:outline-none"
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+              </button>
+
               {errors.password?.type === "required" && (
                 <p className="text-red-500 text-sm">Password is required</p>
               )}
-              {errors.password?.type === "minLength" && (
+              {errors.password?.type === "pattern" && (
                 <p className="text-red-500 text-sm">
-                  Password must be at least 6 characters
+                  Password must be at least 8 characters and include uppercase,
+                  lowercase, number, and special character.
                 </p>
               )}
             </div>

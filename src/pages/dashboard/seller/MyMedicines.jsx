@@ -24,11 +24,23 @@ export default function MyMedicines() {
     discount: 0,
   });
 
+  // Static category list
+  const categories = [
+    "Tablet",
+    "Capsule",
+    "Syrup",
+    "Injection",
+    "Cream",
+    "Drops",
+  ];
+
   // Fetch medicines for this seller
   const { data: medicines = [], isLoading } = useQuery({
     queryKey: ["medicines", user?.email],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/medicines?sellerEmail=${user?.email}`);
+      const res = await axiosSecure.get(
+        `/medicines?sellerEmail=${user?.email}`
+      );
       return res.data;
     },
     enabled: !!user?.email,
@@ -124,7 +136,9 @@ export default function MyMedicines() {
 
       {/* Medicine Table */}
       {isLoading ? (
-        <p className="text-center text-[var(--color-text)]">Loading medicines...</p>
+        <p className="text-center text-[var(--color-text)]">
+          Loading medicines...
+        </p>
       ) : medicines.length === 0 ? (
         <p className="text-center text-gray-500">No medicines found.</p>
       ) : (
@@ -184,115 +198,191 @@ export default function MyMedicines() {
 
       {/* Add Medicine Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
+        <div className="fixed inset-0 shadow-2xs bg-opacity-40 flex items-center justify-center z-50 p-4">
           <form
             onSubmit={handleSubmit}
-            className="bg-white p-6 rounded-lg w-full max-w-lg relative overflow-y-auto max-h-[90vh] shadow-lg"
+            className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-8 relative"
           >
             {/* Close Button */}
             <button
               type="button"
               onClick={() => setShowModal(false)}
-              className="absolute top-2 right-3 text-2xl text-gray-500 hover:text-red-600"
+              className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-3xl font-bold leading-none"
+              aria-label="Close Modal"
             >
               &times;
             </button>
-            <h2 className="text-xl font-bold mb-4 text-center text-[var(--color-primary)]">
+
+            <h2 className="text-3xl font-semibold mb-8 text-center text-[var(--color-primary)]">
               Add New Medicine
             </h2>
 
-            {/* Form Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input
-                name="name"
-                placeholder="Item Name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="input input-bordered"
-                required
-              />
-              <input
-                name="genericName"
-                placeholder="Generic Name"
-                value={formData.genericName}
-                onChange={handleInputChange}
-                className="input input-bordered"
-                required
-              />
-              <input
-                name="category"
-                placeholder="Category"
-                value={formData.category}
-                onChange={handleInputChange}
-                className="input input-bordered"
-                required
-              />
-              <input
-                name="company"
-                placeholder="Company"
-                value={formData.company}
-                onChange={handleInputChange}
-                className="input input-bordered"
-                required
-              />
-              <input
-                name="unit"
-                placeholder="Unit (mg/ml)"
-                value={formData.unit}
-                onChange={handleInputChange}
-                className="input input-bordered"
-                required
-              />
-              <input
-                name="price"
-                placeholder="Price"
-                type="number"
-                value={formData.price}
-                onChange={handleInputChange}
-                className="input input-bordered"
-                required
-              />
-              <input
-                name="stock"
-                placeholder="Stock"
-                type="number"
-                value={formData.stock}
-                onChange={handleInputChange}
-                className="input input-bordered"
-                required
-              />
-              <input
-                name="discount"
-                placeholder="Discount %"
-                type="number"
-                value={formData.discount}
-                onChange={handleInputChange}
-                className="input input-bordered"
-              />
-              <input
-                name="image"
-                placeholder="Image URL"
-                value={formData.image}
-                onChange={handleInputChange}
-                className="input input-bordered col-span-2"
-                required
-              />
-              <textarea
-                name="description"
-                placeholder="Short Description"
-                value={formData.description}
-                onChange={handleInputChange}
-                className="textarea textarea-bordered col-span-2"
-                rows={3}
-                required
-              ></textarea>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Item Name */}
+              <label className="flex flex-col">
+                <span className="mb-2 font-medium text-gray-700">
+                  Item Name
+                </span>
+                <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="input input-bordered"
+                  placeholder="Enter medicine name"
+                  required
+                />
+              </label>
+
+              {/* Generic Name */}
+              <label className="flex flex-col">
+                <span className="mb-2 font-medium text-gray-700">
+                  Generic Name
+                </span>
+                <input
+                  name="genericName"
+                  value={formData.genericName}
+                  onChange={handleInputChange}
+                  className="input input-bordered"
+                  placeholder="Enter generic name"
+                  required
+                />
+              </label>
+
+              {/* Category */}
+              <label className="flex flex-col">
+                <span className="mb-2 font-medium text-gray-700">Category</span>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  className="select select-bordered"
+                  required
+                >
+                  <option value="" disabled>
+                    Select Category
+                  </option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              {/* Company */}
+              <label className="flex flex-col">
+                <span className="mb-2 font-medium text-gray-700">Company</span>
+                <input
+                  name="company"
+                  value={formData.company}
+                  onChange={handleInputChange}
+                  className="input input-bordered"
+                  placeholder="Enter company name"
+                  required
+                />
+              </label>
+
+              {/* Unit */}
+              <label className="flex flex-col">
+                <span className="mb-2 font-medium text-gray-700">
+                  Unit (mg/ml)
+                </span>
+                <input
+                  name="unit"
+                  value={formData.unit}
+                  onChange={handleInputChange}
+                  className="input input-bordered"
+                  placeholder="e.g. 500mg"
+                  required
+                />
+              </label>
+
+              {/* Price */}
+              <label className="flex flex-col">
+                <span className="mb-2 font-medium text-gray-700">
+                  Price (৳)
+                </span>
+                <input
+                  name="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={handleInputChange}
+                  className="input input-bordered"
+                  placeholder="Enter price"
+                  min={0}
+                  step="0.01"
+                  required
+                />
+              </label>
+
+              {/* Stock */}
+              <label className="flex flex-col">
+                <span className="mb-2 font-medium text-gray-700">Stock</span>
+                <input
+                  name="stock"
+                  type="number"
+                  value={formData.stock}
+                  onChange={handleInputChange}
+                  className="input input-bordered"
+                  placeholder="Enter stock quantity"
+                  min={0}
+                  required
+                />
+              </label>
+
+              {/* Discount */}
+              <label className="flex flex-col">
+                <span className="mb-2 font-medium text-gray-700">
+                  Discount %
+                </span>
+                <input
+                  name="discount"
+                  type="number"
+                  value={formData.discount}
+                  onChange={handleInputChange}
+                  className="input input-bordered"
+                  placeholder="Enter discount if any"
+                  min={0}
+                  max={100}
+                />
+              </label>
+
+              {/* Image URL full width */}
+              <label className="flex flex-col col-span-1 md:col-span-2">
+                <span className="mb-2 font-medium text-gray-700">
+                  Image URL
+                </span>
+                <input
+                  name="image"
+                  value={formData.image}
+                  onChange={handleInputChange}
+                  className="input input-bordered w-full"
+                  placeholder="Paste image URL here"
+                  required
+                />
+              </label>
+
+              {/* Description full width */}
+              <label className="flex flex-col col-span-1 md:col-span-2">
+                <span className="mb-2 font-medium text-gray-700">
+                  Description
+                </span>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  className="textarea textarea-bordered w-full"
+                  rows={4}
+                  placeholder="Write a short description"
+                  required
+                ></textarea>
+              </label>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
-              className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 mt-4 w-full"
               disabled={addMedicineMutation.isLoading}
+              className="mt-8 w-full bg-[var(--color-primary)] text-white font-semibold py-3 rounded-lg hover:bg-opacity-90 transition"
             >
               {addMedicineMutation.isLoading ? "Adding..." : "Submit"}
             </button>
