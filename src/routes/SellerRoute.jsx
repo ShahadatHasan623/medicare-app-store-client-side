@@ -6,14 +6,10 @@ import { useRole } from "../hooks/useRool";
 
 export default function SellerRoute({ children }) {
   const { user, loading } = useAuth();
-  const { role, isLoadingRole } = useRole();
+  const { role} = useRole();
 
-  if (loading || isLoadingRole) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <span className="loading loading-spinner text-purple-600"></span>
-      </div>
-    );
+  if (loading) {
+    return "....loading";
   }
 
   if (user && role === "seller") {

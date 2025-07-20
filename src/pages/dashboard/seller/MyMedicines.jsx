@@ -24,7 +24,7 @@ export default function MyMedicines() {
     discount: 0,
   });
 
-  // ✅ Fetch medicines for this seller
+  // Fetch medicines for this seller
   const { data: medicines = [], isLoading } = useQuery({
     queryKey: ["medicines", user?.email],
     queryFn: async () => {
@@ -34,7 +34,7 @@ export default function MyMedicines() {
     enabled: !!user?.email,
   });
 
-  // ✅ Add medicine mutation
+  // Add medicine mutation
   const addMedicineMutation = useMutation({
     mutationFn: async (newMedicine) => {
       const res = await axiosSecure.post("/medicines", newMedicine);
@@ -51,7 +51,7 @@ export default function MyMedicines() {
     },
   });
 
-  // ✅ Reset form
+  // Reset form
   const resetForm = () => {
     setFormData({
       name: "",
@@ -67,13 +67,13 @@ export default function MyMedicines() {
     });
   };
 
-  // ✅ Handle input change
+  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Handle submit
+  // Handle submit
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -90,7 +90,7 @@ export default function MyMedicines() {
     addMedicineMutation.mutate(medicineData);
   };
 
-  // ✅ Delete medicine
+  // Delete medicine
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -108,13 +108,15 @@ export default function MyMedicines() {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-6 bg-[var(--color-bg)] min-h-screen rounded-md">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-blue-700">Manage Medicines</h2>
+        <h2 className="text-2xl font-bold text-[var(--color-primary)]">
+          Manage Medicines
+        </h2>
         <button
           onClick={() => setShowModal(true)}
-          className="btn btn-primary flex items-center gap-2"
+          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 flex items-center gap-2"
         >
           <FaPlus /> Add Medicine
         </button>
@@ -122,48 +124,53 @@ export default function MyMedicines() {
 
       {/* Medicine Table */}
       {isLoading ? (
-        <p className="text-center">Loading medicines...</p>
+        <p className="text-center text-[var(--color-text)]">Loading medicines...</p>
       ) : medicines.length === 0 ? (
         <p className="text-center text-gray-500">No medicines found.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="table table-zebra w-full">
-            <thead>
+        <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
+          <table className="min-w-full text-sm">
+            <thead className="bg-[var(--color-primary)] text-white">
               <tr>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Generic</th>
-                <th>Category</th>
-                <th>Company</th>
-                <th>Unit</th>
-                <th>Price</th>
-                <th>Discount</th>
-                <th>Stock</th>
-                <th>Action</th>
+                <th className="px-4 py-3">Image</th>
+                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Generic</th>
+                <th className="px-4 py-3">Category</th>
+                <th className="px-4 py-3">Company</th>
+                <th className="px-4 py-3">Unit</th>
+                <th className="px-4 py-3">Price</th>
+                <th className="px-4 py-3">Discount</th>
+                <th className="px-4 py-3">Stock</th>
+                <th className="px-4 py-3">Action</th>
               </tr>
             </thead>
             <tbody>
               {medicines.map((med) => (
-                <tr key={med._id}>
-                  <td>
+                <tr
+                  key={med._id}
+                  className="border-b hover:bg-[var(--color-bg)] transition"
+                >
+                  <td className="px-4 py-2">
                     <img
                       src={med.image}
                       alt={med.name}
                       className="w-12 h-12 object-cover rounded"
                     />
                   </td>
-                  <td>{med.name}</td>
-                  <td>{med.genericName}</td>
-                  <td>{med.category}</td>
-                  <td>{med.company}</td>
-                  <td>{med.unit}</td>
-                  <td>৳{med.price}</td>
-                  <td>{med.discount}%</td>
-                  <td>{med.stock}</td>
-                  <td>
+                  <td className="px-4 py-2 font-medium">{med.name}</td>
+                  <td className="px-4 py-2">{med.genericName}</td>
+                  <td className="px-4 py-2">{med.category}</td>
+                  <td className="px-4 py-2">{med.company}</td>
+                  <td className="px-4 py-2">{med.unit}</td>
+                  <td className="px-4 py-2 text-[var(--color-secondary)] font-semibold">
+                    ৳{med.price}
+                  </td>
+                  <td className="px-4 py-2">{med.discount}%</td>
+                  <td className="px-4 py-2">{med.stock}</td>
+                  <td className="px-4 py-2 text-center">
                     <button
                       onClick={() => handleDelete(med._id)}
-                      className="btn btn-error btn-xs"
+                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
                     >
                       <FaTrash />
                     </button>
@@ -175,23 +182,24 @@ export default function MyMedicines() {
         </div>
       )}
 
-      {/* ✅ Add Medicine Modal */}
+      {/* Add Medicine Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
           <form
             onSubmit={handleSubmit}
-            className="bg-white p-6 rounded-lg w-full max-w-lg relative overflow-y-auto max-h-[90vh]"
+            className="bg-white p-6 rounded-lg w-full max-w-lg relative overflow-y-auto max-h-[90vh] shadow-lg"
           >
             {/* Close Button */}
             <button
               type="button"
               onClick={() => setShowModal(false)}
-              className="absolute top-2 right-2 text-3xl font-bold hover:text-red-600"
-              aria-label="Close modal"
+              className="absolute top-2 right-3 text-2xl text-gray-500 hover:text-red-600"
             >
               &times;
             </button>
-            <h2 className="text-xl font-bold mb-4 text-center">Add New Medicine</h2>
+            <h2 className="text-xl font-bold mb-4 text-center text-[var(--color-primary)]">
+              Add New Medicine
+            </h2>
 
             {/* Form Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -283,7 +291,7 @@ export default function MyMedicines() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="btn btn-success mt-4 w-full"
+              className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 mt-4 w-full"
               disabled={addMedicineMutation.isLoading}
             >
               {addMedicineMutation.isLoading ? "Adding..." : "Submit"}
