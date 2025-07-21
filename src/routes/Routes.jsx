@@ -25,6 +25,7 @@ import SalesReport from "../pages/DashBoard/Admin/SalesReport";
 import SellerDashboard from "../pages/dashboard/seller/SellerDashboard";
 import DashboardRedirect from "../hooks/DashboardRedirect";
 import InvoicePage from "../pages/Checkout/InvoicePage";
+import UpdateProfile from "../components/UpdateProfile/UpdateProfile";
 
 export const router = createBrowserRouter([
   {
@@ -59,6 +60,10 @@ export const router = createBrowserRouter([
       {
         path: "cart",
         element: <PrivateRoutes><CartPage /></PrivateRoutes>,
+      },
+      {
+        path:"/update-profile",
+        element:<PrivateRoutes><UpdateProfile></UpdateProfile></PrivateRoutes>
       },
       {
         path: "checkout",
