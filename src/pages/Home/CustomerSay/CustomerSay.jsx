@@ -86,7 +86,7 @@ const CustomerSay = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b from-[#f0f4f8] to-[#e6edf3] py-16 px-4 my-12 rounded-3xl shadow-lg ">
+    <div className="bg-gradient-to-b from-[#f0f4f8] to-[#e6edf3] py-16 px-4 my-12 rounded-3xl shadow-lg max-w-7xl mx-auto">
       {/* Title */}
       <div className="text-center mb-10">
         <h2 className="text-4xl font-extrabold mb-3 text-gray-800 drop-shadow-lg">

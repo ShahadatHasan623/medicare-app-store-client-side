@@ -1,4 +1,4 @@
-import { Outlet, NavLink, Link } from "react-router"; // react-router-dom ঠিক করো
+import { Outlet, NavLink, Link, useNavigate } from "react-router"; 
 import {
   FaHome,
   FaUser,
@@ -10,17 +10,16 @@ import {
 } from "react-icons/fa";
 import { useRole } from "../hooks/useRool";
 import useAuth from "../hooks/useAuth";
+import Loader from "../components/Loader";
+import Swal from "sweetalert2";
 
 export default function DashboardLayout() {
-  const { user, logout } = useAuth();
+  const { user, signOutUser } = useAuth();
   const { role, isLoadingRole } = useRole();
+  const navigate = useNavigate();
 
   if (isLoadingRole) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <span className="loading loading-spinner text-primary"></span>
-      </div>
-    );
+    return <Loader></Loader>;
   }
 
   const renderLinks = () => {
@@ -100,6 +99,16 @@ export default function DashboardLayout() {
     }
   };
 
+  const handleSignOut = () => {
+    signOutUser();
+    Swal.fire({
+      title: "Logut Successfully",
+      icon: "success",
+      draggable: true,
+    });
+    navigate("/");
+  };
+
   return (
     <div className="drawer lg:drawer-open min-h-screen bg-base-100">
       <input id="dashboard-drawer" type="checkbox" className="drawer-toggle" />
@@ -165,7 +174,7 @@ export default function DashboardLayout() {
             </Link>
 
             <button
-              onClick={() => logout()}
+              onClick={handleSignOut}
               className="btn btn-error w-full flex items-center justify-center gap-2"
               title="Logout"
             >
