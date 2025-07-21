@@ -10,6 +10,9 @@ export default function MyMedicines() {
   const axiosSecure = useAxioseSecure();
   const queryClient = useQueryClient();
 
+  const [page, setPage] = useState(1);
+  const limit = 6;
+
   const [showModal, setShowModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -37,15 +40,23 @@ export default function MyMedicines() {
     "Drops",
   ];
 
-  // Fetch medicines for this seller
-  const { data: medicines = [], isLoading } = useQuery({
-    queryKey: ["medicines", user?.email],
+  // Fetch medicines with pagination
+  const { data: medicinesResponse, isLoading } = useQuery({
+    queryKey: ["medicines", user?.email, page],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/medicines?sellerEmail=${user?.email}`);
+      const res = await axiosSecure.get(
+        `/medicines?sellerEmail=${user?.email}&page=${page}&limit=${limit}`
+      );
       return res.data;
     },
     enabled: !!user?.email,
   });
+
+  const medicines = Array.isArray(medicinesResponse?.data)
+    ? medicinesResponse.data
+    : [];
+  const currentPage = medicinesResponse?.currentPage || 1;
+  const totalPages = medicinesResponse?.totalPages || 1;
 
   // Add medicine mutation
   const addMedicineMutation = useMutation({
@@ -85,7 +96,6 @@ export default function MyMedicines() {
     },
   });
 
-  // Reset form
   const resetForm = () => {
     setFormData({
       name: "",
@@ -101,13 +111,11 @@ export default function MyMedicines() {
     });
   };
 
-  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle submit for add or update
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -128,7 +136,6 @@ export default function MyMedicines() {
     }
   };
 
-  // Delete medicine
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -145,7 +152,6 @@ export default function MyMedicines() {
     }
   };
 
-  // Handle Edit button click
   const handleEdit = (medicine) => {
     setFormData({
       name: medicine.name || "",
@@ -190,70 +196,106 @@ export default function MyMedicines() {
       ) : medicines.length === 0 ? (
         <p className="text-center text-gray-500">No medicines found.</p>
       ) : (
-        <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
-          <table className="min-w-full text-sm">
-            <thead className="bg-[var(--color-primary)] text-white">
-              <tr>
-                <th className="px-4 py-3">Image</th>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Generic</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Company</th>
-                <th className="px-4 py-3">Unit</th>
-                <th className="px-4 py-3">Price</th>
-                <th className="px-4 py-3">Discount</th>
-                <th className="px-4 py-3">Stock</th>
-                <th className="px-4 py-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {medicines.map((med) => (
-                <tr
-                  key={med._id}
-                  className="border-b hover:bg-[var(--color-bg)] transition"
-                >
-                  <td className="px-4 py-2">
-                    {med.image ? (
-                      <img
-                        src={med.image}
-                        alt={med.name}
-                        className="w-12 h-12 object-cover rounded"
-                      />
-                    ) : (
-                      "N/A"
-                    )}
-                  </td>
-                  <td className="px-4 py-2 font-medium">{med.name}</td>
-                  <td className="px-4 py-2">{med.genericName}</td>
-                  <td className="px-4 py-2">{med.category}</td>
-                  <td className="px-4 py-2">{med.company}</td>
-                  <td className="px-4 py-2">{med.unit}</td>
-                  <td className="px-4 py-2 text-[var(--color-secondary)] font-semibold">
-                    ৳{med.price}
-                  </td>
-                  <td className="px-4 py-2">{med.discount}%</td>
-                  <td className="px-4 py-2">{med.stock}</td>
-                  <td className="px-4 py-2 text-center flex justify-center gap-2">
-                    <button
-                      onClick={() => handleEdit(med)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full"
-                      title="Edit"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(med._id)}
-                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
-                      title="Delete"
-                    >
-                      <FaTrash />
-                    </button>
-                  </td>
+        <>
+          <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
+            <table className="min-w-full text-sm">
+              <thead className="bg-[var(--color-primary)] text-white">
+                <tr>
+                  <th className="px-4 py-3">Image</th>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Generic</th>
+                  <th className="px-4 py-3">Category</th>
+                  <th className="px-4 py-3">Company</th>
+                  <th className="px-4 py-3">Unit</th>
+                  <th className="px-4 py-3">Price</th>
+                  <th className="px-4 py-3">Discount</th>
+                  <th className="px-4 py-3">Stock</th>
+                  <th className="px-4 py-3">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {medicines.map((med) => (
+                  <tr
+                    key={med._id}
+                    className="border-b hover:bg-[var(--color-bg)] transition"
+                  >
+                    <td className="px-4 py-2">
+                      {med.image ? (
+                        <img
+                          src={med.image}
+                          alt={med.name}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                      ) : (
+                        "N/A"
+                      )}
+                    </td>
+                    <td className="px-4 py-2 font-medium">{med.name}</td>
+                    <td className="px-4 py-2">{med.genericName}</td>
+                    <td className="px-4 py-2">{med.category}</td>
+                    <td className="px-4 py-2">{med.company}</td>
+                    <td className="px-4 py-2">{med.unit}</td>
+                    <td className="px-4 py-2 text-[var(--color-secondary)] font-semibold">
+                      ৳{med.price}
+                    </td>
+                    <td className="px-4 py-2">{med.discount}%</td>
+                    <td className="px-4 py-2">{med.stock}</td>
+                    <td className="px-4 py-2 text-center flex justify-center gap-2">
+                      <button
+                        onClick={() => handleEdit(med)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full"
+                        title="Edit"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(med._id)}
+                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
+                        title="Delete"
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="btn-group mt-4 flex justify-center gap-2">
+            <button
+              className="btn btn-outline"
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+
+            {[...Array(totalPages)].map((_, idx) => {
+              const pageNumber = idx + 1;
+              return (
+                <button
+                  key={pageNumber}
+                  className={`btn btn-outline ${
+                    pageNumber === currentPage ? "btn-active" : ""
+                  }`}
+                  onClick={() => setPage(pageNumber)}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+
+            <button
+              className="btn btn-outline"
+              onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        </>
       )}
 
       {/* Add/Edit Medicine Modal */}
@@ -298,9 +340,7 @@ export default function MyMedicines() {
 
               {/* Generic Name */}
               <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">
-                  Generic Name
-                </span>
+                <span className="mb-2 font-medium text-gray-700">Generic Name</span>
                 <input
                   name="genericName"
                   value={formData.genericName}

@@ -3,6 +3,7 @@ import BannerSlider from './BannerSlider/BannerSlider';
 import Categories from '../Categories/Categories';
 import DiscountProducts from './DiscountProducts/DiscountProducts';
 import CustomerSay from './CustomerSay/CustomerSay';
+import HealthTips from './HealthTips/HealthTips';
 
 const Home = () => {
     return (
@@ -10,6 +11,7 @@ const Home = () => {
             <BannerSlider></BannerSlider>
             <Categories></Categories>
             <DiscountProducts></DiscountProducts>
+            <HealthTips></HealthTips>
             <CustomerSay></CustomerSay>
             
         </div>
