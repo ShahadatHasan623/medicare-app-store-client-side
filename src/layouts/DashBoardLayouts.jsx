@@ -112,7 +112,7 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="drawer lg:drawer-open min-h-screen bg-base-100">
+    <div className="drawer  lg:drawer-open min-h-screen bg-base-300">
       <ReTitle title="Medicare | Dashboard"></ReTitle>
       <input id="dashboard-drawer" type="checkbox" className="drawer-toggle" />
 
@@ -151,7 +151,7 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <div className="drawer-side border-r border-base-300 bg-white">
         <label htmlFor="dashboard-drawer" className="drawer-overlay"></label>
-        <aside className="w-72 flex flex-col justify-between min-h-screen">
+        <aside className="w-72 flex flex-col justify-between bg-white min-h-screen mt-14">
           <div>
             {/* Header */}
             <div className="p-6 border-b border-base-300 text-center">
