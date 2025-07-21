@@ -3,7 +3,7 @@ import React from "react";
 import useAuth from "./useAuth";
 
 const axioseSecure = axios.create({
-  baseURL: `http://localhost:5000`,
+  baseURL: `https://medicins-server-side.vercel.app`,
 });
 const useAxioseSecure = () => {
   const { user } = useAuth();
