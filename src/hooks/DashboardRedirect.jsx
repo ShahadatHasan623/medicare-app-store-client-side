@@ -7,6 +7,9 @@ export default function DashboardRedirect() {
   if (isLoadingRole || !role) return <div>Loading...</div>;
 
   if (role === "admin") return <Navigate to="/dashboard/admin-home" replace />;
-  if (role === "seller") return <Navigate to="/dashboard/seller-home" replace />;
-  return <Navigate to="/dashboard/user-payments" replace />;
+  if (role === "seller")
+    return <Navigate to="/dashboard/seller-home" replace />;
+  if (role === "user")
+    return <Navigate to="/dashboard/user-payments" replace />;
+  return;
 }
