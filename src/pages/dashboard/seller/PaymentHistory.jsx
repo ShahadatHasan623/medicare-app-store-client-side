@@ -2,6 +2,7 @@ import React from "react";
 import useAxiosSecure from "../../../hooks/useAxioseSecure";
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
+import Loader from "../../../components/Loader";
 
 export default function PaymentHistory() {
   const { user } = useAuth();
@@ -55,9 +56,7 @@ export default function PaymentHistory() {
   };
 
   if (isLoading)
-    return (
-      <p className="text-center mt-10 text-gray-600">Loading payment history...</p>
-    );
+    return <Loader></Loader>;
 
   if (isError)
     return (

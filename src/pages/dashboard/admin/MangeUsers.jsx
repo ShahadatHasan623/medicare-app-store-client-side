@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
+import Loader from "../../../components/Loader";
 
 export default function ManageUsers() {
   const axiosSecure = useAxioseSecure();
@@ -46,18 +47,7 @@ export default function ManageUsers() {
   });
 
   if (isLoading)
-    return (
-      <p
-        style={{
-          color: "var(--color-primary)",
-          textAlign: "center",
-          marginTop: "20px",
-          fontWeight: "bold",
-        }}
-      >
-        Loading users...
-      </p>
-    );
+    return <Loader></Loader>;
   if (error)
     return (
       <p

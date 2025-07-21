@@ -6,6 +6,7 @@ import useAxios from "../../hooks/useAxios";
 
 import { toast } from "react-toastify";
 import { useCart } from "../../utils/CartContext";
+import Loader from "../../components/Loader";
 
 const fetchMedicinesByCategoryId = async (Axios, categoryId) => {
   const res = await Axios.get(`/categories/${categoryId}/medicines`);
@@ -27,11 +28,7 @@ const CategoryDetails = () => {
   });
 
   if (isLoading)
-    return (
-      <p className="text-center py-12 text-lg text-[var(--color-primary)] font-semibold">
-        Loading medicines...
-      </p>
-    );
+    return <Loader></Loader>;
 
   if (error)
     return (

@@ -10,6 +10,7 @@ import {
 } from "@react-pdf/renderer";
 import useAuth from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
+import Loader from "../../components/Loader";
 
 const styles = StyleSheet.create({
   page: {
@@ -135,11 +136,7 @@ export default function InvoicePage() {
   }, [id, axiosSecure]);
 
   if (loading) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-600 text-lg">Loading Invoice...</p>
-      </div>
-    );
+    return <Loader></Loader>;
   }
 
   if (error) {

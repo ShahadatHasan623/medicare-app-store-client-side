@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios";
 import CategoryCard from "./CategoryCard";
+import Loader from "../../components/Loader";
 
 const Categories = () => {
   const Axios = useAxios();
@@ -20,11 +21,7 @@ const Categories = () => {
   });
 
   if (isLoading)
-    return (
-      <div className="flex justify-center py-20">
-        <span className="loading loading-spinner text-[var(--color-primary)] text-6xl"></span>
-      </div>
-    );
+    return <Loader></Loader>;
 
   if (error)
     return (

@@ -7,6 +7,7 @@ import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
+import Loader from "../../../components/Loader";
 
 export default function SalesReport() {
   const axiosSecure = useAxioseSecure();
@@ -88,7 +89,7 @@ export default function SalesReport() {
     doc.save("sales_report.pdf");
   };
 
-  if (isLoading) return <p className="text-center">Loading sales report...</p>;
+  if (isLoading) return <Loader></Loader>;
 
   return (
     <div className="p-6">

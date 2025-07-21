@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FaMoneyCheckAlt, FaRegClock, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 import useAuth from "../../../hooks/useAuth";
+import Loader from "../../../components/Loader";
 
 const MyPaymentHistory = () => {
   const axiosSecure = useAxioseSecure();
@@ -17,11 +18,7 @@ const MyPaymentHistory = () => {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <span className="loading loading-spinner text-primary"></span>
-      </div>
-    );
+    return <Loader></Loader>;
   }
 
   return (

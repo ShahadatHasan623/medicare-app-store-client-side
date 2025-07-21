@@ -1,11 +1,15 @@
-import React from 'react';
+import React from "react";
+import Lottie from "lottie-react";
+import loaderAnimation from "../assets/loading.json";
 
 const Loader = () => {
-    return (
-        <div>
-            
-        </div>
-    );
+  return (
+    <div className="flex justify-center items-center h-screen bg-gray-50">
+      <div className="w-56 h-32">
+        <Lottie animationData={loaderAnimation} loop={true} />
+      </div>
+    </div>
+  );
 };
 
 export default Loader;

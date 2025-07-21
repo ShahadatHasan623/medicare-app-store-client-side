@@ -79,7 +79,7 @@ export default function Checkout() {
       if (res.data.insertedId || res.data.acknowledged) {
         Swal.fire("Order Confirmed", "Your order is successfully placed!", "success");
         localStorage.removeItem("cartData");
-        // Invoice পেজে Navigate
+        // Invoice  Navigate
         navigate(`/invoice/${res.data.insertedId}`);
       }
     } catch {

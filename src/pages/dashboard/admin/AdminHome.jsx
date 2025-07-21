@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { FaDollarSign, FaMoneyBillWave } from "react-icons/fa";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
+import Loader from "../../../components/Loader";
 
 export default function AdminHome() {
   const axiosSecure = useAxioseSecure();
@@ -20,11 +21,7 @@ export default function AdminHome() {
   });
 
   if (isLoading)
-    return (
-      <div className="p-6 max-w-4xl mx-auto text-center text-lg font-semibold">
-        Loading summary...
-      </div>
-    );
+    return <Loader></Loader>;
 
   if (isError)
     return (

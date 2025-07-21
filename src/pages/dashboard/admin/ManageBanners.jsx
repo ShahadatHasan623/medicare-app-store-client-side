@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
+import Loader from "../../../components/Loader";
 
 export default function ManageBanner() {
   const axiosSecure = useAxioseSecure();
@@ -29,7 +30,7 @@ export default function ManageBanner() {
   });
 
   if (isLoading)
-    return <p className="text-[var(--color-primary)] font-semibold">Loading advertisements...</p>;
+    return <Loader></Loader>;
 
   return (
     <div className="p-6 min-h-screen bg-[var(--color-bg)]">
