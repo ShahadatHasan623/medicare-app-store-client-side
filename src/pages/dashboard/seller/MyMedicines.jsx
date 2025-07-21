@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
-import { FaPlus, FaTrash } from "react-icons/fa";
+import { FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 export default function MyMedicines() {
@@ -11,6 +11,9 @@ export default function MyMedicines() {
   const queryClient = useQueryClient();
 
   const [showModal, setShowModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
   const [formData, setFormData] = useState({
     name: "",
     genericName: "",
@@ -38,9 +41,7 @@ export default function MyMedicines() {
   const { data: medicines = [], isLoading } = useQuery({
     queryKey: ["medicines", user?.email],
     queryFn: async () => {
-      const res = await axiosSecure.get(
-        `/medicines?sellerEmail=${user?.email}`
-      );
+      const res = await axiosSecure.get(`/medicines?sellerEmail=${user?.email}`);
       return res.data;
     },
     enabled: !!user?.email,
@@ -57,9 +58,30 @@ export default function MyMedicines() {
       Swal.fire("✅ Success", "Medicine added successfully", "success");
       setShowModal(false);
       resetForm();
+      setIsEditMode(false);
+      setEditingId(null);
     },
     onError: () => {
       Swal.fire("❌ Error", "Failed to add medicine", "error");
+    },
+  });
+
+  // Update medicine mutation
+  const updateMedicineMutation = useMutation({
+    mutationFn: async ({ id, updatedMedicine }) => {
+      const res = await axiosSecure.patch(`/medicines/${id}`, updatedMedicine);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["medicines", user.email]);
+      Swal.fire("✅ Success", "Medicine updated successfully", "success");
+      setShowModal(false);
+      resetForm();
+      setIsEditMode(false);
+      setEditingId(null);
+    },
+    onError: () => {
+      Swal.fire("❌ Error", "Failed to update medicine", "error");
     },
   });
 
@@ -75,7 +97,6 @@ export default function MyMedicines() {
       unit: "",
       price: "",
       stock: "",
-      sellerEmail:user.email,
       discount: 0,
     });
   };
@@ -86,7 +107,7 @@ export default function MyMedicines() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle submit
+  // Handle submit for add or update
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -100,7 +121,11 @@ export default function MyMedicines() {
       date: new Date(),
     };
 
-    addMedicineMutation.mutate(medicineData);
+    if (isEditMode && editingId) {
+      updateMedicineMutation.mutate({ id: editingId, updatedMedicine: medicineData });
+    } else {
+      addMedicineMutation.mutate(medicineData);
+    }
   };
 
   // Delete medicine
@@ -120,6 +145,25 @@ export default function MyMedicines() {
     }
   };
 
+  // Handle Edit button click
+  const handleEdit = (medicine) => {
+    setFormData({
+      name: medicine.name || "",
+      genericName: medicine.genericName || "",
+      description: medicine.description || "",
+      image: medicine.image || "",
+      category: medicine.category || "",
+      company: medicine.company || "",
+      unit: medicine.unit || "",
+      price: medicine.price || "",
+      stock: medicine.stock || "",
+      discount: medicine.discount || 0,
+    });
+    setIsEditMode(true);
+    setEditingId(medicine._id);
+    setShowModal(true);
+  };
+
   return (
     <div className="p-6 bg-[var(--color-bg)] min-h-screen rounded-md">
       {/* Header */}
@@ -128,7 +172,12 @@ export default function MyMedicines() {
           Manage Medicines
         </h2>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            resetForm();
+            setIsEditMode(false);
+            setEditingId(null);
+            setShowModal(true);
+          }}
           className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 flex items-center gap-2"
         >
           <FaPlus /> Add Medicine
@@ -137,9 +186,7 @@ export default function MyMedicines() {
 
       {/* Medicine Table */}
       {isLoading ? (
-        <p className="text-center text-[var(--color-text)]">
-          Loading medicines...
-        </p>
+        <p className="text-center text-[var(--color-text)]">Loading medicines...</p>
       ) : medicines.length === 0 ? (
         <p className="text-center text-gray-500">No medicines found.</p>
       ) : (
@@ -166,11 +213,15 @@ export default function MyMedicines() {
                   className="border-b hover:bg-[var(--color-bg)] transition"
                 >
                   <td className="px-4 py-2">
-                    <img
-                      src={med.image}
-                      alt={med.name}
-                      className="w-12 h-12 object-cover rounded"
-                    />
+                    {med.image ? (
+                      <img
+                        src={med.image}
+                        alt={med.name}
+                        className="w-12 h-12 object-cover rounded"
+                      />
+                    ) : (
+                      "N/A"
+                    )}
                   </td>
                   <td className="px-4 py-2 font-medium">{med.name}</td>
                   <td className="px-4 py-2">{med.genericName}</td>
@@ -182,10 +233,18 @@ export default function MyMedicines() {
                   </td>
                   <td className="px-4 py-2">{med.discount}%</td>
                   <td className="px-4 py-2">{med.stock}</td>
-                  <td className="px-4 py-2 text-center">
+                  <td className="px-4 py-2 text-center flex justify-center gap-2">
+                    <button
+                      onClick={() => handleEdit(med)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full"
+                      title="Edit"
+                    >
+                      <FaEdit />
+                    </button>
                     <button
                       onClick={() => handleDelete(med._id)}
                       className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
+                      title="Delete"
                     >
                       <FaTrash />
                     </button>
@@ -197,7 +256,7 @@ export default function MyMedicines() {
         </div>
       )}
 
-      {/* Add Medicine Modal */}
+      {/* Add/Edit Medicine Modal */}
       {showModal && (
         <div className="fixed inset-0 shadow-2xs bg-opacity-40 flex items-center justify-center z-50 p-4">
           <form
@@ -207,7 +266,12 @@ export default function MyMedicines() {
             {/* Close Button */}
             <button
               type="button"
-              onClick={() => setShowModal(false)}
+              onClick={() => {
+                setShowModal(false);
+                setIsEditMode(false);
+                setEditingId(null);
+                resetForm();
+              }}
               className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-3xl font-bold leading-none"
               aria-label="Close Modal"
             >
@@ -215,15 +279,13 @@ export default function MyMedicines() {
             </button>
 
             <h2 className="text-3xl font-semibold mb-8 text-center text-[var(--color-primary)]">
-              Add New Medicine
+              {isEditMode ? "Edit Medicine" : "Add New Medicine"}
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Item Name */}
               <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">
-                  Item Name
-                </span>
+                <span className="mb-2 font-medium text-gray-700">Item Name</span>
                 <input
                   name="name"
                   value={formData.name}
@@ -285,9 +347,7 @@ export default function MyMedicines() {
 
               {/* Unit */}
               <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">
-                  Unit (mg/ml)
-                </span>
+                <span className="mb-2 font-medium text-gray-700">Unit (mg/ml)</span>
                 <input
                   name="unit"
                   value={formData.unit}
@@ -300,9 +360,7 @@ export default function MyMedicines() {
 
               {/* Price */}
               <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">
-                  Price (৳)
-                </span>
+                <span className="mb-2 font-medium text-gray-700">Price (৳)</span>
                 <input
                   name="price"
                   type="number"
@@ -333,9 +391,7 @@ export default function MyMedicines() {
 
               {/* Discount */}
               <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">
-                  Discount %
-                </span>
+                <span className="mb-2 font-medium text-gray-700">Discount %</span>
                 <input
                   name="discount"
                   type="number"
@@ -348,11 +404,9 @@ export default function MyMedicines() {
                 />
               </label>
 
-              {/* Image URL full width */}
+              {/* Image URL */}
               <label className="flex flex-col col-span-1 md:col-span-2">
-                <span className="mb-2 font-medium text-gray-700">
-                  Image URL
-                </span>
+                <span className="mb-2 font-medium text-gray-700">Image URL</span>
                 <input
                   name="image"
                   value={formData.image}
@@ -363,11 +417,9 @@ export default function MyMedicines() {
                 />
               </label>
 
-              {/* Description full width */}
+              {/* Description */}
               <label className="flex flex-col col-span-1 md:col-span-2">
-                <span className="mb-2 font-medium text-gray-700">
-                  Description
-                </span>
+                <span className="mb-2 font-medium text-gray-700">Description</span>
                 <textarea
                   name="description"
                   value={formData.description}
@@ -382,10 +434,16 @@ export default function MyMedicines() {
 
             <button
               type="submit"
-              disabled={addMedicineMutation.isLoading}
+              disabled={addMedicineMutation.isLoading || updateMedicineMutation.isLoading}
               className="mt-8 w-full bg-[var(--color-primary)] text-white font-semibold py-3 rounded-lg hover:bg-opacity-90 transition"
             >
-              {addMedicineMutation.isLoading ? "Adding..." : "Submit"}
+              {(addMedicineMutation.isLoading || updateMedicineMutation.isLoading)
+                ? isEditMode
+                  ? "Updating..."
+                  : "Adding..."
+                : isEditMode
+                ? "Update"
+                : "Submit"}
             </button>
           </form>
         </div>
