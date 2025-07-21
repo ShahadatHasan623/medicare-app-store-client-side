@@ -1,34 +1,39 @@
 import React, { useState } from "react";
-import { FaEye, FaCartPlus } from "react-icons/fa";
+import { FaEye, FaCartPlus, FaTimes } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios";
 import { toast } from "react-toastify";
 import { useCart } from "../../utils/CartContext";
 
 const Shop = () => {
-  const { addToCart } = useCart(); // Cart context hook
-  const useaxios = useAxios();
+  const { addToCart } = useCart();
+  const axios = useAxios();
 
   const [modalData, setModalData] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
 
-  // Fetch medicines
-  const {
-    data: medicines = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["medicines"],
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const limit = 5; // items per page
+
+  // Fetch medicines with pagination
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["medicines", page],
     queryFn: async () => {
-      const res = await useaxios.get(`/medicines`);
-      return Array.isArray(res.data) ? res.data : [];
+      const res = await axios.get(`/medicines?page=${page}&limit=${limit}`);
+      return res.data;
     },
+    keepPreviousData: true,
     staleTime: 5 * 60 * 1000,
   });
 
-  // Filter and Sort
+  // medicines data array from backend
+  const medicines = data?.data || [];
+  const totalPages = data?.totalPages || 1;
+
+  // Filter and sort locally (optional - you can also do on backend)
   const filteredMedicines = medicines
     .filter(
       (med) =>
@@ -57,15 +62,13 @@ const Shop = () => {
       return 0;
     });
 
-  if (isError) {
+  if (isError)
     return (
       <div className="text-center text-red-600 mt-16 font-semibold text-lg">
         ❌ Error loading medicines. Please try again later.
       </div>
     );
-  }
 
-  // Add to cart handler
   const handleAddToCart = (med) => {
     addToCart(med);
     toast.success(`${med.name ?? "Medicine"} added to cart!`, {
@@ -213,6 +216,35 @@ const Shop = () => {
         </div>
       )}
 
+      {/* Pagination Controls */}
+      <div className="flex justify-center items-center gap-4 mt-8">
+        <button
+          onClick={() => setPage((old) => Math.max(old - 1, 1))}
+          disabled={page === 1}
+          className={`px-4 py-2 rounded-md ${
+            page === 1
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
+        >
+          Prev
+        </button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <button
+          onClick={() => setPage((old) => (old < totalPages ? old + 1 : old))}
+          disabled={page === totalPages}
+          className={`px-4 py-2 rounded-md ${
+            page === totalPages
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-600 text-white hover:bg-blue-700"
+          }`}
+        >
+          Next
+        </button>
+      </div>
+
       {/* Modal */}
       {modalData && (
         <div className="fixed inset-0 shadow-2xs bg-opacity-60 flex justify-center items-center z-50 p-6">
@@ -251,7 +283,7 @@ const Shop = () => {
                 {modalData.category ?? "N/A"}
               </p>
               <p>
-                <span className="font-semibold">Price:</span>$
+                <span className="font-semibold">Price:</span> ৳
                 {modalData.price ?? modalData.perUnitPrice ?? "N/A"}
               </p>
               <p>

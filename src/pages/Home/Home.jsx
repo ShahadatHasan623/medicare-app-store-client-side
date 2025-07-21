@@ -2,6 +2,7 @@ import React from 'react';
 import BannerSlider from './BannerSlider/BannerSlider';
 import Categories from '../Categories/Categories';
 import DiscountProducts from './DiscountProducts/DiscountProducts';
+import CustomerSay from './CustomerSay/CustomerSay';
 
 const Home = () => {
     return (
@@ -9,6 +10,8 @@ const Home = () => {
             <BannerSlider></BannerSlider>
             <Categories></Categories>
             <DiscountProducts></DiscountProducts>
+            <CustomerSay></CustomerSay>
+            
         </div>
     );
 };
