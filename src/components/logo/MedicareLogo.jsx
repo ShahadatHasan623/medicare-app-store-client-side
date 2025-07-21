@@ -6,7 +6,7 @@ const MedicareLogo = () => {
   return (
     <Link to='/' className="p-1 flex items-center gap-2">
       <img className="h-10 w-10" src={medicareLogo} alt="" />
-      <h1 className="text-3xl font-bold text-secondary poppins">Medicare</h1>
+      <h1 className="text-3xl font-bold text-secondary poppins lg:block hidden md:block">Medicare</h1>
     </Link>
   );
 };

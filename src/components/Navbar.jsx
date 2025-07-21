@@ -1,6 +1,6 @@
-import React from "react";
-import { Link, useLocation, useNavigate } from "react-router"; 
-import { FaCartPlus } from "react-icons/fa";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
+import { FaCartPlus, FaBars } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import useAuth from "../hooks/useAuth";
 import { useCart } from "../utils/CartContext";
@@ -15,6 +15,8 @@ const Navbar = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   const isActive = (path) => location.pathname === path;
 
   const handleSignOut = () => {
@@ -25,6 +27,7 @@ const Navbar = () => {
       draggable: true,
     });
     navigate("/");
+    setDrawerOpen(false);
   };
 
   const links = (
@@ -35,8 +38,9 @@ const Navbar = () => {
           className={
             isActive("/")
               ? "text-orange-500 font-semibold border-b-2 border-orange-500"
-              : "text-white hover:text-purple-300 transition-colors duration-300"
+              : "hover:text-purple-300 transition-colors duration-300"
           }
+          onClick={() => setDrawerOpen(false)}
         >
           {t("home")}
         </Link>
@@ -47,8 +51,9 @@ const Navbar = () => {
           className={
             isActive("/shop")
               ? "text-orange-500 font-semibold border-b-2 border-orange-500"
-              : "text-white hover:text-purple-300 transition-colors duration-300"
+              : "hover:text-purple-300 transition-colors duration-300"
           }
+          onClick={() => setDrawerOpen(false)}
         >
           {t("shop")}
         </Link>
@@ -59,8 +64,9 @@ const Navbar = () => {
           className={
             isActive("/Categories")
               ? "text-orange-500 font-semibold border-b-2 border-orange-500"
-              : "text-white hover:text-purple-300 transition-colors duration-300"
+              : "hover:text-purple-300 transition-colors duration-300"
           }
+          onClick={() => setDrawerOpen(false)}
         >
           {t("categories")}
         </Link>
@@ -69,122 +75,163 @@ const Navbar = () => {
   );
 
   return (
-    <div
-      className="navbar bg-primary poppins text-white shadow-md px-4 sticky top-0 z-50"
-      style={{ backgroundColor: "var(--color-primary)" }}
-    >
-      {/* Navbar Start */}
-      <div className="navbar-start">
-        <div className="dropdown">
-          <label tabIndex={0} className="btn btn-ghost lg:hidden">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
-            </svg>
-          </label>
-          <ul
-            tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 p-2 shadow bg-blue-5 rounded-box w-52 "
+    <>
+      {/* Top Navbar */}
+      <div
+        className="navbar bg-primary text-white shadow-md px-4 sticky top-0 z-50"
+        style={{ backgroundColor: "var(--color-primary)" }}
+      >
+        {/* Left Side */}
+        <div className="navbar-start flex items-center gap-3">
+          {/* Drawer Button for Mobile */}
+          <button
+            className="lg:hidden p-2 rounded-md hover:bg-primary-focus"
+            onClick={() => setDrawerOpen(true)}
           >
-            {links}
-          </ul>
-        </div>
+            <FaBars className="text-xl" />
+          </button>
 
-        {/* Logo */}
-        <div  className="flex items-center">
-          <MedicareLogo /> 
-        </div>
-      </div>
-
-      {/* Navbar Center */}
-      <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 font-medium">{links}</ul>
-      </div>
-
-      {/* Navbar End */}
-      <div className="navbar-end gap-3 flex items-center">
-        {/* Cart Icon with badge */}
-        <Link to="/cart" className="relative group">
-          <div className="p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition duration-300 ease-in-out shadow-md">
-            <FaCartPlus className="text-xl" />
-          </div>
-          {cart.length > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full animate-bounce">
-              {cart.length}
-            </span>
-          )}
-        </Link>
-
-        {/* Language Selector Component */}
-        <LanguageSelector />
-
-        {/* Auth Buttons */}
-        {!user ? (
-          <Link
-            to="/login"
-            className="btn shadow-2xl bg-secondary text-white border-none  transition-all duration-300 hover:shadow-2xl"
-          >
-            {t("joinUs")}
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2">
+            <MedicareLogo />
           </Link>
-        ) : (
-          <div className="dropdown dropdown-end">
-            <label
-              tabIndex={0}
-              className="cursor-pointer flex items-center space-x-2 p-1 rounded-full hover:ring-2 hover:ring-[var(--color-secondary)] transition duration-300"
+        </div>
+
+        {/* Center Links (Only for Desktop) */}
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal px-1 font-medium">{links}</ul>
+        </div>
+
+        {/* Right Side */}
+        <div className="navbar-end gap-3 flex items-center">
+          {/* Cart Icon */}
+          <Link to="/cart" className="relative group">
+            <div className="p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition duration-300 ease-in-out shadow-md">
+              <FaCartPlus className="text-xl" />
+            </div>
+            {cart.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full animate-bounce">
+                {cart.length}
+              </span>
+            )}
+          </Link>
+
+          {/* Language Selector */}
+          <div className="hidden lg:block">
+            <LanguageSelector />
+          </div>
+
+          {/* Auth Buttons */}
+          {!user ? (
+            <Link
+              to="/login"
+              className="btn bg-secondary text-white border-none hover:shadow-2xl transition-all duration-300"
             >
+              {t("joinUs")}
+            </Link>
+          ) : (
+            <div className="hidden lg:block dropdown dropdown-end">
+              <label
+                tabIndex={0}
+                className="cursor-pointer flex items-center space-x-2 p-1 rounded-full hover:ring-2 hover:ring-[var(--color-secondary)] transition duration-300"
+              >
+                <img
+                  src={
+                    user?.photoURL ||
+                    "https://i.ibb.co/0y7VvYb/default-avatar.png"
+                  }
+                  alt="User Avatar"
+                  className="h-10 w-10 rounded-full border-2 border-gray-300 shadow-sm hover:shadow-md"
+                />
+              </label>
+              <ul
+                tabIndex={0}
+                className="dropdown-content mt-3 p-3 shadow-lg bg-white rounded-xl w-60 border border-gray-200 text-gray-700 z-[1000]"
+              >
+                <li>
+                  <Link
+                    to="/update-profile"
+                    className="block px-4 py-3 text-lg hover:bg-[var(--color-primary)] hover:text-white rounded-md transition-colors duration-300"
+                  >
+                    {t("updateProfile")}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/dashboard"
+                    className="block px-4 py-3 text-lg hover:bg-[var(--color-primary)] hover:text-white rounded-md transition-colors duration-300"
+                  >
+                    {t("dashboard")}
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-4 py-3 text-lg hover:bg-red-500 hover:text-white rounded-md transition-colors duration-300"
+                  >
+                    {t("logout")}
+                  </button>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Drawer (Mobile Menu) */}
+      <div
+        className={`fixed inset-0  bg-opacity-40 z-50 transition-transform ${
+          drawerOpen ? "translate-x-0" : "translate-x-full"
+        } lg:hidden`}
+        onClick={() => setDrawerOpen(false)}
+      >
+        <div
+          className="absolute right-0 top-0 w-64 h-full bg-primary text-white p-5 shadow-lg flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Profile Section */}
+          {user && (
+            <div className="flex items-center gap-3 mb-6">
               <img
                 src={
-                  user?.photoURL ||
-                  "https://i.ibb.co/0y7VvYb/default-avatar.png"
+                  user?.photoURL || "https://i.ibb.co/0y7VvYb/default-avatar.png"
                 }
-                alt="User Avatar"
-                className="h-10 w-10 rounded-full border-2 border-gray-300 shadow-sm hover:shadow-md"
+                alt="User"
+                className="h-12 w-12 rounded-full border-2 border-white"
               />
-            </label>
+              <div>
+                <p className="font-semibold">{user?.displayName || "User"}</p>
+                <p className="text-sm opacity-80">{user?.email}</p>
+              </div>
+            </div>
+          )}
 
-            <ul
-              tabIndex={0}
-              className="dropdown-content mt-3 p-3 shadow-lg bg-white rounded-xl w-60 border border-gray-200 text-gray-700 z-[1000] animate-fadeIn"
+          {/* Menu Links */}
+          <ul className="menu flex flex-col gap-3 mb-5">{links}</ul>
+
+          {/* Language Selector */}
+          <LanguageSelector />
+
+          {/* Auth Buttons */}
+          {!user ? (
+            <Link
+              to="/login"
+              onClick={() => setDrawerOpen(false)}
+              className="btn mt-5 bg-secondary border-none text-white"
             >
-              <li>
-                <Link
-                  to="/update-profile"
-                  className="block px-4 py-3 text-lg hover:bg-[var(--color-primary)] hover:text-white rounded-md transition-colors duration-300"
-                >
-                  {t("updateProfile")}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/dashboard"
-                  className="block px-4 py-3 text-lg hover:bg-[var(--color-primary)] hover:text-white rounded-md transition-colors duration-300"
-                >
-                  {t("dashboard")}
-                </Link>
-              </li>
-              <li>
-                <button
-                  onClick={handleSignOut}
-                  className="block w-full text-left px-4 py-3 text-lg hover:bg-red-500 hover:text-white rounded-md transition-colors duration-300"
-                >
-                  {t("logout")}
-                </button>
-              </li>
-            </ul>
-          </div>
-        )}
+              {t("joinUs")}
+            </Link>
+          ) : (
+            <button
+              onClick={handleSignOut}
+              className="btn mt-5 bg-red-500 border-none text-white"
+            >
+              {t("logout")}
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
