@@ -11,6 +11,7 @@ import {
 import useAuth from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
 import Loader from "../../components/Loader";
+import MedicareLogo from "../../components/logo/MedicareLogo";
 
 const styles = StyleSheet.create({
   page: {
@@ -151,7 +152,7 @@ export default function InvoicePage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-      <h1>Logo</h1>
+       <MedicareLogo></MedicareLogo>
       <div className="mb-6 text-right">
         <PDFDownloadLink
           document={<InvoiceDocument invoiceData={invoiceData} user={user} />}
@@ -163,7 +164,6 @@ export default function InvoicePage() {
           }
         </PDFDownloadLink>
       </div>
-
       <h1 className="text-3xl font-bold mb-4 text-center">Invoice Preview</h1>
       <p>
         <strong>Invoice ID:</strong> {invoiceData._id}

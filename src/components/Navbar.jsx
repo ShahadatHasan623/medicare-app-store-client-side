@@ -132,7 +132,7 @@ const Navbar = () => {
         {!user ? (
           <Link
             to="/login"
-            className="btn shadow-2xl bg-[var(--color-primary)] text-white border-none hover:bg-[var(--color-secondary)] transition-all duration-300 hover:shadow-2xl"
+            className="btn shadow-2xl bg-secondary text-white border-none  transition-all duration-300 hover:shadow-2xl"
           >
             {t("joinUs")}
           </Link>

@@ -1,24 +1,33 @@
-import { useForm } from "react-hook-form";
+import { useRef, useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate, useLocation, NavLink } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import Lottie from "lottie-react";
 import loginAnimation from "../../assets/Login.json";
-import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import GoogleLogin from "./soicalLogin/GoogleLogin";
+import { ReTitle } from "re-title";
 
 const Login = () => {
-  const { signIn } = useAuth();
-  const { register, handleSubmit } = useForm();
+  const { signIn, resetPass } = useAuth();
+  const emailRef = useRef();
+  const passwordRef = useRef();
   const navigate = useNavigate();
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const from = location.state?.from?.pathname || "/";
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+
+    if (!email || !password) {
+      Swal.fire("Warning!", "Please fill in all fields", "warning");
+      return;
+    }
+
     try {
-      const { email, password } = data;
       await signIn(email, password);
       Swal.fire("Success!", "Logged in successfully", "success");
       navigate(from);
@@ -28,8 +37,24 @@ const Login = () => {
     }
   };
 
+  const handleForgot = async () => {
+    const email = emailRef.current.value;
+    if (!email) {
+      Swal.fire("Warning!", "Please enter your email address", "warning");
+      return;
+    }
+    try {
+      await resetPass(email);
+      Swal.fire("Success!", "Password reset email sent successfully", "success");
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Failed", err.message || "Something went wrong", "error");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E0F7FA] to-[#F3E5F5] p-4 rounded-3xl max-w-7xl mx-auto my-12">
+      <ReTitle title="Medicare | Login"></ReTitle>
       <div className="bg-white rounded-2xl shadow-2xl grid md:grid-cols-2 items-center p-6 md:p-10 max-w-4xl w-full">
         {/* Left Side: Animation */}
         <div className="hidden md:block">
@@ -49,10 +74,10 @@ const Login = () => {
             Enter your credentials to continue
           </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             {/* Email */}
             <input
-              {...register("email")}
+              ref={emailRef}
               placeholder="Email"
               type="email"
               className="input input-bordered w-full"
@@ -62,7 +87,7 @@ const Login = () => {
             {/* Password with show/hide */}
             <div className="relative">
               <input
-                {...register("password")}
+                ref={passwordRef}
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 className="input input-bordered w-full pr-10"
@@ -76,7 +101,11 @@ const Login = () => {
               </span>
             </div>
 
-            <div className="flex justify-between text-sm">
+            <div
+              type="button"
+              onClick={handleForgot}
+              className="flex justify-between text-sm"
+            >
               <a className="link link-hover text-blue-500">Forgot password?</a>
             </div>
 

@@ -9,6 +9,7 @@ import signUpLottie from "../../assets/register.json";
 import Lottie from "lottie-react";
 import Swal from "sweetalert2";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { ReTitle } from "re-title";
 
 const SignUp = () => {
   const { createUser, updateProfileUser } = useAuth();
@@ -78,6 +79,7 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#FCE4EC] to-[#E8EAF6] px-4 max-w-7xl py-16 mx-auto rounded-2xl">
+      <ReTitle title="Medicare | SignUp"></ReTitle>
       <div className="bg-white rounded-2xl shadow-xl grid md:grid-cols-2 gap-10 p-8 max-w-5xl w-full">
         {/* Left Side: Lottie */}
         <div className="hidden md:flex items-center justify-center">
