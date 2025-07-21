@@ -5,7 +5,7 @@ import { CSVLink } from "react-csv";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 
 export default function SalesReport() {
@@ -15,7 +15,7 @@ export default function SalesReport() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10; // প্রতি পেজে কত ডাটা দেখাবে
+  const rowsPerPage = 10;
 
   // Fetch sales report
   const { data: sales = [], isLoading } = useQuery({
@@ -76,12 +76,12 @@ export default function SalesReport() {
       s.sellerEmail,
       s.buyerEmail,
       s.quantity,
-      s.unitPrice,
-      s.totalPrice,
+      `$${s.unitPrice}`,
+      `$${s.totalPrice}`,
       s.status,
       new Date(s.date).toLocaleDateString(),
     ]);
-    doc.autoTable({
+    autoTable(doc, {
       head: [["Medicine", "Seller", "Buyer", "Qty", "Unit Price", "Total", "Status", "Date"]],
       body: tableData,
     });
@@ -96,13 +96,27 @@ export default function SalesReport() {
 
       {/* Filter & Export Buttons */}
       <div className="flex flex-wrap gap-4 mb-4 items-center">
-        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="border p-2 rounded" />
-        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="border p-2 rounded" />
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="border p-2 rounded"
+        />
         <CSVLink data={sales} filename="sales_report.csv" className="btn btn-primary">
           Export CSV
         </CSVLink>
-        <button onClick={exportToExcel} className="btn btn-success">Export Excel</button>
-        <button onClick={exportToPDF} className="btn btn-error">Export PDF</button>
+        <button onClick={exportToExcel} className="btn btn-success">
+          Export Excel
+        </button>
+        <button onClick={exportToPDF} className="btn btn-error">
+          Export PDF
+        </button>
       </div>
 
       {/* Data Table */}

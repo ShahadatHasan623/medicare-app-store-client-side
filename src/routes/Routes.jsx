@@ -24,6 +24,7 @@ import AdminHome from "../pages/dashboard/admin/AdminHome";
 import SalesReport from "../pages/DashBoard/Admin/SalesReport";
 import SellerDashboard from "../pages/dashboard/seller/SellerDashboard";
 import DashboardRedirect from "../hooks/DashboardRedirect";
+import InvoicePage from "../pages/Checkout/InvoicePage";
 
 export const router = createBrowserRouter([
   {
@@ -44,7 +45,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "shop",
-        element: <Shop />,
+        element: <PrivateRoutes><Shop /></PrivateRoutes>,
       },
       {
         path: "categories",
@@ -52,16 +53,20 @@ export const router = createBrowserRouter([
       },
       {
         path:'/categories/:categoryId',
-        element: <CategoryDetails />,
+        element: <PrivateRoutes><CategoryDetails /></PrivateRoutes>,
       },
       {
         path: "cart",
-        element: <CartPage />,
+        element: <PrivateRoutes><CartPage /></PrivateRoutes>,
       },
       {
         path: "checkout",
         element: <Checkout />,
       },
+      {
+        path:'/invoice/:id',
+        element:<InvoicePage></InvoicePage>
+      }
     ],
   },
 

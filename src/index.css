@@ -2,11 +2,8 @@
 @plugin "daisyui";
 
 :root {
-  --color-primary: #4f46e5;       /* Indigo-600 (Navbar background, buttons) */
-  --color-secondary: #9333ea;     /* Purple-600 (Accent elements, hover) */
-  --color-accent: #10b981;        /* Emerald-500 (Success messages, badges) */
-  --color-danger: #ef4444;        /* Red-500 (Errors, delete buttons) */
-  --color-text-primary: #111827;  /* Gray-900 (Main text color) */
-  --color-text-secondary: #6b7280;/* Gray-500 (Secondary text) */
-  --color-bg: #f9fafb;            /* Gray-50 (Background) */
+  --color-primary: #5A4FCF;     /* Navbar, main buttons */
+  --color-secondary: #F97316;   /* Accent color, hover, CTA */
+  --color-bg: #F3F4F6;          /* Background, sections */
+  --color-text: #1F2937;        /* Main text color */
 }

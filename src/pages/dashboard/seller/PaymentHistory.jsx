@@ -1,5 +1,3 @@
-// src/pages/Dashboard/Seller/PaymentHistory.jsx
-
 import React from "react";
 import useAxiosSecure from "../../../hooks/useAxioseSecure";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +7,7 @@ export default function PaymentHistory() {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
 
-  const { data: payments = [] } = useQuery({
+  const { data: payments = [], isLoading, isError } = useQuery({
     queryKey: ["seller-payments", user?.email],
     queryFn: async () => {
       const res = await axiosSecure.get(`/payments/seller/${user.email}`);
@@ -37,14 +35,12 @@ export default function PaymentHistory() {
         );
       case "failed":
         return (
-          <span className={`${baseClasses} bg-red-100 text-red-800`}>
-            Failed
-          </span>
+          <span className={`${baseClasses} bg-red-100 text-red-800`}>Failed</span>
         );
       default:
         return (
           <span className={`${baseClasses} bg-gray-200 text-gray-700`}>
-            {status}
+            {status || "Unknown"}
           </span>
         );
     }
@@ -57,6 +53,18 @@ export default function PaymentHistory() {
       currency: "USD",
     }).format(amount || 0);
   };
+
+  if (isLoading)
+    return (
+      <p className="text-center mt-10 text-gray-600">Loading payment history...</p>
+    );
+
+  if (isError)
+    return (
+      <p className="text-center mt-10 text-red-600 font-semibold">
+        Failed to load payment history.
+      </p>
+    );
 
   return (
     <section className="p-6 bg-[var(--color-bg)] min-h-screen">
@@ -89,13 +97,11 @@ export default function PaymentHistory() {
                 >
                   <td className="px-4 py-3">{index + 1}</td>
                   <td className="px-4 py-3 font-medium text-[var(--color-text)]">
-                    {pay.medicineName}
+                    {pay.medicineName || "Unnamed"}
                   </td>
-                  <td className="px-4 py-3 text-gray-700">
-                    {pay.buyerEmail}
-                  </td>
+                  <td className="px-4 py-3 text-gray-700">{pay.buyerEmail}</td>
                   <td className="px-4 py-3 text-right font-semibold text-[var(--color-secondary)]">
-                    {formatCurrency(pay.amount)}
+                    {formatCurrency(pay.amount ?? pay.totalAmount)}
                   </td>
                   <td className="px-4 py-3">{getStatusBadge(pay.status)}</td>
                   <td className="px-4 py-3 text-gray-600">

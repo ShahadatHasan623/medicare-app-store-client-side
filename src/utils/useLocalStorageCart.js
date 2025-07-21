@@ -4,16 +4,15 @@ const CART_KEY = "medicine_cart";
 
 export const useLocalStorageCart = () => {
   const [cart, setCart] = useState(() => {
-    // lazy initial load from localStorage
     const stored = localStorage.getItem(CART_KEY);
     return stored ? JSON.parse(stored) : [];
   });
 
-  // Update localStorage whenever cart changes
   useEffect(() => {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }, [cart]);
 
+  // Add medicine to cart with sellerEmail check
   const addToCart = (medicine) => {
     setCart((prevCart) => {
       const exist = prevCart.find((item) => item._id === medicine._id);
@@ -24,7 +23,14 @@ export const useLocalStorageCart = () => {
             : item
         );
       } else {
-        return [...prevCart, { ...medicine, quantity: 1 }];
+        return [
+          ...prevCart,
+          {
+            ...medicine,
+            quantity: 1,
+            sellerEmail: medicine.sellerEmail || "unknown@seller.com",
+          },
+        ];
       }
     });
   };

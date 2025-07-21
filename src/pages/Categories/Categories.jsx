@@ -21,30 +21,45 @@ const Categories = () => {
 
   if (isLoading)
     return (
-      <div className="flex justify-center py-10">
-        <span className="loading loading-spinner text-primary text-4xl"></span>
+      <div className="flex justify-center py-20">
+        <span className="loading loading-spinner text-[var(--color-primary)] text-6xl"></span>
       </div>
     );
 
   if (error)
     return (
-      <p className="text-red-500 text-center text-lg">
+      <p className="text-center text-lg text-red-600 font-semibold py-12">
         ❌ Failed to load categories
       </p>
     );
 
   return (
-    <section className="max-w-7xl mx-auto my-12 px-4">
-      <h2 className="text-3xl font-bold text-center mb-10">
+    <section
+      className="max-w-7xl mx-auto my-20 px-5 sm:px-8 lg:px-0"
+      style={{ backgroundColor: "var(--color-bg)" }}
+      aria-label="Browse categories"
+    >
+      <h2
+        className="text-5xl font-extrabold text-center mb-16 tracking-wide"
+        style={{ color: "var(--color-primary)" }}
+      >
         Browse by Category
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
         {categories.slice(0, 6).map((category) => (
           <div
-            key={category._id} // use _id for better uniqueness
-            onClick={() => navigate(`/categories/${category._id}`)} // go to category details
-            className="cursor-pointer"
+            key={category._id}
+            onClick={() => navigate(`/categories/${category._id}`)}
+            className="cursor-pointer rounded-3xl bg-white dark:bg-gray-900 shadow-lg hover:shadow-2xl transition-shadow duration-500 transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-[var(--color-secondary)]"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                navigate(`/categories/${category._id}`);
+              }
+            }}
+            aria-label={`View category ${category.categoryName}`}
           >
             <CategoryCard category={category} />
           </div>

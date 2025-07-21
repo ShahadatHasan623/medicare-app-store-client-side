@@ -26,7 +26,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E0F7FA] to-[#F3E5F5] p-4 rounded-3xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#E0F7FA] to-[#F3E5F5] p-4 rounded-3xl max-w-7xl mx-auto my-12">
       <div className="bg-white rounded-2xl shadow-2xl grid md:grid-cols-2 items-center p-6 md:p-10 max-w-4xl w-full">
         {/* Left Side: Animation */}
         <div className="hidden md:block">

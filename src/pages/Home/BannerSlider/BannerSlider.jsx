@@ -5,10 +5,11 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { useQuery } from "@tanstack/react-query";
-import useAxioseSecure from "../../../hooks/useAxioseSecure";
+import useAxios from "../../../hooks/useAxios";
+
 
 const BannerSlider = () => {
-  const axiosSecure = useAxioseSecure();
+  const axiosSecure = useAxios()
 
   const {
     data: sliderData = [],

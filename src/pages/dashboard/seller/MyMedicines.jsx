@@ -75,6 +75,7 @@ export default function MyMedicines() {
       unit: "",
       price: "",
       stock: "",
+      sellerEmail:user.email,
       discount: 0,
     });
   };

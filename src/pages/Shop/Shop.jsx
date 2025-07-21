@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaEye, FaCartPlus, FaTimes } from "react-icons/fa";
+import { FaEye, FaCartPlus } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios";
 import { toast } from "react-toastify";

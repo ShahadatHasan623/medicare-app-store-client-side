@@ -48,11 +48,11 @@ const DiscountProducts = () => {
 
   return (
     <section
-      className="my-10"
+      className="my-12 p-6"
       style={{ backgroundColor: "var(--color-bg)" }}
       aria-label="Discounted Products"
     >
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto lg:px-0 px-4">
         <h2
           className="text-4xl font-extrabold text-center mb-12"
           style={{ color: "var(--color-primary)" }}
@@ -75,8 +75,8 @@ const DiscountProducts = () => {
           speed={800}
           breakpoints={{
             320: { slidesPerView: 1 },
-            640: { slidesPerView: 2 },
-            1024: { slidesPerView: 4 },
+            640: { slidesPerView: 3 },
+            1024: { slidesPerView: 3 },
           }}
           aria-live="polite"
         >

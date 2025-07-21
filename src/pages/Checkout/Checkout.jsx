@@ -3,19 +3,21 @@ import { FaUser, FaMapMarkerAlt, FaShoppingCart } from "react-icons/fa";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import Swal from "sweetalert2";
-import useAxioseSecure from "../../hooks/useAxioseSecure";
 import PaymentForm from "./PaymentForm";
 import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router";
+import useAxioseSecure from "../../hooks/useAxioseSecure";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export default function Checkout() {
-  const axiosSecure = useAxioseSecure();
+  const axiosSecure =useAxioseSecure();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     fullName: "",
-    email: user?.email || "",
+    email: user?.email,
     phone: "",
     dob: "",
     address: "",
@@ -27,7 +29,7 @@ export default function Checkout() {
   const [cart, setCart] = useState([]);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
-
+  console.log(cart)
   useEffect(() => {
     const savedCart = localStorage.getItem("cartData");
     if (savedCart) setCart(JSON.parse(savedCart));
@@ -44,7 +46,7 @@ export default function Checkout() {
       (item.quantity ?? 0) * ((item.originalPrice ?? 0) - (item.price ?? 0)),
     0
   );
-  const totalAmount = subtotal * 100;
+  const totalAmount = subtotal * 100; // Stripe needs amount in cents
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -68,7 +70,7 @@ export default function Checkout() {
           name: item.name,
           quantity: item.quantity,
           unitPrice: item.price,
-          sellerEmail: item.sellerEmail || "unknown",
+          sellerEmail: item.sellerEmail,
         })),
       };
 
@@ -76,8 +78,9 @@ export default function Checkout() {
 
       if (res.data.insertedId || res.data.acknowledged) {
         Swal.fire("Order Confirmed", "Your order is successfully placed!", "success");
-        setPaymentDone(true);
         localStorage.removeItem("cartData");
+        // Invoice পেজে Navigate
+        navigate(`/invoice/${res.data.insertedId}`);
       }
     } catch {
       Swal.fire("Error", "Failed to save payment info", "error");
