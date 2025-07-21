@@ -172,18 +172,6 @@ const CategoryDetails = () => {
                 <strong>Price:</strong> ৳{selectedMedicine.price}
               </p>
               <p>
-                <strong>Status:</strong>{" "}
-                <span
-                  className={
-                    selectedMedicine.status?.toLowerCase() === "available"
-                      ? "text-green-600 font-semibold"
-                      : "text-red-600 font-semibold"
-                  }
-                >
-                  {selectedMedicine.status || "Unknown"}
-                </span>
-              </p>
-              <p>
                 <strong>Stock:</strong> {selectedMedicine.stock}
               </p>
               <p>

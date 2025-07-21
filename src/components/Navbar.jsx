@@ -1,29 +1,30 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router"; 
 import { FaCartPlus } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import useAuth from "../hooks/useAuth";
 import { useCart } from "../utils/CartContext";
 import LanguageSelector from "./LanguageSelector";
 import Swal from "sweetalert2";
+import MedicareLogo from "./logo/MedicareLogo";
 
 const Navbar = () => {
   const { user, signOutUser } = useAuth();
   const { cart } = useCart();
   const location = useLocation();
   const { t } = useTranslation();
-  const navigate =useNavigate()
+  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
 
   const handleSignOut = () => {
     signOutUser();
     Swal.fire({
-      title: "Logut Successfully",
+      title: "Logout Successfully",
       icon: "success",
       draggable: true,
     });
-    navigate('/')
+    navigate("/");
   };
 
   const links = (
@@ -69,7 +70,7 @@ const Navbar = () => {
 
   return (
     <div
-      className="navbar bg-primary text-white shadow-md px-4 sticky top-0 z-50"
+      className="navbar bg-primary poppins text-white shadow-md px-4 sticky top-0 z-50"
       style={{ backgroundColor: "var(--color-primary)" }}
     >
       {/* Navbar Start */}
@@ -93,20 +94,16 @@ const Navbar = () => {
           </label>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 p-2 shadow bg-blue-500 rounded-box w-52 "
+            className="menu menu-sm dropdown-content mt-3 p-2 shadow bg-blue-5 rounded-box w-52 "
           >
             {links}
           </ul>
         </div>
 
         {/* Logo */}
-        <Link
-          to="/"
-          className="btn btn-ghost text-xl font-bold"
-          style={{ color: "var(--color-secondary)" }}
-        >
-          {t("mediStore")}
-        </Link>
+        <div  className="flex items-center">
+          <MedicareLogo /> 
+        </div>
       </div>
 
       {/* Navbar Center */}
@@ -135,13 +132,12 @@ const Navbar = () => {
         {!user ? (
           <Link
             to="/login"
-            className="btn shadow-2xl bg-[var(--color-primary)] text-white border-none hover:bg-[var(--color-secondary)] transition-all duration-300  hover:shadow-2xl"
+            className="btn shadow-2xl bg-[var(--color-primary)] text-white border-none hover:bg-[var(--color-secondary)] transition-all duration-300 hover:shadow-2xl"
           >
             {t("joinUs")}
           </Link>
         ) : (
           <div className="dropdown dropdown-end">
-            {/* Avatar Button */}
             <label
               tabIndex={0}
               className="cursor-pointer flex items-center space-x-2 p-1 rounded-full hover:ring-2 hover:ring-[var(--color-secondary)] transition duration-300"
@@ -156,7 +152,6 @@ const Navbar = () => {
               />
             </label>
 
-            {/* Dropdown Menu */}
             <ul
               tabIndex={0}
               className="dropdown-content mt-3 p-3 shadow-lg bg-white rounded-xl w-60 border border-gray-200 text-gray-700 z-[1000] animate-fadeIn"

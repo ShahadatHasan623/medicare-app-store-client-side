@@ -1,6 +1,7 @@
 import React from "react";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import MedicareLogo from "./logo/MedicareLogo";
 
 export default function Footer() {
   return (
@@ -8,7 +9,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand & About */}
         <div>
-          <h2 className="text-2xl font-bold mb-3">MediCare</h2>
+          <MedicareLogo></MedicareLogo>
           <p className="text-sm text-gray-200 leading-relaxed">
             Your trusted partner in healthcare. We provide genuine medicines, 
             health tips, and expert guidance for a better life.

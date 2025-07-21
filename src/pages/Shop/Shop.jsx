@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios";
 import { toast } from "react-toastify";
 import { useCart } from "../../utils/CartContext";
+import { ReTitle } from "re-title";
 
 const Shop = () => {
   const { addToCart } = useCart();
@@ -81,6 +82,7 @@ const Shop = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 my-12">
+      <ReTitle title="Shop"></ReTitle>
       <h1 className="text-5xl font-extrabold text-blue-700 mb-10 tracking-wide drop-shadow-md">
         🛒 Shop Medicines
       </h1>

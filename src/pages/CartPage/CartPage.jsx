@@ -9,6 +9,7 @@ import {
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { useCart } from "../../utils/CartContext";
+import { ReTitle } from "re-title";
 
 export default function CartPage() {
   const { cart, removeItem, clearCart, updateQuantity } = useCart();
@@ -17,6 +18,7 @@ export default function CartPage() {
   if (!cart || cart.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center bg-bg text-main">
+        <ReTitle title="Cart"></ReTitle>
         <h2 className="text-5xl font-extrabold mb-4">🛒 Your cart is empty</h2>
         <p className="mb-8 text-lg max-w-md">
           Looks like you haven't added any medicines yet. Start shopping now!

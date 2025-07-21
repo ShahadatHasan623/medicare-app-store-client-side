@@ -6,6 +6,7 @@ import Lottie from "lottie-react";
 import loginAnimation from "../../assets/Login.json";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import GoogleLogin from "./soicalLogin/GoogleLogin";
 
 const Login = () => {
   const { signIn } = useAuth();
@@ -85,14 +86,14 @@ const Login = () => {
             >
               Login
             </button>
+            <GoogleLogin></GoogleLogin>
+            <p className="text-center text-sm text-gray-600">
+              Don't have an account?{" "}
+              <NavLink to="/signup">
+                <span className="hover:underline text-blue-500">Sign Up</span>
+              </NavLink>
+            </p>
           </form>
-
-          <p className="text-center text-sm text-gray-600">
-            Don't have an account?{" "}
-            <NavLink to="/signup">
-              <span className="hover:underline text-blue-500">Sign Up</span>
-            </NavLink>
-          </p>
         </div>
       </div>
     </div>

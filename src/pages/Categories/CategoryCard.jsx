@@ -44,7 +44,8 @@ const CategoryCard = ({ category }) => {
         <p className="text-gray-600 font-medium flex items-center space-x-2">
           <FaCapsules className="text-gray-400" />
           <span>
-            {category.medicineCount} {category.medicineCount > 1 ? "Medicines" : "Medicine"}
+            {category.medicineCount}{" "}
+            {category.medicineCount > 1 ? "Medicines" : "Medicine"}
           </span>
         </p>
       </div>

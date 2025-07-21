@@ -26,11 +26,13 @@ import SellerDashboard from "../pages/dashboard/seller/SellerDashboard";
 import DashboardRedirect from "../hooks/DashboardRedirect";
 import InvoicePage from "../pages/Checkout/InvoicePage";
 import UpdateProfile from "../components/UpdateProfile/UpdateProfile";
+import ErrorElement from "../components/ErrorElement";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayouts />,
+    errorElement:<ErrorElement></ErrorElement>,
     children: [
       {
         path:'/',

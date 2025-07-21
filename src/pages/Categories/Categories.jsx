@@ -32,7 +32,7 @@ const Categories = () => {
 
   return (
     <section
-      className="max-w-7xl mx-auto my-20 px-5 sm:px-8 lg:px-0"
+      className="max-w-7xl mx-auto my-20 p-6 sm:px-8 "
       style={{ backgroundColor: "var(--color-bg)" }}
       aria-label="Browse categories"
     >

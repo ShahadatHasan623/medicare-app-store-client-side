@@ -12,6 +12,8 @@ import { useRole } from "../hooks/useRool";
 import useAuth from "../hooks/useAuth";
 import Loader from "../components/Loader";
 import Swal from "sweetalert2";
+import MedicareLogo from "../components/logo/MedicareLogo";
+import { ReTitle } from "re-title";
 
 export default function DashboardLayout() {
   const { user, signOutUser } = useAuth();
@@ -111,6 +113,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="drawer lg:drawer-open min-h-screen bg-base-100">
+      <ReTitle title="Dashboard"></ReTitle>
       <input id="dashboard-drawer" type="checkbox" className="drawer-toggle" />
 
       {/* Main content */}
@@ -127,7 +130,7 @@ export default function DashboardLayout() {
             </label>
           </div>
           <div className="flex-1 px-4 text-xl font-bold text-primary">
-            Dashboard
+            <MedicareLogo></MedicareLogo>
           </div>
           <div className="flex-none">
             <img
@@ -152,9 +155,7 @@ export default function DashboardLayout() {
           <div>
             {/* Header */}
             <div className="p-6 border-b border-base-300 text-center">
-              <h2 className="text-3xl font-extrabold text-primary">
-                Dashboard
-              </h2>
+              <MedicareLogo></MedicareLogo>
               <p className="mt-1 text-sm text-gray-500 capitalize">
                 Welcome, <span className="font-semibold">{role}</span>!
               </p>
