@@ -71,6 +71,23 @@ const Navbar = () => {
           {t("categories")}
         </Link>
       </li>
+
+      {/* Dashboard link */}
+      {user && (
+        <li>
+          <Link
+            to="/dashboard"
+            className={
+              isActive("/dashboard")
+                ? "text-orange-500 font-semibold border-b-2 border-orange-500"
+                : "hover:text-purple-300 transition-colors duration-300"
+            }
+            onClick={() => setDrawerOpen(false)}
+          >
+            {t("dashboard")}
+          </Link>
+        </li>
+      )}
     </>
   );
 
@@ -180,7 +197,7 @@ const Navbar = () => {
 
       {/* Drawer (Mobile Menu) */}
       <div
-        className={`fixed inset-0  bg-opacity-40 z-50 transition-transform ${
+        className={`fixed inset-0 bg-black bg-opacity-40 z-50 transition-transform ${
           drawerOpen ? "translate-x-0" : "translate-x-full"
         } lg:hidden`}
         onClick={() => setDrawerOpen(false)}
