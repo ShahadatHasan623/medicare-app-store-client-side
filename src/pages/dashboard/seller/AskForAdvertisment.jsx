@@ -50,24 +50,30 @@ export default function AskForAdvertisement() {
     addAdMutation.mutate({ ...formData, sellerEmail: user.email });
   };
 
-  if (isLoading) return <Loader></Loader>;
+  if (isLoading) return <Loader />;
 
   return (
-    <div className="p-6 min-h-screen bg-[var(--color-bg)]">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-[var(--color-primary)]">Your Advertisements</h2>
+    <div className="p-4 sm:p-6 min-h-screen bg-[var(--color-bg)]">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-[var(--color-primary)]">
+          Your Advertisements
+        </h2>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-[var(--color-secondary)] text-white px-5 py-2 rounded-lg shadow hover:opacity-90 transition"
+          className="bg-[var(--color-secondary)] text-white px-4 sm:px-5 py-2 rounded-lg shadow hover:opacity-90 transition"
         >
           + Add Advertisement
         </button>
       </div>
 
+      {/* Ads List */}
       {ads.length === 0 ? (
-        <p className="text-gray-500 font-medium text-lg">No advertisements found.</p>
+        <p className="text-gray-500 font-medium text-base sm:text-lg">
+          No advertisements found.
+        </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {ads.map((ad) => (
             <div
               key={ad._id}
@@ -76,14 +82,14 @@ export default function AskForAdvertisement() {
               <img
                 src={ad.medicineImage}
                 alt={ad.medicineName}
-                className="w-full h-40 object-cover"
+                className="w-full h-40 sm:h-48 object-cover"
               />
               <div className="p-4">
-                <h3 className="text-xl font-semibold text-[var(--color-text)]">
+                <h3 className="text-lg sm:text-xl font-semibold text-[var(--color-text)]">
                   {ad.medicineName}
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">{ad.description}</p>
-                <p className="mt-3 font-medium">
+                <p className="mt-3 font-medium text-sm sm:text-base">
                   Status:{" "}
                   {ad.isOnSlider ? (
                     <span className="text-green-600 font-semibold">On Slider</span>
@@ -99,15 +105,15 @@ export default function AskForAdvertisement() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0  bg-opacity-40 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-xl relative">
+        <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50 p-2">
+          <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md shadow-xl relative animate-fadeIn">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-2 right-2 text-gray-600 hover:text-gray-900 font-bold text-xl"
             >
               &times;
             </button>
-            <h3 className="text-2xl font-bold text-[var(--color-primary)] mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold text-[var(--color-primary)] mb-4">
               Add Advertisement
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -121,7 +127,7 @@ export default function AskForAdvertisement() {
                   value={formData.medicineName}
                   onChange={handleInputChange}
                   required
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                 />
               </div>
               <div>
@@ -134,7 +140,7 @@ export default function AskForAdvertisement() {
                   value={formData.medicineImage}
                   onChange={handleInputChange}
                   required
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                 />
               </div>
               <div>
@@ -147,13 +153,13 @@ export default function AskForAdvertisement() {
                   onChange={handleInputChange}
                   required
                   rows={3}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                 />
               </div>
               <button
                 type="submit"
                 disabled={addAdMutation.isLoading}
-                className="bg-[var(--color-primary)] text-white px-5 py-2 rounded-lg shadow hover:bg-opacity-90 transition disabled:opacity-50"
+                className="w-full bg-[var(--color-primary)] text-white px-5 py-2 rounded-lg shadow hover:bg-opacity-90 transition disabled:opacity-50"
               >
                 {addAdMutation.isLoading ? "Adding..." : "Add Advertisement"}
               </button>

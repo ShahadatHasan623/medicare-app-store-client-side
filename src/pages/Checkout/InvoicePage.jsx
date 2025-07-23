@@ -70,17 +70,14 @@ const InvoiceDocument = ({ invoiceData, user }) => (
   <Document>
     <Page style={styles.page}>
       <Text style={styles.header}>INVOICE</Text>
-
       <View style={styles.section}>
         <Text>Invoice ID: {invoiceData._id}</Text>
         <Text>Date: {new Date(invoiceData.date).toLocaleDateString()}</Text>
       </View>
-
       <View style={styles.section}>
         <Text>Billed To: {user?.displayName || "Customer"}</Text>
         <Text>Email: {invoiceData.buyerEmail}</Text>
       </View>
-
       <View style={styles.table}>
         <View style={styles.tableRow}>
           <Text style={styles.tableColHeader}>Item</Text>
@@ -88,7 +85,6 @@ const InvoiceDocument = ({ invoiceData, user }) => (
           <Text style={styles.tableColHeader}>Price</Text>
           <Text style={styles.tableColHeader}>Total</Text>
         </View>
-
         {invoiceData.cartItems.map((item, idx) => (
           <View style={styles.tableRow} key={idx}>
             <Text style={styles.tableCol}>{item.name}</Text>
@@ -100,7 +96,6 @@ const InvoiceDocument = ({ invoiceData, user }) => (
           </View>
         ))}
       </View>
-
       <View style={[styles.section, { marginTop: 10, alignItems: "flex-end" }]}>
         <Text>Total: ${invoiceData.totalPrice.toFixed(2)}</Text>
         <Text style={{ fontSize: 10, color: "#555" }}>
@@ -136,84 +131,97 @@ export default function InvoicePage() {
     fetchInvoice();
   }, [id, axiosSecure]);
 
-  if (loading) {
-    return <Loader></Loader>;
-  }
-
-  if (error) {
+  if (loading) return <Loader />;
+  if (error)
     return (
       <div className="text-center py-12">
         <p className="text-red-600 text-lg">{error}</p>
       </div>
     );
-  }
 
   if (!invoiceData) return null;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-       <MedicareLogo></MedicareLogo>
-      <div className="mb-6 text-right">
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-md mt-6 sm:mt-10">
+      <MedicareLogo />
+      {/* Download PDF Button */}
+      <div className="mb-4 sm:mb-6 text-center sm:text-right">
         <PDFDownloadLink
           document={<InvoiceDocument invoiceData={invoiceData} user={user} />}
           fileName={`invoice-${invoiceData._id}.pdf`}
-          className="inline-block bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
+          className="inline-block bg-blue-600 text-white px-3 sm:px-5 py-2 rounded hover:bg-blue-700 transition text-sm sm:text-base"
         >
           {({ loading }) =>
             loading ? "Preparing document..." : "Download Invoice PDF"
           }
         </PDFDownloadLink>
       </div>
-      <h1 className="text-3xl font-bold mb-4 text-center">Invoice Preview</h1>
-      <p>
-        <strong>Invoice ID:</strong> {invoiceData._id}
-      </p>
-      <p>
-        <strong>Date:</strong> {new Date(invoiceData.date).toLocaleDateString()}
-      </p>
 
-      <div className="mt-4">
-        <h2 className="font-semibold mb-2">Billed To:</h2>
-        <p>{user?.displayName || "Customer"}</p>
-        <p>{invoiceData.buyerEmail}</p>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-center">
+        Invoice Preview
+      </h1>
+
+      <div className="text-sm sm:text-base">
+        <p>
+          <strong>Invoice ID:</strong> {invoiceData._id}
+        </p>
+        <p>
+          <strong>Date:</strong>{" "}
+          {new Date(invoiceData.date).toLocaleDateString()}
+        </p>
+
+        <div className="mt-4">
+          <h2 className="font-semibold mb-2">Billed To:</h2>
+          <p>{user?.displayName || "Customer"}</p>
+          <p>{invoiceData.buyerEmail}</p>
+        </div>
       </div>
 
-      <table className="w-full border border-gray-300 mt-6">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-4 py-2 text-left">Item</th>
-            <th className="border border-gray-300 px-4 py-2 text-right">Qty</th>
-            <th className="border border-gray-300 px-4 py-2 text-right">
-              Price
-            </th>
-            <th className="border border-gray-300 px-4 py-2 text-right">
-              Total
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {invoiceData.cartItems.map((item, idx) => (
-            <tr key={idx}>
-              <td className="border border-gray-300 px-4 py-2">{item.name}</td>
-              <td className="border border-gray-300 px-4 py-2 text-right">
-                {item.quantity}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-right">
-                ${item.unitPrice.toFixed(2)}
-              </td>
-              <td className="border border-gray-300 px-4 py-2 text-right">
-                ${(item.quantity * item.unitPrice).toFixed(2)}
-              </td>
+      {/* Responsive Table */}
+      <div className="mt-6 overflow-x-auto">
+        <table className="w-full border border-gray-300 text-sm sm:text-base">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 px-2 sm:px-4 py-2 text-left">
+                Item
+              </th>
+              <th className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+                Qty
+              </th>
+              <th className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+                Price
+              </th>
+              <th className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+                Total
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {invoiceData.cartItems.map((item, idx) => (
+              <tr key={idx}>
+                <td className="border border-gray-300 px-2 sm:px-4 py-2">
+                  {item.name}
+                </td>
+                <td className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+                  {item.quantity}
+                </td>
+                <td className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+                  ${item.unitPrice.toFixed(2)}
+                </td>
+                <td className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+                  ${(item.quantity * item.unitPrice).toFixed(2)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <div className="mt-4 text-right">
+      <div className="mt-4 text-right text-sm sm:text-base">
         <p className="font-semibold text-lg">
           Total: ${invoiceData.totalPrice.toFixed(2)}
         </p>
-        <p className="text-sm text-gray-600">
+        <p className="text-gray-600 text-xs sm:text-sm">
           Transaction ID: {invoiceData.transactionId}
         </p>
       </div>

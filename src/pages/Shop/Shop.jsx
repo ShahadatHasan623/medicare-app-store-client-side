@@ -17,9 +17,9 @@ const Shop = () => {
 
   // Pagination state
   const [page, setPage] = useState(1);
-  const limit = 5; // items per page
+  const limit = 5;
 
-  // Fetch medicines with pagination
+  // Fetch medicines
   const { data, isLoading, isError } = useQuery({
     queryKey: ["medicines", page],
     queryFn: async () => {
@@ -30,11 +30,9 @@ const Shop = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // medicines data array from backend
   const medicines = data?.data || [];
   const totalPages = data?.totalPages || 1;
 
-  // Filter and sort locally (optional - you can also do on backend)
   const filteredMedicines = medicines
     .filter(
       (med) =>
@@ -63,13 +61,6 @@ const Shop = () => {
       return 0;
     });
 
-  if (isError)
-    return (
-      <div className="text-center text-red-600 mt-16 font-semibold text-lg">
-        ❌ Error loading medicines. Please try again later.
-      </div>
-    );
-
   const handleAddToCart = (med) => {
     addToCart(med);
     toast.success(`${med.name ?? "Medicine"} added to cart!`, {
@@ -80,10 +71,17 @@ const Shop = () => {
     });
   };
 
+  if (isError)
+    return (
+      <div className="text-center text-red-600 mt-16 font-semibold text-lg">
+        ❌ Error loading medicines. Please try again later.
+      </div>
+    );
+
   return (
     <div className="max-w-7xl mx-auto px-4 my-12">
       <ReTitle title="Medicare | Shop"></ReTitle>
-      <h1 className="text-5xl font-extrabold text-blue-700 mb-10 tracking-wide drop-shadow-md">
+      <h1 className="text-5xl font-extrabold text-blue-700 mb-10 text-center tracking-wide drop-shadow-md">
         🛒 Shop Medicines
       </h1>
 
@@ -123,102 +121,148 @@ const Shop = () => {
         </div>
       </div>
 
-      {/* Medicines Table */}
+      {/* Desktop Table View */}
       {isLoading ? (
         <p className="text-center text-gray-600 text-lg">
           Loading medicines...
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-lg shadow-lg border border-gray-200">
-          <table className="min-w-full text-left text-gray-700">
-            <thead className="bg-blue-600 text-white">
-              <tr>
-                {[
-                  "Image",
-                  "Medicine",
-                  "Company",
-                  "Unit",
-                  "Category",
-                  "Price (৳)",
-                  "Stock",
-                  "Actions",
-                ].map((heading) => (
-                  <th
-                    key={heading}
-                    className="px-6 py-4 font-semibold tracking-wide"
-                  >
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredMedicines.length === 0 ? (
+        <>
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto rounded-lg shadow-lg border border-gray-200">
+            <table className="min-w-full text-left text-gray-700">
+              <thead className="bg-blue-600 text-white">
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="text-center py-8 text-gray-500 italic"
-                  >
-                    No medicines found.
-                  </td>
+                  {[
+                    "Image",
+                    "Medicine",
+                    "Company",
+                    "Unit",
+                    "Category",
+                    "Price (৳)",
+                    "Stock",
+                    "Actions",
+                  ].map((heading) => (
+                    <th
+                      key={heading}
+                      className="px-6 py-4 font-semibold tracking-wide"
+                    >
+                      {heading}
+                    </th>
+                  ))}
                 </tr>
-              ) : (
-                filteredMedicines.map((med) => (
-                  <tr
-                    key={med._id}
-                    className="hover:bg-blue-50 transition-colors duration-200"
-                  >
-                    <td className="px-6 py-4">
-                      <img
-                        src={med.image}
-                        alt={med.name ?? "medicine image"}
-                        className="w-16 h-16 object-cover rounded-lg shadow-md"
-                      />
-                    </td>
-                    <td className="px-6 py-4 font-semibold text-gray-900">
-                      {med.name ?? "N/A"}
-                    </td>
-                    <td className="px-6 py-4">{med.company ?? "N/A"}</td>
-                    <td className="px-6 py-4">{med.unit ?? "N/A"}</td>
-                    <td className="px-6 py-4">{med.category ?? "N/A"}</td>
-                    <td className="px-6 py-4 font-semibold text-green-600">
-                      ৳{med.price ?? med.perUnitPrice ?? "N/A"}
-                    </td>
-                    <td className="px-6 py-4">{med.stock ?? "N/A"}</td>
-                    <td className="px-6 py-4 flex gap-3">
-                      <button
-                        onClick={() => setModalData(med)}
-                        title="View Details"
-                        className="bg-blue-600 hover:bg-blue-700 transition text-white rounded-lg p-3 shadow-md flex items-center justify-center"
-                      >
-                        <FaEye className="text-lg" />
-                      </button>
-                      <button
-                        disabled={!med.stock || med.stock === 0}
-                        onClick={() => handleAddToCart(med)}
-                        title={
-                          !med.stock || med.stock === 0
-                            ? "Out of stock"
-                            : "Add to cart"
-                        }
-                        className={`p-3 rounded-lg text-white shadow-md flex items-center justify-center ${
-                          !med.stock || med.stock === 0
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-green-600 hover:bg-green-700 transition"
-                        }`}
-                      >
-                        <FaCartPlus className="text-lg" />
-                      </button>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredMedicines.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="text-center py-8 text-gray-500 italic"
+                    >
+                      No medicines found.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : (
+                  filteredMedicines.map((med) => (
+                    <tr
+                      key={med._id}
+                      className="hover:bg-blue-50 transition-colors duration-200"
+                    >
+                      <td className="px-6 py-4">
+                        <img
+                          src={med.image}
+                          alt={med.name ?? "medicine image"}
+                          className="w-16 h-16 object-cover rounded-lg shadow-md"
+                        />
+                      </td>
+                      <td className="px-6 py-4 font-semibold text-gray-900">
+                        {med.name ?? "N/A"}
+                      </td>
+                      <td className="px-6 py-4">{med.company ?? "N/A"}</td>
+                      <td className="px-6 py-4">{med.unit ?? "N/A"}</td>
+                      <td className="px-6 py-4">{med.category ?? "N/A"}</td>
+                      <td className="px-6 py-4 font-semibold text-green-600">
+                        ৳{med.price ?? med.perUnitPrice ?? "N/A"}
+                      </td>
+                      <td className="px-6 py-4">{med.stock ?? "N/A"}</td>
+                      <td className="px-6 py-4 flex gap-3">
+                        <button
+                          onClick={() => setModalData(med)}
+                          className="bg-blue-600 hover:bg-blue-700 transition text-white rounded-lg p-3 shadow-md"
+                        >
+                          <FaEye className="text-lg" />
+                        </button>
+                        <button
+                          disabled={!med.stock || med.stock === 0}
+                          onClick={() => handleAddToCart(med)}
+                          className={`p-3 rounded-lg text-white shadow-md ${
+                            !med.stock || med.stock === 0
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-green-600 hover:bg-green-700 transition"
+                          }`}
+                        >
+                          <FaCartPlus className="text-lg" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden grid grid-cols-1 gap-6">
+            {filteredMedicines.length === 0 ? (
+              <p className="text-center text-gray-500 italic">
+                No medicines found.
+              </p>
+            ) : (
+              filteredMedicines.map((med) => (
+                <div
+                  key={med._id}
+                  className="bg-white rounded-xl shadow-lg p-4 flex flex-col"
+                >
+                  <img
+                    src={med.image}
+                    alt={med.name ?? "medicine image"}
+                    className="w-full h-40 object-cover rounded-md mb-4"
+                  />
+                  <h3 className="text-lg font-bold">{med.name}</h3>
+                  <p className="text-sm text-gray-500">{med.company}</p>
+                  <p className="text-sm text-gray-500">
+                    {med.category} • {med.unit}
+                  </p>
+                  <p className="text-green-600 font-semibold text-lg mt-2">
+                    ৳{med.price ?? med.perUnitPrice}
+                  </p>
+                  <div className="flex gap-3 mt-4">
+                    <button
+                      onClick={() => setModalData(med)}
+                      className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                    >
+                      View
+                    </button>
+                    <button
+                      disabled={!med.stock || med.stock === 0}
+                      onClick={() => handleAddToCart(med)}
+                      className={`flex-1 py-2 rounded-lg text-white ${
+                        !med.stock || med.stock === 0
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-green-600 hover:bg-green-700"
+                      }`}
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </>
       )}
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       <div className="flex justify-center items-center gap-4 mt-8">
         <button
           onClick={() => setPage((old) => Math.max(old - 1, 1))}
@@ -249,17 +293,14 @@ const Shop = () => {
 
       {/* Modal */}
       {modalData && (
-        <div className="fixed inset-0 shadow-2xs bg-opacity-60 flex justify-center items-center z-50 p-6">
+        <div className="fixed inset-0 shadow-2xl bg-opacity-60 flex justify-center items-center z-50 p-6">
           <div className="bg-white rounded-2xl max-w-lg w-full shadow-xl p-8 relative">
             <button
               onClick={() => setModalData(null)}
-              className="absolute top-5 right-5 bg-gray-200 hover:bg-gray-400 text-gray-700 hover:text-gray-900 rounded-full p-2 shadow-md transition duration-300 ease-in-out"
-              title="Close"
-              aria-label="Close modal"
+              className="absolute top-5 right-5 bg-gray-200 hover:bg-gray-400 text-gray-700 rounded-full p-2 shadow-md"
             >
               <FaTimes size={24} />
             </button>
-
             <img
               src={modalData.image}
               alt={modalData.name ?? "medicine image"}
