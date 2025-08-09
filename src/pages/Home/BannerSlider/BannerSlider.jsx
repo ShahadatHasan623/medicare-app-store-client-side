@@ -23,7 +23,6 @@ const BannerSlider = () => {
     },
   });
 
-  console.log(sliderData);
 
   if (isLoading)
     return (

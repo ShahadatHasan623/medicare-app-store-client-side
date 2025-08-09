@@ -109,9 +109,9 @@ const Navbar = () => {
           </button>
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <MedicareLogo />
-          </Link>
+          </div>
         </div>
 
         {/* Center Links (Only for Desktop) */}
@@ -197,7 +197,7 @@ const Navbar = () => {
 
       {/* Drawer (Mobile Menu) */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-40 z-50 transition-transform ${
+        className={`fixed inset-0 bg-opacity-40 z-50 transition-transform ${
           drawerOpen ? "translate-x-0" : "translate-x-full"
         } lg:hidden`}
         onClick={() => setDrawerOpen(false)}
