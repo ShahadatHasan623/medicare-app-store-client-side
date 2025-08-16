@@ -29,12 +29,21 @@ const sampleArticles = [
       "https://i.ibb.co/5h16SGcR/boosting-your-immune-system-s.jpg",
     url: "#",
   },
+  {
+    id: 4,
+    title: "Stress Management Techniques",
+    summary:
+      "Effective ways to reduce stress and maintain mental well-being every day.",
+    image:
+      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=600&q=80",
+    url: "#",
+  },
 ];
 
 export default function HealthTips() {
   return (
     <section
-      className="py-16  px-6 bg-[var(--color-bg)] rounded-xl shadow-lg max-w-7xl mx-auto my-12"
+      className="px-5 lg:px-0 max-w-7xl mx-auto my-20"
       style={{ color: "var(--color-text)" }}
     >
       <h2
@@ -45,17 +54,17 @@ export default function HealthTips() {
         Health Tips & Articles
       </h2>
 
-      <div className="grid gap-10 md:grid-cols-3">
+      <div className="grid gap-10 md:grid-cols-4">
         {sampleArticles.map(({ id, title, summary, image, url }) => (
           <article
             key={id}
-            className="bg-white rounded-lg shadow-md overflow-hidden transform transition hover:scale-[1.03] hover:shadow-xl cursor-pointer flex flex-col"
+            className="bg-[var(--color-surface)] rounded-xl shadow-md overflow-hidden transform transition hover:scale-[1.03] hover:shadow-xl cursor-pointer flex flex-col border border-[var(--color-border)]"
             onClick={() => window.open(url, "_blank")}
             role="link"
             tabIndex={0}
             onKeyPress={(e) => e.key === "Enter" && window.open(url, "_blank")}
           >
-            <div className="h-46 overflow-hidden">
+            <div className="h-40 overflow-hidden">
               <img
                 src={image}
                 alt={title}
@@ -63,7 +72,7 @@ export default function HealthTips() {
                 loading="lazy"
               />
             </div>
-            <div className="p-6 flex flex-col flex-grow">
+            <div className="py-4 px-4 flex flex-col flex-grow">
               <h3
                 className="text-2xl font-semibold mb-3 leading-snug flex items-center gap-2"
                 style={{ color: "var(--color-primary)" }}
@@ -78,7 +87,7 @@ export default function HealthTips() {
                   e.stopPropagation();
                   window.open(url, "_blank");
                 }}
-                className="mt-6 self-start bg-[var(--color-secondary)] text-white px-5 py-2 rounded-md font-semibold hover:bg-orange-600 transition flex items-center gap-2"
+                className="mt-6 self-start bg-[var(--color-secondary)] text-white px-5 py-2 rounded-md font-semibold hover:bg-[var(--color-primary)] transition flex items-center gap-2"
                 aria-label={`Read more about ${title}`}
               >
                 Read More <FaArrowRight />
