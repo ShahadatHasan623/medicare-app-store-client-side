@@ -30,6 +30,7 @@ import ErrorElement from "../components/ErrorElement";
 import Terms from "../pages/Terms";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import FAQForm from "../pages/dashboard/admin/FAQForm";
+import FAQList from "../pages/FAQList";
 
 export const router = createBrowserRouter([
   {
@@ -85,6 +86,10 @@ export const router = createBrowserRouter([
       {
         path:'/privacy',
         Component:PrivacyPolicy
+      },
+      {
+        path:'/faq-list',
+        Component:FAQList
       }
     ],
   },
