@@ -11,7 +11,7 @@ import useAxioseSecure from "../../hooks/useAxioseSecure";
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export default function Checkout() {
-  const axiosSecure =useAxioseSecure();
+  const axiosSecure = useAxioseSecure();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -28,8 +28,7 @@ export default function Checkout() {
 
   const [cart, setCart] = useState([]);
   const [showPayment, setShowPayment] = useState(false);
-  const [paymentDone, setPaymentDone] = useState(false);
-  console.log(cart)
+
   useEffect(() => {
     const savedCart = localStorage.getItem("cartData");
     if (savedCart) setCart(JSON.parse(savedCart));
@@ -46,11 +45,10 @@ export default function Checkout() {
       (item.quantity ?? 0) * ((item.originalPrice ?? 0) - (item.price ?? 0)),
     0
   );
-  const totalAmount = subtotal * 100; // Stripe needs amount in cents
+  const totalAmount = subtotal * 100;
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleContinueToPayment = (e) => {
     e.preventDefault();
@@ -79,7 +77,6 @@ export default function Checkout() {
       if (res.data.insertedId || res.data.acknowledged) {
         Swal.fire("Order Confirmed", "Your order is successfully placed!", "success");
         localStorage.removeItem("cartData");
-        // Invoice  Navigate
         navigate(`/invoice/${res.data.insertedId}`);
       }
     } catch {
@@ -87,113 +84,108 @@ export default function Checkout() {
     }
   };
 
-  if (paymentDone) {
-    return (
-      <div className="max-w-xl mx-auto p-8 bg-green-50 rounded-xl text-center mt-10 shadow-md">
-        <h2 className="text-3xl font-bold mb-4 text-green-700">Thank you! 🎉</h2>
-        <p className="text-gray-700 text-lg">
-          Your payment of <strong>${subtotal.toFixed(2)}</strong> was successful.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <h2 className="text-4xl font-extrabold text-gray-800 mb-8 text-center">
-        🧾 Checkout
+    <div className="max-w-7xl mx-auto px-6 py-12">
+      <h2 className="text-4xl font-extrabold text-gray-900 mb-12 text-center tracking-tight">
+        🧾 Secure Checkout
       </h2>
 
       {!showPayment ? (
         <form
           onSubmit={handleContinueToPayment}
-          className="grid grid-cols-1 md:grid-cols-2 gap-10"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-12"
         >
-          {/* Customer Info */}
-          <div className="bg-white p-8 rounded-xl shadow-lg space-y-6 border border-gray-100">
-            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <FaUser className="text-blue-600" /> Customer Information
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {["fullName", "email", "phone", "dob"].map((field) => (
-                <label key={field} className="text-sm font-medium text-gray-600">
-                  {field === "fullName"
-                    ? "Full Name"
-                    : field === "dob"
-                    ? "Date of Birth"
-                    : field.charAt(0).toUpperCase() + field.slice(1)}
-                  <input
-                    name={field}
-                    value={formData[field]}
-                    onChange={handleChange}
-                    type={field === "dob" ? "date" : field === "email" ? "email" : "text"}
-                    className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 input input-bordered"
-                    required
-                    disabled={field === "email"}
-                  />
-                </label>
-              ))}
+          {/* Left Side - Customer & Address */}
+          <div className="lg:col-span-2 space-y-10">
+            {/* Customer Info */}
+            <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                <FaUser className="text-blue-600" /> Customer Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {["fullName", "email", "phone", "dob"].map((field) => (
+                  <label key={field} className="text-sm font-medium text-gray-600">
+                    {field === "fullName"
+                      ? "Full Name"
+                      : field === "dob"
+                      ? "Date of Birth"
+                      : field.charAt(0).toUpperCase() + field.slice(1)}
+                    <input
+                      name={field}
+                      value={formData[field]}
+                      onChange={handleChange}
+                      type={field === "dob" ? "date" : field === "email" ? "email" : "text"}
+                      className="mt-2 block w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                      disabled={field === "email"}
+                    />
+                  </label>
+                ))}
+              </div>
             </div>
 
-            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2 mt-6">
-              <FaMapMarkerAlt className="text-green-600" /> Shipping Address
-            </h3>
-            <label className="text-sm font-medium text-gray-600">
-              Street Address
-              <input
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                type="text"
-                className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 input input-bordered"
-                required
-              />
-            </label>
+            {/* Shipping Address */}
+            <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+              <h3 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                <FaMapMarkerAlt className="text-green-600" /> Shipping Address
+              </h3>
+              <label className="text-sm font-medium text-gray-600 block mb-4">
+                Street Address
+                <input
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  type="text"
+                  className="mt-2 block w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  required
+                />
+              </label>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {["city", "state", "zip"].map((field) => (
-                <label key={field} className="text-sm font-medium text-gray-600">
-                  {field.toUpperCase()}
-                  <input
-                    name={field}
-                    value={formData[field]}
-                    onChange={handleChange}
-                    type="text"
-                    className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 input input-bordered"
-                    required
-                  />
-                </label>
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {["city", "state", "zip"].map((field) => (
+                  <label key={field} className="text-sm font-medium text-gray-600">
+                    {field.toUpperCase()}
+                    <input
+                      name={field}
+                      value={formData[field]}
+                      onChange={handleChange}
+                      type="text"
+                      className="mt-2 block w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-800 shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      required
+                    />
+                  </label>
+                ))}
+              </div>
             </div>
 
             <button
               type="submit"
-              className="btn bg-blue-600 text-white hover:bg-blue-700 w-full mt-6 py-2 rounded-lg text-lg font-semibold transition"
+              className="btn bg-gradient-to-r from-green-500 to-blue-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:opacity-90 transition w-full text-lg"
             >
-              Continue to Payment
+              Continue to Payment →
             </button>
           </div>
 
-          {/* Order Summary */}
-          <div className="bg-white p-8 rounded-xl shadow-lg space-y-6 h-fit border border-gray-100">
-            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+          {/* Right Side - Order Summary */}
+          <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 h-fit sticky top-24">
+            <h3 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
               <FaShoppingCart className="text-orange-500" /> Order Summary
             </h3>
-            <div className="divide-y divide-gray-200">
+
+            <div className="divide-y divide-gray-200 mb-6">
               {cart.map((item) => (
                 <div
                   key={item._id}
-                  className="flex justify-between items-start py-4 hover:bg-gray-50 rounded-lg px-2"
+                  className="flex justify-between items-start py-4"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="w-12 h-12 object-contain rounded border"
+                      className="w-14 h-14 object-contain rounded border"
                     />
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-800">{item.name}</h4>
+                      <h4 className="font-medium text-gray-900">{item.name}</h4>
                       <p className="text-xs text-gray-500">
                         {item.company} • {item.strength}
                       </p>
@@ -212,34 +204,42 @@ export default function Checkout() {
               ))}
             </div>
 
-            <div className="border-t pt-4 space-y-2 text-sm">
+            <div className="border-t pt-4 space-y-3 text-base">
               <div className="flex justify-between text-gray-700">
                 <span>Subtotal ({totalItems} items)</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-green-600 font-medium">
+              <div className="flex justify-between text-green-600 font-semibold">
                 <span>Discount</span>
-                <span>-${totalDiscount.toFixed(2)}</span>
+                <span>- ${totalDiscount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between font-bold text-gray-900 text-lg pt-2 border-t">
+                <span>Total</span>
+                <span>${subtotal.toFixed(2)}</span>
               </div>
             </div>
           </div>
         </form>
       ) : (
-        <div className="bg-white p-8 rounded-xl shadow-lg max-w-md mx-auto">
-          <h3 className="text-2xl font-bold mb-4 text-gray-800">💳 Payment Summary</h3>
-          <p><strong>Name:</strong> {formData.fullName}</p>
-          <p><strong>Email:</strong> {formData.email}</p>
-          <p><strong>Phone:</strong> {formData.phone}</p>
-          <p className="mb-4">
+        <div className="bg-white p-10 rounded-2xl shadow-xl max-w-lg mx-auto">
+          <h3 className="text-3xl font-bold mb-6 text-gray-900">
+            💳 Payment Summary
+          </h3>
+          <p className="text-gray-700"><strong>Name:</strong> {formData.fullName}</p>
+          <p className="text-gray-700"><strong>Email:</strong> {formData.email}</p>
+          <p className="text-gray-700"><strong>Phone:</strong> {formData.phone}</p>
+          <p className="text-gray-700 mb-4">
             <strong>Shipping Address:</strong> {formData.address}, {formData.city}, {formData.state} - {formData.zip}
           </p>
-          <p className="mt-4 text-lg font-bold text-blue-600">
+          <p className="mt-6 text-2xl font-bold text-blue-600">
             Total Payment: ${subtotal.toFixed(2)}
           </p>
 
-          <Elements stripe={stripePromise}>
-            <PaymentForm amount={totalAmount} onPaymentSuccess={handlePaymentSuccess} />
-          </Elements>
+          <div className="mt-6">
+            <Elements stripe={stripePromise}>
+              <PaymentForm amount={totalAmount} onPaymentSuccess={handlePaymentSuccess} />
+            </Elements>
+          </div>
         </div>
       )}
     </div>
