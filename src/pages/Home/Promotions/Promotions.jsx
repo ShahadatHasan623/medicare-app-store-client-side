@@ -1,59 +1,105 @@
-import React from "react";
+import { useQuery } from '@tanstack/react-query';
+import useAxios from '../../../hooks/useAxios';
+import { useCart } from '../../../utils/CartContext';
 
-// Dummy promotion data
-const promotions = [
-  {
-    id: 1,
-    title: "Buy 2 get 1 free on vitamins",
-    description: "Applicable on all vitamin products",
-    image: "https://i.ibb.co/YTQBFBKx/nicolas-solerieu-v-Hbw2pf8nbw-unsplash.jpg",
-  },
-  {
-    id: 2,
-    title: "20% off on Pain Relievers",
-    description: "Limited time discount",
-    image: "https://i.ibb.co/JJ38GLQ/towfiqu-barbhuiya-ss-Z6x-ga-O0c-unsplash.jpg",
-  },
-  {
-    id: 3,
-    title: "Seasonal Sale on Supplements",
-    description: "Grab your supplements now",
-    image: "https://i.ibb.co/F4qNG3qT/supliful-supplements-on-demand-UTPZnn-EVW4-E-unsplash.jpg",
-  },
-  {
-    id: 4,
-    title: "Exclusive Health Bundles",
-    description: "Special combo offers for your wellness",
-    image: "https://i.ibb.co.com/S4tVzVFx/elsa-olofsson-6-Iq2-T0-DN7ds-unsplash.jpg",
-  },
-];
+export default function Promotions({ category = "" }) {
+  const axios = useAxios();
+  const { addToCart } = useCart();
 
-export default function Promotions() {
+  // Fetch promotions data
+  const { data: promotions = [], isLoading, error } = useQuery({
+    queryKey: ['promotions', category],
+    queryFn: async () => {
+      let url = '/categories/promotions/all';
+      if (category) url += `?category=${category}`;
+      const res = await axios.get(url);
+      return res.data;
+    },
+    staleTime: 5 * 60 * 1000, // cache for 5 minutes
+  });
+
+  // Add to cart logic based on discount
+  const handleAddToCart = (item) => {
+    const cartItem = {
+      ...item,
+      price: item.discountPrice || item.price, // use discount price if available
+      offerType: item.discountPrice ? "Discount" : undefined, // only add if discounted
+    };
+    addToCart(cartItem);
+  };
+
+  if (isLoading)
+    return (
+      <p className="text-center py-20 text-lg text-[var(--color-muted)] animate-pulse">
+        Loading Promotions...
+      </p>
+    );
+
+  if (error)
+    return (
+      <p className="text-center py-20 text-lg text-[var(--color-error)]">
+        Failed to load promotions!
+      </p>
+    );
+
   return (
-    <section className="my-20 max-w-7xl mx-auto px-4 bg-[var(--color-bg)]">
-      <h2 className="text-2xl font-bold mb-6 text-[var(--color-text)]">
-        Sales & Promotions
-      </h2>
+    <section>
+      <div className="max-w-7xl mx-auto px-5 lg:px-0">
+        <h2 className="text-3xl font-bold mb-10 text-center text-[var(--color-primary)]">
+          🎉 Promotions & Discounts
+        </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {promotions.map((promo) => (
-          <div
-            key={promo.id}
-            className="bg-[var(--color-surface)] shadow-lg rounded-xl overflow-hidden transform hover:scale-105 transition duration-300 border border-[var(--color-border)]"
-          >
-            <img
-              src={promo.image}
-              alt={promo.title}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h3 className="font-semibold text-lg mb-2 text-[var(--color-primary)]">
-                {promo.title}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8">
+          {promotions.map((item) => (
+            <div
+              key={item._id}
+              className="relative bg-[var(--color-surface)] rounded-2xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 px-4 py-4 flex flex-col justify-between border border-[var(--color-border)]"
+            >
+              {/* Only show Discount badge if discountPrice exists */}
+              {item.discountPrice && (
+                <span className="absolute top-3 left-3 inline-block px-3 py-1 text-xs rounded-full bg-[var(--color-warning)] text-[var(--color-text)] font-semibold uppercase tracking-wide z-10">
+                  Discount
+                </span>
+              )}
+
+              <div className="overflow-hidden rounded-xl mb-4">
+                <img
+                  src={item.image || 'https://i.ibb.co/default-category.png'}
+                  alt={item.name}
+                  className="w-full h-30 object-cover transition-transform duration-500 hover:scale-105"
+                />
+              </div>
+
+              <h3 className="text-xl font-semibold text-[var(--color-text)] mb-2 text-wrap">
+                {item.name}
               </h3>
-              <p className="text-[var(--color-muted)] text-sm">{promo.description}</p>
+
+              <div className="mb-4">
+                {item.discountPrice ? (
+                  <>
+                    <p className="text-[var(--color-muted)] line-through text-sm">
+                      ${item.price}
+                    </p>
+                    <p className="text-[var(--color-primary)] font-bold text-lg">
+                      ${item.discountPrice}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-[var(--color-primary)] font-bold text-lg">
+                    ${item.price}
+                  </p>
+                )}
+              </div>
+
+              <button
+                className="mt-4 w-full py-2 bg-[var(--color-primary)] text-[var(--navbar-text)] font-semibold rounded-lg shadow-md hover:bg-[var(--navbar-hover)] transition-colors duration-300"
+                onClick={() => handleAddToCart(item)}
+              >
+                Shop Now
+              </button>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
