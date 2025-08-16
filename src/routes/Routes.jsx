@@ -27,6 +27,7 @@ import DashboardRedirect from "../hooks/DashboardRedirect";
 import InvoicePage from "../pages/Checkout/InvoicePage";
 import UpdateProfile from "../components/UpdateProfile/UpdateProfile";
 import ErrorElement from "../components/ErrorElement";
+import Terms from "../pages/Terms";
 
 export const router = createBrowserRouter([
   {
@@ -74,6 +75,10 @@ export const router = createBrowserRouter([
       {
         path:'/invoice/:id',
         element:<InvoicePage></InvoicePage>
+      },
+      {
+        path:'/terms',
+        element:<Terms></Terms>
       }
     ],
   },

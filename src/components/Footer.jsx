@@ -2,6 +2,7 @@ import React from "react";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import MedicareLogo from "./logo/MedicareLogo";
+import { Link } from "react-router";
 
 export default function Footer() {
   return (
@@ -46,10 +47,10 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
           <ul className="space-y-2 text-gray-200 text-sm">
-            <li><a href="/" className="hover:text-[var(--color-secondary)]">Home</a></li>
-            <li><a href="/shop" className="hover:text-[var(--color-secondary)]">Shop</a></li>
-            <li><a href="/categories" className="hover:text-[var(--color-secondary)]">Categories</a></li>
-            <li><a href="#" className="hover:text-[var(--color-secondary)]">About Us</a></li>
+            <li><Link href="/" className="hover:text-[var(--color-secondary)]">Home</Link ></li>
+            <li><Link  href="/shop" className="hover:text-[var(--color-secondary)]">Shop</Link ></li>
+            <li><Link  href="/categories" className="hover:text-[var(--color-secondary)]">Categories</Link ></li>
+            <li><Link  href="#" className="hover:text-[var(--color-secondary)]">About Us</Link ></li>
             <li><a href="#" className="hover:text-[var(--color-secondary)]">Contact</a></li>
           </ul>
         </div>
@@ -60,7 +61,7 @@ export default function Footer() {
           <ul className="space-y-2 text-gray-200 text-sm">
             <li><a href="#" className="hover:text-[var(--color-secondary)]">FAQ</a></li>
             <li><a href="#y" className="hover:text-[var(--color-secondary)]">Privacy Policy</a></li>
-            <li><a href="#" className="hover:text-[var(--color-secondary)]">Terms & Conditions</a></li>
+            <li><Link  to="/terms" className="hover:text-[var(--color-secondary)]">Terms & Conditions</Link ></li>
           </ul>
         </div>
 
