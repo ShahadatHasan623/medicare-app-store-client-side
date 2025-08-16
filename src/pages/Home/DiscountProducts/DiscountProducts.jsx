@@ -2,13 +2,13 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import { FaCartPlus } from "react-icons/fa";
+import { FaCartPlus, FaStar } from "react-icons/fa";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import useAxios from "../../../hooks/useAxios";
 import { useCart } from "../../../utils/CartContext";
-
+import Loader from "../../../components/Loader"
 
 const DiscountProducts = () => {
   const axiosInstance = useAxios();
@@ -26,29 +26,25 @@ const DiscountProducts = () => {
   });
 
   if (isLoading)
-    return (
-      <p className="text-center py-20 text-lg font-semibold text-gray-600">
-        Loading discount products...
-      </p>
-    );
+    return <Loader></Loader>  ;
 
   if (isError)
     return (
-      <p className="text-center py-20 text-lg font-semibold text-red-600">
+      <p className="text-center py-20 text-lg font-semibold text-[var(--color-error)]">
         Error: {error.message}
       </p>
     );
 
   if (discountProducts.length === 0)
     return (
-      <p className="text-center py-20 text-lg font-semibold text-gray-600">
+      <p className="text-center py-20 text-lg font-semibold text-[var(--color-muted)]">
         No discount products available.
       </p>
     );
 
   return (
     <section
-      className="my-12 p-6"
+      className="my-16 p-6"
       style={{ backgroundColor: "var(--color-bg)" }}
       aria-label="Discounted Products"
     >
@@ -66,7 +62,7 @@ const DiscountProducts = () => {
           slidesPerView={3}
           navigation
           pagination={{ clickable: true }}
-          grabCursor={true}
+          grabCursor
           autoplay={{
             delay: 3000,
             disableOnInteraction: false,
@@ -75,8 +71,8 @@ const DiscountProducts = () => {
           speed={800}
           breakpoints={{
             320: { slidesPerView: 1 },
-            640: { slidesPerView: 3 },
-            1024: { slidesPerView: 3 },
+            640: { slidesPerView: 2 },
+            1024: { slidesPerView: 4 },
           }}
           aria-live="polite"
         >
@@ -87,7 +83,8 @@ const DiscountProducts = () => {
 
             return (
               <SwiperSlide key={product._id}>
-                <article className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col h-full transform hover:-translate-y-1 hover:scale-[1.03]">
+                <article className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col h-full transform hover:-translate-y-1 hover:scale-105">
+                  {/* Image */}
                   <div className="relative overflow-hidden rounded-t-2xl h-56">
                     <img
                       src={product.image}
@@ -102,6 +99,7 @@ const DiscountProducts = () => {
                     )}
                   </div>
 
+                  {/* Content */}
                   <div className="p-6 flex flex-col flex-grow">
                     <h3
                       className="text-lg font-semibold mb-1 truncate"
@@ -111,24 +109,38 @@ const DiscountProducts = () => {
                       {product.name}
                     </h3>
                     <p
-                      className="text-sm text-gray-500 mb-4 truncate"
+                      className="text-sm text-[var(--color-muted)] mb-2 truncate"
                       title={product.company}
                     >
                       {product.company}
                     </p>
 
-                    <div className="mb-6">
-                      <span className="line-through text-gray-400 mr-3 text-base">
-                        ৳{product.price}
-                      </span>
-                      <span
-                        className="font-bold text-2xl"
-                        style={{ color: "var(--color-primary)" }}
-                      >
-                        ৳{discountedPrice}
+                    {/* Ratings */}
+                    <div className="flex items-center mb-3">
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar
+                          key={i}
+                          className={`${
+                            i < product.rating ? "text-[var(--color-secondary)]" : "text-[var(--color-border)]"
+                          }`}
+                        />
+                      ))}
+                      <span className="text-xs text-[var(--color-muted)] ml-2">
+                        {product.reviews || 0} reviews
                       </span>
                     </div>
 
+                    {/* Price */}
+                    <div className="mb-4 flex items-baseline gap-3">
+                      <span className="line-through text-[var(--color-muted)] text-base">
+                        ${product.price}
+                      </span>
+                      <span className="font-bold text-2xl" style={{ color: "var(--color-primary)" }}>
+                        ${discountedPrice}
+                      </span>
+                    </div>
+
+                    {/* Add to Cart */}
                     <button
                       type="button"
                       onClick={() => addToCart(product)}
