@@ -59,6 +59,9 @@ export default function DashboardLayout() {
               icon={<FaPills />}
               label="Manage Banners"
             />
+            <SidebarLink to="/dashboard/Faq-from"
+            label="FAQ"
+            />
           </>
         );
       case "seller":

@@ -60,7 +60,7 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-4">Support</h3>
           <ul className="space-y-2 text-gray-200 text-sm">
             <li><a href="#" className="hover:text-[var(--color-secondary)]">FAQ</a></li>
-            <li><a href="#y" className="hover:text-[var(--color-secondary)]">Privacy Policy</a></li>
+            <li><Link to='/privacy' className="hover:text-[var(--color-secondary)]">Privacy Policy</Link></li>
             <li><Link  to="/terms" className="hover:text-[var(--color-secondary)]">Terms & Conditions</Link ></li>
           </ul>
         </div>

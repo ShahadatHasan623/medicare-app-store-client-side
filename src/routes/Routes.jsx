@@ -28,6 +28,8 @@ import InvoicePage from "../pages/Checkout/InvoicePage";
 import UpdateProfile from "../components/UpdateProfile/UpdateProfile";
 import ErrorElement from "../components/ErrorElement";
 import Terms from "../pages/Terms";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
+import FAQForm from "../pages/dashboard/admin/FAQForm";
 
 export const router = createBrowserRouter([
   {
@@ -79,6 +81,10 @@ export const router = createBrowserRouter([
       {
         path:'/terms',
         element:<Terms></Terms>
+      },
+      {
+        path:'/privacy',
+        Component:PrivacyPolicy
       }
     ],
   },
@@ -144,6 +150,10 @@ export const router = createBrowserRouter([
             <SalesReport />
           </AdminRoute>
         ),
+      },
+      {
+        path:'Faq-from',
+        element:<AdminRoute><FAQForm></FAQForm></AdminRoute>
       },
 
       // ✅ Seller Routes
