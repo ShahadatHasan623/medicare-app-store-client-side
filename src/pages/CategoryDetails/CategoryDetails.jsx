@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { FaEye, FaCartPlus, FaTimes } from "react-icons/fa";
 import useAxios from "../../hooks/useAxios";
-
 import { toast } from "react-toastify";
 import { useCart } from "../../utils/CartContext";
 import Loader from "../../components/Loader";
@@ -27,9 +26,7 @@ const CategoryDetails = () => {
     queryFn: () => fetchMedicinesByCategoryId(Axios, categoryId),
   });
 
-  if (isLoading)
-    return <Loader></Loader>;
-
+  if (isLoading) return <Loader />;
   if (error)
     return (
       <p className="text-center text-red-600 py-12 font-semibold">
@@ -56,9 +53,10 @@ const CategoryDetails = () => {
 
   return (
     <div
-      className="max-w-7xl mx-auto p-6 my-14 bg-[var(--color-bg)] rounded-2xl shadow-lg min-h-screen"
+      className="max-w-7xl mx-auto p-6 my-14 bg-[var(--color-bg)] rounded-2xl shadow-xl min-h-screen"
       role="main"
     >
+      {/* Back button */}
       <button
         onClick={() => navigate(-1)}
         className="mb-6 text-[var(--color-primary)] hover:text-[var(--color-secondary)] font-semibold transition-colors duration-300"
@@ -67,6 +65,7 @@ const CategoryDetails = () => {
         ← Back to Categories
       </button>
 
+      {/* Heading */}
       <h2
         className="text-4xl font-extrabold mb-10 text-center text-[var(--color-text)] tracking-wide"
         aria-live="polite"
@@ -74,8 +73,9 @@ const CategoryDetails = () => {
         {category?.categoryName || "Category"} Medicines
       </h2>
 
+      {/* Empty state */}
       {medicines.length === 0 ? (
-        <p className="text-center text-gray-600 italic text-lg">
+        <p className="text-center text-gray-500 italic text-lg">
           No medicines found in this category.
         </p>
       ) : (
@@ -94,18 +94,20 @@ const CategoryDetails = () => {
               {medicines.map((med) => (
                 <tr
                   key={med._id}
-                  className="border-b last:border-none hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+                  className="border-b last:border-none hover:bg-[var(--color-bg)] cursor-pointer transition-all duration-200"
                 >
-                  <td className="px-6 py-3">{med.name}</td>
-                  <td className="px-6 py-3">{med.company}</td>
-                  <td className="px-6 py-3">{med.stock}</td>
+                  <td className="px-6 py-3 font-medium text-[var(--color-text)]">
+                    {med.name}
+                  </td>
+                  <td className="px-6 py-3 text-gray-700">{med.company}</td>
+                  <td className="px-6 py-3 font-semibold">{med.stock}</td>
                   <td className="px-6 py-3 text-[var(--color-secondary)] font-bold">
                     ৳{med.price}
                   </td>
-                  <td className="px-6 py-3 text-center space-x-6">
+                  <td className="px-6 py-3 text-center space-x-4">
                     <button
                       onClick={() => openModal(med)}
-                      className="text-[var(--color-primary)] hover:text-[var(--color-secondary)] transition-colors"
+                      className="text-[var(--color-primary)] hover:text-[var(--color-secondary)] transition-transform hover:scale-110"
                       title={`View details of ${med.name}`}
                       aria-label={`View details of ${med.name}`}
                     >
@@ -113,7 +115,7 @@ const CategoryDetails = () => {
                     </button>
                     <button
                       onClick={() => handleAddToCart(med)}
-                      className="text-green-600 hover:text-green-800 transition-colors"
+                      className="text-green-600 hover:text-green-800 transition-transform hover:scale-110"
                       title={`Add ${med.name} to cart`}
                       aria-label={`Add ${med.name} to cart`}
                     >
@@ -130,15 +132,13 @@ const CategoryDetails = () => {
       {/* Modal */}
       {isModalOpen && selectedMedicine && (
         <div
-          className="fixed inset-0 shadow-2xl bg-opacity-50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
           onClick={closeModal}
           aria-modal="true"
           role="dialog"
-          aria-labelledby="modal-title"
-          tabIndex={-1}
         >
           <div
-            className="bg-white rounded-3xl max-w-lg w-full p-8 relative shadow-xl transform transition-transform duration-300 scale-95 hover:scale-100"
+            className="bg-white rounded-3xl max-w-lg w-full p-8 relative shadow-2xl transform transition-transform duration-300 scale-95 hover:scale-100"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -151,7 +151,6 @@ const CategoryDetails = () => {
             </button>
 
             <h3
-              id="modal-title"
               className="text-3xl font-bold mb-5 text-[var(--color-primary)]"
             >
               {selectedMedicine.name}

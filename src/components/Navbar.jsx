@@ -35,56 +35,97 @@ const Navbar = () => {
       <li>
         <Link
           to="/"
-          className={
-            isActive("/")
-              ? "text-orange-500 font-semibold border-b-2 border-orange-500"
-              : "hover:text-purple-300 transition-colors duration-300"
-          }
           onClick={() => setDrawerOpen(false)}
+          className={`relative px-4 py-2 rounded-md font-medium transition-all duration-300
+          ${
+            isActive("/")
+              ? "bg-[var(--color-secondary)] text-white shadow-md"
+              : "text-[var(--navbar-text)] hover:bg-[var(--color-primary)] hover:text-white"
+          }
+        `}
         >
           {t("home")}
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="/shop"
-          className={
-            isActive("/shop")
-              ? "text-orange-500 font-semibold border-b-2 border-orange-500"
-              : "hover:text-purple-300 transition-colors duration-300"
-          }
-          onClick={() => setDrawerOpen(false)}
-        >
-          {t("shop")}
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="/Categories"
-          className={
-            isActive("/Categories")
-              ? "text-orange-500 font-semibold border-b-2 border-orange-500"
-              : "hover:text-purple-300 transition-colors duration-300"
-          }
-          onClick={() => setDrawerOpen(false)}
-        >
-          {t("categories")}
+          <span
+            className={`absolute bottom-0 left-0 h-1 w-full rounded-full bg-[var(--color-accent)] transition-transform duration-300
+            ${
+              isActive("/")
+                ? "scale-x-100"
+                : "scale-x-0 group-hover:scale-x-100"
+            }`}
+          ></span>
         </Link>
       </li>
 
-      {/* Dashboard link */}
+      <li>
+        <Link
+          to="/shop"
+          onClick={() => setDrawerOpen(false)}
+          className={`relative px-4 py-2 rounded-md font-medium transition-all duration-300
+          ${
+            isActive("/shop")
+              ? "bg-[var(--color-secondary)] text-white shadow-md"
+              : "text-[var(--navbar-text)] hover:bg-[var(--color-primary)] hover:text-white"
+          }
+        `}
+        >
+          {t("shop")}
+          <span
+            className={`absolute bottom-0 left-0 h-1 w-full rounded-full bg-[var(--color-accent)] transition-transform duration-300
+            ${
+              isActive("/shop")
+                ? "scale-x-100"
+                : "scale-x-0 group-hover:scale-x-100"
+            }`}
+          ></span>
+        </Link>
+      </li>
+
+      <li>
+        <Link
+          to="/Categories"
+          onClick={() => setDrawerOpen(false)}
+          className={`relative px-4 py-2 rounded-md font-medium transition-all duration-300
+          ${
+            isActive("/Categories")
+              ? "bg-[var(--color-secondary)] text-white shadow-md"
+              : "text-[var(--navbar-text)] hover:bg-[var(--color-primary)] hover:text-white"
+          }
+        `}
+        >
+          {t("categories")}
+          <span
+            className={`absolute bottom-0 left-0 h-1 w-full rounded-full bg-[var(--color-accent)] transition-transform duration-300
+            ${
+              isActive("/Categories")
+                ? "scale-x-100"
+                : "scale-x-0 group-hover:scale-x-100"
+            }`}
+          ></span>
+        </Link>
+      </li>
+
       {user && (
         <li>
           <Link
             to="/dashboard"
-            className={
-              isActive("/dashboard")
-                ? "text-orange-500 font-semibold border-b-2 border-orange-500"
-                : "hover:text-purple-300 transition-colors duration-300"
-            }
             onClick={() => setDrawerOpen(false)}
+            className={`relative px-4 py-2 rounded-md font-medium transition-all duration-300
+            ${
+              isActive("/dashboard")
+                ? "bg-[var(--color-secondary)] text-white shadow-md"
+                : "text-[var(--navbar-text)] hover:bg-[var(--color-primary)] hover:text-white"
+            }
+          `}
           >
             {t("dashboard")}
+            <span
+              className={`absolute bottom-0 left-0 h-1 w-full rounded-full bg-[var(--color-accent)] transition-transform duration-300
+              ${
+                isActive("/dashboard")
+                  ? "scale-x-100"
+                  : "scale-x-0 group-hover:scale-x-100"
+              }`}
+            ></span>
           </Link>
         </li>
       )}
@@ -211,7 +252,8 @@ const Navbar = () => {
             <div className="flex items-center gap-3 mb-6">
               <img
                 src={
-                  user?.photoURL || "https://i.ibb.co/0y7VvYb/default-avatar.png"
+                  user?.photoURL ||
+                  "https://i.ibb.co/0y7VvYb/default-avatar.png"
                 }
                 alt="User"
                 className="h-12 w-12 rounded-full border-2 border-white"

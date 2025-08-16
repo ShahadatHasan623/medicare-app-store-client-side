@@ -1,18 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 @import "tailwindcss";
 @plugin "daisyui";
 
 :root {
-  --color-primary: #5A4FCF;    
-  --color-secondary: #F97316;   
-  --color-bg: #F3F4F6;        
-  --color-text: #1F2937;      
+  /* 🌿 Brand Core */
+  --color-primary: #10B981;   /* Emerald Green → health, trust, fresh */
+  --color-secondary: #3B82F6; /* Blue → calmness, reliability */
+
+  /* 🎨 Base */
+  --color-bg: #F9FAFB;        /* Light Grayish White → clean background */
+  --color-surface: #FFFFFF;   /* Cards, sections */
+  --color-text: #1F2937;      /* Dark gray → readability & professional */
+  --color-muted: #6B7280;     /* Muted gray text */
+
+  /* 🌐 Navbar */
+  --navbar-bg: #10B981;       /* Emerald Green → friendly & trustable */
+  --navbar-text: #FFFFFF;      /* White text for contrast */
+  --navbar-hover: #6EE7B7;     /* Soft mint hover → smooth highlight */
+
+  /* 📦 Footer */
+  --footer-bg: #1E3A8A;       /* Deep Blue → professional, calm & stable */
+  --footer-text: #F3F4F6;      /* Light gray → readable */
+  --footer-link-hover: #3B82F6; /* Bright blue hover → interactive */
+
+  /* ✨ Extras */
+  --color-border: #E5E7EB;    /* Subtle borders */
+  --color-success: #22C55E;   /* Success messages */
+  --color-error: #EF4444;     /* Errors */
+  --color-warning: #FACC15;   /* Alerts */
+  --color-info: #3B82F6;      /* Info messages */
 }
 
-.poppins{
+
+
+.poppins {
   font-family: "Poppins", sans-serif;
 }
-*{
+* {
   font-family: "Open Sans", sans-serif;
 }

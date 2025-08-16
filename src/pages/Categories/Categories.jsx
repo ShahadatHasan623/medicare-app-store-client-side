@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios";
 import CategoryCard from "./CategoryCard";
 import Loader from "../../components/Loader";
+import { FaArrowRight } from "react-icons/fa";
 
 const Categories = () => {
   const Axios = useAxios();
@@ -20,8 +21,7 @@ const Categories = () => {
     },
   });
 
-  if (isLoading)
-    return <Loader></Loader>;
+  if (isLoading) return <Loader></Loader>;
 
   if (error)
     return (
@@ -32,18 +32,27 @@ const Categories = () => {
 
   return (
     <section
-      className="max-w-7xl mx-auto my-20 p-6 sm:px-8 "
-      style={{ backgroundColor: "var(--color-bg)" }}
+      className="max-w-7xl mx-auto my-20 lg:px-0 sm:px-8 px-5"
       aria-label="Browse categories"
     >
-      <h2
-        className="text-5xl font-extrabold text-center mb-16 tracking-wide"
-        style={{ color: "var(--color-primary)" }}
-      >
-        Browse by Category
-      </h2>
+      <div className="flex justify-between items-center mb-8">
+        <h2
+          className="text-2xl font-extrabold tracking-wide"
+          style={{ color: "var(--color-primary)" }}
+        >
+          Explore by Category
+        </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
+        {/* ✅ Clickable View All with icon */}
+        <div
+          className="flex items-center gap-1 text-[var(--color-secondary)] font-semibold cursor-pointer hover:underline transition"
+          onClick={() => navigate("/categories")}
+        >
+          <span>View All</span>
+          <FaArrowRight />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 md:grid-cols-3 gap-5">
         {categories.slice(0, 6).map((category) => (
           <div
             key={category._id}
