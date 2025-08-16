@@ -6,6 +6,7 @@ import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { useQuery } from "@tanstack/react-query";
 import useAxios from "../../../hooks/useAxios";
+import Loader from "../../../components/Loader"
 
 
 const BannerSlider = () => {
@@ -25,11 +26,7 @@ const BannerSlider = () => {
 
 
   if (isLoading)
-    return (
-      <p className="text-center py-10 text-gray-500 text-lg font-medium">
-        Loading banners...
-      </p>
-    );
+    return <Loader></Loader> ;
 
   if (error)
     return (
@@ -46,7 +43,7 @@ const BannerSlider = () => {
     );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
+    <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-0">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}
@@ -55,12 +52,11 @@ const BannerSlider = () => {
         navigation={true}
         loop={sliderData.length > 2}
         modules={[Autoplay, Pagination, Navigation]}
-        className="rounded-2xl shadow-xl"
       >
         {sliderData.map((product) => (
           <SwiperSlide key={product._id}>
             <div
-              className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-lg"
+              className="relative w-full h-[400px] md:h-[500px] flow-hidden shadow-lg"
               style={{
                 backgroundImage: `url(${
                   product.medicineImage || "/default-banner.jpg"

@@ -44,8 +44,7 @@ const DiscountProducts = () => {
 
   return (
     <section
-      className="my-16 p-6"
-      style={{ backgroundColor: "var(--color-bg)" }}
+      className="my-16 lg:px-0 px-5"
       aria-label="Discounted Products"
     >
       <div className="max-w-7xl mx-auto lg:px-0 px-4">
@@ -85,7 +84,7 @@ const DiscountProducts = () => {
               <SwiperSlide key={product._id}>
                 <article className="relative bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col h-full transform hover:-translate-y-1 hover:scale-105">
                   {/* Image */}
-                  <div className="relative overflow-hidden rounded-t-2xl h-56">
+                  <div className="relative overflow-hidden rounded-t-2xl h-35">
                     <img
                       src={product.image}
                       alt={product.name}
@@ -121,7 +120,7 @@ const DiscountProducts = () => {
                         <FaStar
                           key={i}
                           className={`${
-                            i < product.rating ? "text-[var(--color-secondary)]" : "text-[var(--color-border)]"
+                            i < product.reviews ? "text-[var(--color-secondary)]" : "text-[var(--color-border)]"
                           }`}
                         />
                       ))}

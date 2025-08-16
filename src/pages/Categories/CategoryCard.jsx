@@ -21,7 +21,7 @@ const CategoryCard = ({ category }) => {
       className="cursor-pointer w-full max-w-md mx-auto rounded-2xl overflow-hidden shadow-lg hover:shadow-[0_8px_30px_rgba(0,0,0,0.15)] transition-all transform hover:-translate-y-3 duration-500 bg-gradient-to-br from-white via-gray-50 to-gray-100 border border-gray-200"
     >
       {/* Image Section */}
-      <div className="relative h-44 overflow-hidden group">
+      <div className="relative h-25 overflow-hidden group">
         <img
           src={category.image || "https://i.ibb.co/default-category.png"}
           alt={category.categoryName}
