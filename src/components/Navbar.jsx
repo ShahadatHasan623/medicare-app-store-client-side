@@ -136,7 +136,7 @@ const Navbar = () => {
     <>
       {/* Top Navbar */}
       <div
-        className="navbar bg-primary text-white shadow-md px-4 sticky top-0 z-50"
+        className="navbar bg-primary text-white shadow-md px-8 sticky top-0 z-50"
         style={{ backgroundColor: "var(--color-primary)" }}
       >
         {/* Left Side */}
