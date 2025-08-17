@@ -30,6 +30,8 @@
   --color-error: #ef4444;
   --color-warning: #facc15;
   --color-info: #3b82f6;
+
+  --body-bg: #f9fafb; /* Light mode body background */
 }
 
 /* Dark Theme */
@@ -55,7 +57,16 @@
   --color-error: #f87171;
   --color-warning: #facc15;
   --color-info: #3b82f6;
+
+  --body-bg: #111827; /* Dark mode body background */
 }
+
+/* Apply background */
+body, html {
+  background-color: var(--body-bg);
+  transition: background-color 0.3s ease;
+}
+
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 @keyframes spin-slow {
   from {

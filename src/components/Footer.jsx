@@ -48,9 +48,9 @@ export default function Footer() {
           <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
           <ul className="space-y-2 text-gray-200 text-sm">
             <li><Link href="/" className="hover:text-[var(--color-secondary)]">Home</Link ></li>
-            <li><Link  href="/shop" className="hover:text-[var(--color-secondary)]">Shop</Link ></li>
-            <li><Link  href="/categories" className="hover:text-[var(--color-secondary)]">Categories</Link ></li>
-            <li><Link  href="#" className="hover:text-[var(--color-secondary)]">About Us</Link ></li>
+            <li><Link  to="/shop" className="hover:text-[var(--color-secondary)]">Shop</Link ></li>
+            <li><Link  to="/categories" className="hover:text-[var(--color-secondary)]">Categories</Link ></li>
+            <li><Link  to="#" className="hover:text-[var(--color-secondary)]">About Us</Link ></li>
             <li><a href="#" className="hover:text-[var(--color-secondary)]">Contact</a></li>
           </ul>
         </div>
@@ -59,7 +59,7 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold mb-4">Support</h3>
           <ul className="space-y-2 text-gray-200 text-sm">
-            <li><a href="#" className="hover:text-[var(--color-secondary)]">FAQ</a></li>
+            <li><Link to="/faq-list" className="hover:text-[var(--color-secondary)]">FAQ</Link></li>
             <li><Link to='/privacy' className="hover:text-[var(--color-secondary)]">Privacy Policy</Link></li>
             <li><Link  to="/terms" className="hover:text-[var(--color-secondary)]">Terms & Conditions</Link ></li>
           </ul>

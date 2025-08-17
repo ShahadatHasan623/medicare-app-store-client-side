@@ -85,11 +85,11 @@ export default function AskForAdvertisement() {
                 className="w-full h-40 sm:h-48 object-cover"
               />
               <div className="p-4">
-                <h3 className="text-lg sm:text-xl font-semibold text-[var(--color-text)]">
+                <h3 className="text-lg sm:text-xl font-semibold text-[var(--color-text)] dark:text-black">
                   {ad.medicineName}
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">{ad.description}</p>
-                <p className="mt-3 font-medium text-sm sm:text-base">
+                <p className="mt-3 font-medium text-sm sm:text-base dark:text-primary">
                   Status:{" "}
                   {ad.isOnSlider ? (
                     <span className="text-green-600 font-semibold">On Slider</span>

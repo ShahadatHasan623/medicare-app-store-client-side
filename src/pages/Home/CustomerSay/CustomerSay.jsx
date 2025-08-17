@@ -51,11 +51,11 @@ const RatingStars = ({ rating }) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
     if (i <= Math.floor(rating)) {
-      stars.push(<FaStar key={i} className="text-yellow-400" />);
+      stars.push(<FaStar key={i} className="text-yellow-400 dark:text-yellow-500" />);
     } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
-      stars.push(<FaStarHalfAlt key={i} className="text-yellow-400" />);
+      stars.push(<FaStarHalfAlt key={i} className="text-yellow-400 dark:text-yellow-500" />);
     } else {
-      stars.push(<FaRegStar key={i} className="text-gray-300" />);
+      stars.push(<FaRegStar key={i} className="text-gray-300 dark:text-gray-600" />);
     }
   }
   return <div className="flex justify-center mb-2">{stars}</div>;
@@ -86,13 +86,13 @@ const CustomerSay = () => {
   };
 
   return (
-    <div className="bg-gradient-to-b from-[#f0f4f8] to-[#e6edf3] py-16 px-4 my-12 rounded-3xl shadow-lg max-w-7xl mx-auto">
+    <div className="bg-bg dark:bg-bg-dark  px-4 my-20 py-10 rounded-3xl shadow-lg max-w-7xl mx-auto transition-colors duration-300">
       {/* Title */}
       <div className="text-center mb-10">
-        <h2 className="text-4xl font-extrabold mb-3 text-gray-800 drop-shadow-lg">
+        <h2 className="text-4xl font-extrabold mb-3 text-text dark:text-text-dark drop-shadow-lg text-primary">
           🌟 What Our Customers Say
         </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <p className="text-lg text-muted dark:text-muted-dark max-w-2xl mx-auto">
           We are trusted by thousands of happy customers for their healthcare needs.
         </p>
       </div>
@@ -103,7 +103,7 @@ const CustomerSay = () => {
           {testimonials.map((item, index) => (
             <div key={index} className="px-4">
               <div
-                className={`bg-white rounded-2xl shadow-xl p-8 h-72 flex flex-col justify-between text-center transition-all duration-500 transform ${
+                className={`bg-surface dark:bg-surface-dark rounded-2xl shadow-xl p-8 h-72 flex flex-col justify-between text-center transition-all duration-500 transform ${
                   index === currentSlide
                     ? "scale-100 opacity-100"
                     : "scale-90 opacity-60"
@@ -112,18 +112,18 @@ const CustomerSay = () => {
                 {/* Rating Stars */}
                 <RatingStars rating={item.rating} />
 
-                <p className="text-gray-700 mb-4 text-sm leading-relaxed italic">
+                <p className="text-text dark:text-text-dark mb-4 text-sm leading-relaxed italic">
                   "{item.review}"
                 </p>
                 <div className="flex justify-center items-center gap-3 mt-4">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-12 h-12 object-cover rounded-full border-2 border-green-500"
+                    className="w-12 h-12 object-cover rounded-full border-2 border-primary dark:border-primary-dark"
                   />
                   <div className="text-left">
-                    <h4 className="font-semibold text-gray-900">{item.name}</h4>
-                    <p className="text-xs text-gray-500">{item.title}</p>
+                    <h4 className="font-semibold text-text dark:text-text-dark">{item.name}</h4>
+                    <p className="text-xs text-muted dark:text-muted-dark">{item.title}</p>
                   </div>
                 </div>
               </div>
@@ -135,13 +135,13 @@ const CustomerSay = () => {
         <div className="flex justify-center gap-6 mt-6">
           <button
             onClick={() => sliderRef.current.slickPrev()}
-            className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-md hover:shadow-lg transition"
+            className="bg-primary dark:bg-primary-dark hover:bg-primary/90 dark:hover:bg-primary-dark/90 text-white p-3 rounded-full shadow-md hover:shadow-lg transition"
           >
             <FaArrowLeft />
           </button>
           <button
             onClick={() => sliderRef.current.slickNext()}
-            className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-md hover:shadow-lg transition"
+            className="bg-primary dark:bg-primary-dark hover:bg-primary/90 dark:hover:bg-primary-dark/90 text-white p-3 rounded-full shadow-md hover:shadow-lg transition"
           >
             <FaArrowRight />
           </button>
