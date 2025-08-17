@@ -58,12 +58,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     padding: 4,
   },
-  logoText: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#0077cc",
-    textAlign: "right",
-  },
 });
 
 const InvoiceDocument = ({ invoiceData, user }) => (
@@ -135,21 +129,22 @@ export default function InvoicePage() {
   if (error)
     return (
       <div className="text-center py-12">
-        <p className="text-red-600 text-lg">{error}</p>
+        <p className="text-red-600 dark:text-red-400 text-lg">{error}</p>
       </div>
     );
 
   if (!invoiceData) return null;
 
   return (
-    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-md mt-6 sm:mt-10">
+    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-lg mt-10 transition-colors">
       <MedicareLogo />
+
       {/* Download PDF Button */}
-      <div className="mb-4 sm:mb-6 text-center sm:text-right">
+      <div className="mb-6 text-center sm:text-right">
         <PDFDownloadLink
           document={<InvoiceDocument invoiceData={invoiceData} user={user} />}
           fileName={`invoice-${invoiceData._id}.pdf`}
-          className="inline-block bg-blue-600 text-white px-3 sm:px-5 py-2 rounded hover:bg-blue-700 transition text-sm sm:text-base"
+          className="inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-2 rounded-lg shadow hover:from-blue-700 hover:to-blue-800 transition text-sm sm:text-base"
         >
           {({ loading }) =>
             loading ? "Preparing document..." : "Download Invoice PDF"
@@ -157,11 +152,11 @@ export default function InvoicePage() {
         </PDFDownloadLink>
       </div>
 
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-center">
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
         Invoice Preview
       </h1>
 
-      <div className="text-sm sm:text-base">
+      <div className="text-sm sm:text-base text-gray-800 dark:text-gray-200">
         <p>
           <strong>Invoice ID:</strong> {invoiceData._id}
         </p>
@@ -179,36 +174,39 @@ export default function InvoicePage() {
 
       {/* Responsive Table */}
       <div className="mt-6 overflow-x-auto">
-        <table className="w-full border border-gray-300 text-sm sm:text-base">
+        <table className="w-full border border-gray-300 dark:border-gray-700 text-sm sm:text-base">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-2 sm:px-4 py-2 text-left">
+            <tr className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+              <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-left">
                 Item
               </th>
-              <th className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+              <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-right">
                 Qty
               </th>
-              <th className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+              <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-right">
                 Price
               </th>
-              <th className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+              <th className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-right">
                 Total
               </th>
             </tr>
           </thead>
           <tbody>
             {invoiceData.cartItems.map((item, idx) => (
-              <tr key={idx}>
-                <td className="border border-gray-300 px-2 sm:px-4 py-2">
+              <tr
+                key={idx}
+                className="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-900 dark:even:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              >
+                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2">
                   {item.name}
                 </td>
-                <td className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-right">
                   {item.quantity}
                 </td>
-                <td className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-right">
                   ${item.unitPrice.toFixed(2)}
                 </td>
-                <td className="border border-gray-300 px-2 sm:px-4 py-2 text-right">
+                <td className="border border-gray-300 dark:border-gray-700 px-4 py-2 text-right">
                   ${(item.quantity * item.unitPrice).toFixed(2)}
                 </td>
               </tr>
@@ -217,11 +215,12 @@ export default function InvoicePage() {
         </table>
       </div>
 
-      <div className="mt-4 text-right text-sm sm:text-base">
-        <p className="font-semibold text-lg">
+      {/* Total Section */}
+      <div className="mt-6 text-right">
+        <p className="font-semibold text-xl text-gray-900 dark:text-gray-100">
           Total: ${invoiceData.totalPrice.toFixed(2)}
         </p>
-        <p className="text-gray-600 text-xs sm:text-sm">
+        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
           Transaction ID: {invoiceData.transactionId}
         </p>
       </div>

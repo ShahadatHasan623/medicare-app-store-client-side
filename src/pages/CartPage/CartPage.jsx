@@ -17,15 +17,15 @@ export default function CartPage() {
 
   if (!cart || cart.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center bg-[#F9FAFB] text-[#111827]">
+      <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center bg-[var(--color-bg)] text-[var(--color-text)]">
         <ReTitle title="Cart" />
         <h2 className="text-5xl font-extrabold mb-4">🛒 Your cart is empty</h2>
-        <p className="mb-8 text-lg max-w-md text-gray-600">
+        <p className="mb-8 text-lg max-w-md text-[var(--color-muted)]">
           Looks like you haven't added any medicines yet. Start shopping now!
         </p>
         <button
           onClick={() => navigate("/shop")}
-          className="bg-[#2563EB] hover:bg-[#1D4ED8] transition text-white px-8 py-3 rounded-xl font-semibold shadow-lg"
+          className="bg-[var(--color-primary)] hover:bg-emerald-600 transition text-white px-8 py-3 rounded-xl font-semibold shadow-lg"
         >
           🛍️ Go to Shop
         </button>
@@ -66,11 +66,11 @@ export default function CartPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 my-12 bg-[#F9FAFB] min-h-screen py-10 rounded-2xl shadow-xl">
-      <h2 className="text-4xl font-extrabold mb-8 text-[#2563EB] tracking-wide">
+    <div className="max-w-7xl mx-auto px-6 my-12 bg-[var(--body-bg)] min-h-screen py-10 rounded-2xl shadow-xl transition-colors duration-300">
+      <h2 className="text-4xl font-extrabold mb-8 text-[var(--color-primary)] tracking-wide">
         🛒 Shopping Cart
       </h2>
-      <p className="mb-12 text-gray-600 text-lg max-w-xl">
+      <p className="mb-12 text-[var(--color-muted)] text-lg max-w-xl">
         Review your selected medicines before checkout
       </p>
 
@@ -83,23 +83,23 @@ export default function CartPage() {
             return (
               <div
                 key={item._id}
-                className="flex flex-col md:flex-row md:items-center justify-between bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-2xl transition"
+                className="flex flex-col md:flex-row md:items-center justify-between bg-[var(--color-surface)] p-6 rounded-2xl shadow-lg border border-[var(--color-border)] hover:shadow-2xl transition"
               >
                 <div className="flex items-center gap-5 w-full md:w-1/2">
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-28 h-28 object-contain rounded-xl border border-gray-300"
+                    className="w-28 h-28 object-contain rounded-xl border border-[var(--color-border)]"
                   />
                   <div>
-                    <h3 className="text-xl font-semibold text-[#111827]">
+                    <h3 className="text-xl font-semibold text-[var(--color-text)]">
                       {item.name}
                     </h3>
-                    <p className="text-gray-500">{item.genericName}</p>
-                    <p className="text-sm text-gray-400 mt-1">
+                    <p className="text-[var(--color-muted)]">{item.genericName}</p>
+                    <p className="text-sm text-[var(--color-muted)] mt-1">
                       {item.company} | {item.unit}
                     </p>
-                    <span className="inline-block mt-2 bg-[#F59E0B]/20 text-[#F59E0B] text-xs font-semibold px-3 py-1 rounded-full capitalize">
+                    <span className="inline-block mt-2 bg-yellow-500/20 text-yellow-500 text-xs font-semibold px-3 py-1 rounded-full capitalize">
                       {item.category}
                     </span>
                   </div>
@@ -107,7 +107,7 @@ export default function CartPage() {
 
                 <div className="flex flex-col md:flex-row items-end md:items-center justify-between w-full md:w-1/2 mt-6 md:mt-0">
                   <div className="text-right md:text-left md:mr-8">
-                    <p className="line-through text-sm text-gray-400">
+                    <p className="line-through text-sm text-[var(--color-muted)]">
                       ${item.price.toFixed(2)}
                     </p>
                     <p className="text-green-600 text-2xl font-bold">
@@ -116,38 +116,38 @@ export default function CartPage() {
                     <p className="text-xs text-red-500 font-semibold mt-1">
                       {item.discount}% OFF
                     </p>
-                    <p className="text-sm text-gray-500 mt-3">
+                    <p className="text-sm text-[var(--color-muted)] mt-3">
                       Stock: {item.stock ?? 0}
                     </p>
-                    <p className="font-semibold text-[#111827] mt-3 text-lg">
+                    <p className="font-semibold text-[var(--color-text)] mt-3 text-lg">
                       Total: ${(discountedPrice * (item.quantity ?? 0)).toFixed(2)}
                     </p>
                   </div>
 
                   <div className="flex flex-col items-center gap-3 mt-4 md:mt-0">
-                    <span className="text-sm text-gray-500 font-medium">
+                    <span className="text-sm text-[var(--color-muted)] font-medium">
                       Quantity
                     </span>
-                    <div className="flex items-center rounded-lg overflow-hidden border border-gray-300">
+                    <div className="flex items-center rounded-lg overflow-hidden border border-[var(--color-border)]">
                       <button
                         onClick={() => updateQuantity(item._id, -1)}
-                        className="bg-[#2563EB]/10 hover:bg-[#2563EB]/20 transition px-3 py-2 text-[#2563EB]"
+                        className="bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/20 transition px-3 py-2 text-[var(--color-primary)]"
                       >
                         <FaMinus size={18} />
                       </button>
-                      <span className="px-6 py-2 bg-white text-[#111827] font-semibold">
+                      <span className="px-6 py-2 bg-[var(--color-surface)] text-[var(--color-text)] font-semibold">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item._id, 1)}
-                        className="bg-[#2563EB]/10 hover:bg-[#2563EB]/20 transition px-3 py-2 text-[#2563EB]"
+                        className="bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/20 transition px-3 py-2 text-[var(--color-primary)]"
                       >
                         <FaPlus size={18} />
                       </button>
                     </div>
                     <button
                       onClick={() => handleRemoveItem(item._id, item.name)}
-                      className="text-[#10B981] hover:text-white hover:bg-[#10B981] rounded-full p-2 transition border border-[#10B981]"
+                      className="text-[var(--color-error)] hover:text-white hover:bg-[var(--color-error)] rounded-full p-2 transition border border-[var(--color-error)]"
                       aria-label={`Remove ${item.name} from cart`}
                       title="Remove item"
                     >
@@ -161,7 +161,7 @@ export default function CartPage() {
 
           {/* Cart Actions */}
           {cart.length > 0 && (
-            <div className="flex justify-between items-center pt-6 border-t border-gray-300">
+            <div className="flex justify-between items-center pt-6 border-t border-[var(--color-border)]">
               <button
                 onClick={handleClearCart}
                 className="flex items-center gap-2 bg-red-100 text-red-600 hover:bg-red-200 px-5 py-3 rounded-lg font-semibold transition shadow-sm"
@@ -171,7 +171,7 @@ export default function CartPage() {
 
               <button
                 onClick={() => navigate("/shop")}
-                className="flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-3 rounded-lg font-semibold transition shadow-sm"
+                className="flex items-center gap-2 bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-border)] px-5 py-3 rounded-lg font-semibold transition shadow-sm"
               >
                 <FaArrowLeft /> Continue Shopping
               </button>
@@ -180,11 +180,11 @@ export default function CartPage() {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 space-y-6 h-fit sticky top-20">
-          <h3 className="text-3xl font-extrabold text-[#111827] flex items-center gap-2">
+        <div className="bg-[var(--color-surface)] rounded-2xl shadow-lg p-8 space-y-6 h-fit sticky top-20 border border-[var(--color-border)]">
+          <h3 className="text-3xl font-extrabold text-[var(--color-text)] flex items-center gap-2">
             🧾 Order Summary
           </h3>
-          <div className="flex justify-between text-gray-700 font-semibold text-lg">
+          <div className="flex justify-between text-[var(--color-text)] font-semibold text-lg">
             <span>Items ({totalItems})</span>
             <span>${totalPrice.toFixed(2)}</span>
           </div>
@@ -192,28 +192,28 @@ export default function CartPage() {
             <span>Discount</span>
             <span>-${totalDiscount.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between border-t border-gray-300 pt-4 text-gray-700 font-semibold text-lg">
+          <div className="flex justify-between border-t border-[var(--color-border)] pt-4 text-[var(--color-text)] font-semibold text-lg">
             <span>Subtotal</span>
             <span>${subtotal.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-gray-700 font-semibold text-lg">
+          <div className="flex justify-between text-[var(--color-text)] font-semibold text-lg">
             <span>Tax (8%)</span>
             <span>${tax.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-2xl font-extrabold text-[#2563EB] border-t border-gray-300 pt-5">
+          <div className="flex justify-between text-2xl font-extrabold text-[var(--color-primary)] border-t border-[var(--color-border)] pt-5">
             <span>Total</span>
             <span>${total.toFixed(2)}</span>
           </div>
 
           <button
             onClick={handleProceedToCheckout}
-            className="bg-[#2563EB] hover:bg-[#1D4ED8] transition text-white w-full py-3 rounded-xl text-xl font-semibold shadow-md"
+            className="bg-[var(--color-primary)] hover:bg-emerald-600 transition text-white w-full py-3 rounded-xl text-xl font-semibold shadow-md"
           >
             🛒 Proceed to Checkout
           </button>
           <button
             onClick={handleClearCart}
-            className="bg-[#10B981] hover:bg-[#059669] transition text-white w-full py-3 rounded-xl text-xl font-semibold shadow-md"
+            className="bg-[var(--color-secondary)] hover:bg-blue-600 transition text-white w-full py-3 rounded-xl text-xl font-semibold shadow-md"
           >
             🗑️ Clear Cart
           </button>
