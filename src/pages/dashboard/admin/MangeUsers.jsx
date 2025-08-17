@@ -27,10 +27,10 @@ export default function ManageUsers() {
       axiosSecure.patch(`/users/role/${id}`, { role }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      Swal.fire("Updated!", "User role updated successfully.", "success");
+      Swal.fire("✅ Updated!", "User role updated successfully.", "success");
     },
     onError: () => {
-      Swal.fire("Error!", "Failed to update user role.", "error");
+      Swal.fire("❌ Error!", "Failed to update user role.", "error");
     },
   });
 
@@ -39,21 +39,21 @@ export default function ManageUsers() {
     mutationFn: (id) => axiosSecure.delete(`/users/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      Swal.fire("Deleted!", "User has been deleted.", "success");
+      Swal.fire("🗑️ Deleted!", "User has been deleted.", "success");
     },
     onError: () => {
-      Swal.fire("Error!", "Failed to delete user.", "error");
+      Swal.fire("❌ Error!", "Failed to delete user.", "error");
     },
   });
 
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      text: "You won’t be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "var(--color-secondary)",
-      cancelButtonColor: "var(--color-primary)",
+      confirmButtonColor: "var(--color-error)",
+      cancelButtonColor: "var(--color-muted)",
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -65,41 +65,39 @@ export default function ManageUsers() {
   if (isLoading) return <Loader />;
   if (error)
     return (
-      <p className="text-center text-[var(--color-secondary)] font-bold mt-5">
+      <p className="text-center text-[var(--color-error)] font-bold mt-5">
         Error loading users
       </p>
     );
 
   return (
-    <div className="my-10 px-2 sm:px-4 max-w-7xl mx-auto">
+    <div className="my-10 px-3 sm:px-6 max-w-7xl mx-auto">
       <div
-        className="p-4 rounded-lg shadow-lg"
+        className="p-6 rounded-2xl shadow-lg"
         style={{
-          backgroundColor: "var(--color-bg)",
-          boxShadow: "0 0 15px rgba(90, 79, 207, 0.2)",
+          backgroundColor: "var(--color-surface)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
         }}
       >
         <h2 className="text-center text-2xl sm:text-3xl font-bold text-[var(--color-primary)] mb-6">
-          Manage Users
+          👥 Manage Users
         </h2>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-200 bg-white rounded-lg whitespace-nowrap">
-            <thead className="bg-[var(--color-primary)] text-white text-left">
+          <table className="min-w-full border border-[var(--color-border)] rounded-lg overflow-hidden">
+            <thead className="bg-[var(--color-primary)] text-[var(--navbar-text)]">
               <tr>
-                <th className="px-3 sm:px-5 py-3 text-sm sm:text-base">Name</th>
-                <th className="px-3 sm:px-5 py-3 text-sm sm:text-base">Email</th>
-                <th className="px-3 sm:px-5 py-3 text-sm sm:text-base">Role</th>
-                <th className="px-3 sm:px-5 py-3 text-sm sm:text-base">
-                  Change Role
-                </th>
-                <th className="px-3 sm:px-5 py-3 text-sm sm:text-base">Delete</th>
+                <th className="px-4 py-3 text-sm sm:text-base">Name</th>
+                <th className="px-4 py-3 text-sm sm:text-base">Email</th>
+                <th className="px-4 py-3 text-sm sm:text-base">Role</th>
+                <th className="px-4 py-3 text-sm sm:text-base">Change Role</th>
+                <th className="px-4 py-3 text-sm sm:text-base">Action</th>
               </tr>
             </thead>
             <tbody className="text-[var(--color-text)] text-sm sm:text-base">
               {users.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="text-center py-5 italic">
+                  <td colSpan={5} className="text-center py-6 italic text-[var(--color-muted)]">
                     No users found.
                   </td>
                 </tr>
@@ -107,12 +105,14 @@ export default function ManageUsers() {
               {users.map(({ _id, name, email, role }) => (
                 <tr
                   key={_id}
-                  className="border-b hover:bg-gray-100 transition"
+                  className="border-b border-[var(--color-border)] hover:bg-[var(--color-bg)] transition"
                 >
-                  <td className="px-3 sm:px-5 py-3">{name || "-"}</td>
-                  <td className="px-3 sm:px-5 py-3">{email}</td>
-                  <td className="px-3 sm:px-5 py-3 capitalize">{role}</td>
-                  <td className="px-3 sm:px-5 py-3">
+                  <td className="px-4 py-3">{name || "-"}</td>
+                  <td className="px-4 py-3">{email}</td>
+                  <td className="px-4 py-3 capitalize font-medium text-[var(--color-secondary)]">
+                    {role}
+                  </td>
+                  <td className="px-4 py-3">
                     <select
                       value={role}
                       onChange={(e) =>
@@ -122,18 +122,18 @@ export default function ManageUsers() {
                         })
                       }
                       disabled={updateRoleMutation.isLoading}
-                      className="px-2 py-1 rounded border border-[var(--color-primary)] bg-white text-[var(--color-text)] font-semibold text-sm sm:text-base"
+                      className="px-3 py-2 rounded-lg border border-[var(--color-border)] bg-white text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] font-medium"
                     >
                       <option value="user">User</option>
                       <option value="seller">Seller</option>
                       <option value="admin">Admin</option>
                     </select>
                   </td>
-                  <td className="px-3 sm:px-5 py-3">
+                  <td className="px-4 py-3">
                     <button
                       onClick={() => handleDelete(_id)}
                       disabled={deleteUserMutation.isLoading}
-                      className="bg-[var(--color-secondary)] hover:bg-[#dc6a17] text-white font-bold px-3 py-1 rounded transition text-sm sm:text-base"
+                      className="bg-[var(--color-error)] hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg transition shadow-md"
                     >
                       Delete
                     </button>
