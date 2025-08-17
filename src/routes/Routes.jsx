@@ -31,6 +31,7 @@ import Terms from "../pages/Terms";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import FAQForm from "../pages/dashboard/admin/FAQForm";
 import FAQList from "../pages/FAQList";
+import AboutPage from "../components/AboutPage";
 
 export const router = createBrowserRouter([
   {
@@ -90,6 +91,10 @@ export const router = createBrowserRouter([
       {
         path:'/faq-list',
         Component:FAQList
+      },
+      {
+        path:'/about-page',
+        Component:AboutPage
       }
     ],
   },

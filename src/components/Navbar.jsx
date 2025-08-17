@@ -39,6 +39,7 @@ const Navbar = () => {
     { name: "Shop", path: "/shop" },
     { name: "Categories", path: "/categories" },
     { name: "FAQ", path: "/faq-list" },
+    {name:"About",path:"/about-page"},
     user ? { name: "Dashboard", path: "/dashboard" } : null,
   ].filter(Boolean);
 
