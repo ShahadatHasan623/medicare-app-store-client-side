@@ -37,7 +37,7 @@ export default function NewsletterSubscription() {
   };
 
   return (
-    <section>
+    <section data-aos="zoom-out-left">
       <div className="max-w-3xl mx-auto my-20 px-5 lg:px-0 text-center">
         <h2 className="text-3xl font-bold mb-4 text-[var(--color-primary)]">
           Subscribe for Health Tips & Offers

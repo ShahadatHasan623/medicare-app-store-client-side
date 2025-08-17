@@ -43,7 +43,8 @@ export default function Promotions({ category = "" }) {
     );
 
   return (
-    <section>
+    <section data-aos="fade-up"
+     data-aos-anchor-placement="top-center">
       <div className="max-w-7xl mx-auto px-5 lg:px-0">
         <h2 className="text-3xl font-bold mb-10 text-center text-[var(--color-primary)]">
           🎉 Promotions & Discounts

@@ -44,7 +44,10 @@ const DiscountProducts = () => {
 
   return (
     <section
-      className="my-16 lg:px-0 px-5"
+      className="my-16 lg:px-0 px-5" data-aos="fade-left"
+     data-aos-anchor="#example-anchor"
+     data-aos-offset="500"
+     data-aos-duration="500"
       aria-label="Discounted Products"
     >
       <div className="max-w-7xl mx-auto lg:px-0 px-4">

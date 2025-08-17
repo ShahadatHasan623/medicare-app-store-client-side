@@ -19,6 +19,7 @@
     "@stripe/stripe-js": "^7.4.0",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-query": "^5.83.0",
+    "aos": "^2.3.4",
     "axios": "^1.10.0",
     "bootstrap": "^5.3.7",
     "daisyui": "^5.0.46",

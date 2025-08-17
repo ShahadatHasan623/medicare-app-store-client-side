@@ -86,7 +86,7 @@ const CustomerSay = () => {
   };
 
   return (
-    <div className="bg-bg dark:bg-bg-dark  px-4 my-20 py-10 rounded-3xl shadow-lg max-w-7xl mx-auto transition-colors duration-300">
+    <div data-aos="zoom-out-right" className="bg-bg dark:bg-bg-dark  px-4 my-20 py-10 rounded-3xl shadow-lg max-w-7xl mx-auto transition-colors duration-300">
       {/* Title */}
       <div className="text-center mb-10">
         <h2 className="text-4xl font-extrabold mb-3 text-text dark:text-text-dark drop-shadow-lg text-primary">

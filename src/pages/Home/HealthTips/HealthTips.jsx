@@ -42,7 +42,7 @@ const sampleArticles = [
 
 export default function HealthTips() {
   return (
-    <section
+    <section data-aos="zoom-in-right"
       className="px-5 lg:px-0 max-w-7xl mx-auto my-20"
       style={{ color: "var(--color-text)" }}
     >

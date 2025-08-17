@@ -32,7 +32,9 @@ const Categories = () => {
 
   return (
     <section
-      className="max-w-7xl mx-auto my-20 lg:px-0 sm:px-8 px-5"
+      className="max-w-7xl mx-auto my-20 lg:px-0 sm:px-8 px-5" data-aos="fade-right"
+     data-aos-offset="300"
+     data-aos-easing="ease-in-sine"
       aria-label="Browse categories"
     >
       <div className="flex justify-between items-center mb-8">

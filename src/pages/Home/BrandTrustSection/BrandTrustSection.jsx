@@ -15,7 +15,7 @@ const certifications = [
 
 export default function BrandTrustSection() {
   return (
-    <section>
+    <section data-aos="zoom-in-left">
       <div className="max-w-7xl mx-auto px-5 my-20 lg:px-0">
         <h2 className="text-[2.618rem] font-extrabold mb-[3.618rem] text-center text-[var(--color-primary)]">
           Trusted Brands & Certifications
