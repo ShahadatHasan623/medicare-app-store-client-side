@@ -22,13 +22,29 @@ export default function PaymentHistory() {
       "inline-block px-3 py-1 rounded-full text-xs font-semibold";
     switch (status?.toLowerCase()) {
       case "paid":
-        return <span className={`${baseClasses} bg-green-100 text-green-800`}>Paid</span>;
+        return (
+          <span className={`${baseClasses} bg-success/20 text-success dark:bg-success-dark/20 dark:text-success-dark`}>
+            Paid
+          </span>
+        );
       case "pending":
-        return <span className={`${baseClasses} bg-yellow-100 text-yellow-800`}>Pending</span>;
+        return (
+          <span className={`${baseClasses} bg-warning/20 text-warning dark:bg-warning-dark/20 dark:text-warning-dark`}>
+            Pending
+          </span>
+        );
       case "failed":
-        return <span className={`${baseClasses} bg-red-100 text-red-800`}>Failed</span>;
+        return (
+          <span className={`${baseClasses} bg-error/20 text-error dark:bg-error-dark/20 dark:text-error-dark`}>
+            Failed
+          </span>
+        );
       default:
-        return <span className={`${baseClasses} bg-gray-200 text-gray-700`}>{status || "Unknown"}</span>;
+        return (
+          <span className={`${baseClasses} bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200`}>
+            {status || "Unknown"}
+          </span>
+        );
     }
   };
 
@@ -38,21 +54,21 @@ export default function PaymentHistory() {
   if (isLoading) return <Loader />;
   if (isError)
     return (
-      <p className="text-center mt-10 text-red-600 font-semibold">
+      <p className="text-center mt-10 text-error dark:text-error-dark font-semibold">
         Failed to load payment history.
       </p>
     );
 
   return (
-    <section className="min-h-screen p-[1.618rem] md:p-[1.5rem] bg-[var(--color-bg)]">
+    <section className="min-h-screen p-6 md:p-10 bg-bg dark:bg-bg-dark transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-[2.618rem] md:text-[3.618rem] font-extrabold mb-[1.618rem] text-[var(--color-primary)] text-center">
+        <h2 className="text-3xl md:text-4xl font-extrabold mb-6 text-primary dark:text-primary-dark text-center">
           My Payment History
         </h2>
 
-        <div className="overflow-x-auto bg-[var(--color-surface)] rounded-2xl shadow-xl border border-[var(--color-border)]">
+        <div className="overflow-x-auto bg-surface dark:bg-surface-dark rounded-2xl shadow-xl  dark:border-border-dark">
           <table className="min-w-full text-sm md:text-base">
-            <thead className="bg-[var(--color-primary)] text-white rounded-t-2xl">
+            <thead className="bg-primary dark:bg-primary-dark text-white rounded-t-2xl">
               <tr>
                 <th className="px-4 py-3 text-left">#</th>
                 <th className="px-4 py-3 text-left">Medicine</th>
@@ -62,28 +78,32 @@ export default function PaymentHistory() {
                 <th className="px-4 py-3 text-left">Date</th>
               </tr>
             </thead>
-            <tbody className="text-[var(--color-text)]">
+            <tbody className="text-text dark:text-text-dark transition-colors duration-300">
               {payments.length > 0 ? (
                 payments.map((pay, index) => (
                   <tr
                     key={pay._id}
-                    className={`transition hover:bg-[var(--color-bg)] ${
-                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    className={`transition hover:bg-gray-100 dark:hover:bg-gray-800 ${
+                      index % 2 === 0
+                        ? "bg-gray-50 dark:bg-gray-900"
+                        : "bg-white dark:bg-gray-700"
                     }`}
                   >
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3 font-medium">{pay.medicineName || "Unnamed"}</td>
-                    <td className="px-4 py-3 text-gray-700">{pay.buyerEmail}</td>
-                    <td className="px-4 py-3 text-right font-semibold text-[var(--color-secondary)]">
+                    <td className="px-4 py-3 text-muted dark:text-muted-dark">{pay.buyerEmail}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-secondary dark:text-secondary-dark">
                       {formatCurrency(pay.amount ?? pay.totalAmount)}
                     </td>
                     <td className="px-4 py-3">{getStatusBadge(pay.status)}</td>
-                    <td className="px-4 py-3 text-gray-600">{new Date(pay.date).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-muted dark:text-muted-dark">
+                      {new Date(pay.date).toLocaleDateString()}
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="text-center text-gray-500 italic py-[2.618rem]">
+                  <td colSpan="6" className="text-center text-muted dark:text-muted-dark italic py-10">
                     No payment history found.
                   </td>
                 </tr>

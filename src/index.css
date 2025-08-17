@@ -2,36 +2,61 @@
 
 @import "tailwindcss";
 @plugin "daisyui";
-
-:root {
-  /* 🌿 Brand Core */
-  --color-primary: #10b981; /* Emerald Green → health, trust, fresh */
-  --color-secondary: #3b82f6; /* Blue → calmness, reliability */
-
-  /* 🎨 Base */
-  --color-bg: #f9fafb; /* Light Grayish White → clean background */
-  --color-surface: #ffffff; /* Cards, sections */
-  --color-text: #1f2937; /* Dark gray → readability & professional */
-  --color-muted: #6b7280; /* Muted gray text */
-
-  /* 🌐 Navbar */
-  --navbar-bg: #10b981; /* Emerald Green → friendly & trustable */
-  --navbar-text: #ffffff; /* White text for contrast */
-  --navbar-hover: #6ee7b7; /* Soft mint hover → smooth highlight */
-
-  /* 📦 Footer */
-  --footer-bg: #1e3a8a; /* Deep Blue → professional, calm & stable */
-  --footer-text: #f3f4f6; /* Light gray → readable */
-  --footer-link-hover: #3b82f6; /* Bright blue hover → interactive */
-
-  /* ✨ Extras */
-  --color-border: #e5e7eb; /* Subtle borders */
-  --color-success: #22c55e; /* Success messages */
-  --color-error: #ef4444; /* Errors */
-  --color-warning: #facc15; /* Alerts */
-  --color-info: #3b82f6; /* Info messages */
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
 }
 
+/* Light Theme (default) */
+:root {
+  --color-primary: #10b981;
+  --color-secondary: #3b82f6;
+
+  --color-bg: #f9fafb;
+  --color-surface: #ffffff;
+  --color-text: #1f2937;
+  --color-muted: #6b7280;
+
+  --navbar-bg: #10b981;
+  --navbar-text: #ffffff;
+  --navbar-hover: #6ee7b7;
+
+  --footer-bg: #1e3a8a;
+  --footer-text: #f3f4f6;
+  --footer-link-hover: #3b82f6;
+
+  --color-border: #e5e7eb;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #facc15;
+  --color-info: #3b82f6;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --color-primary: #10b981;
+  --color-secondary: #3b82f6;
+
+  --color-bg: #111827; /* Main background */
+  --color-surface: #1f2937; /* Cards, modals */
+  --color-text: #f3f4f6; /* Primary text */
+  --color-muted: #9ca3af; /* Secondary text */
+
+  --navbar-bg: #0f766e;
+  --navbar-text: #f3f4f6;
+  --navbar-hover: #22c55e;
+
+  --footer-bg: #111827;
+  --footer-text: #d1d5db;
+  --footer-link-hover: #3b82f6;
+
+  --color-border: #374151;
+  --color-success: #22c55e;
+  --color-error: #f87171;
+  --color-warning: #facc15;
+  --color-info: #3b82f6;
+}
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 @keyframes spin-slow {
   from {
     transform: rotate(0deg);

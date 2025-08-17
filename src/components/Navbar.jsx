@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import MedicareLogo from "./logo/MedicareLogo";
 import useAuth from "../hooks/useAuth";
 import { useCart } from "../utils/CartContext"; // ✅ Context import
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const location = useLocation();
@@ -85,6 +86,7 @@ const Navbar = () => {
           {/* Right Icons */}
           <div className="flex items-center gap-3">
             {/* Cart */}
+            <ThemeToggle></ThemeToggle>
             <Link to="/cart" className="relative">
               <div className="p-2 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white transition shadow-md">
                 <FaCartPlus className="text-xl" />
