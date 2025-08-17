@@ -1,23 +1,50 @@
 import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Avatar,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
-import { FaEdit, FaTrash } from "react-icons/fa";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 import Loader from "../../../components/Loader";
+
+// MUI Theme colors using your palette
+const palette = {
+  primary: "#10b981", // Emerald Green
+  secondary: "#3b82f6", // Blue
+  error: "#ef4444",
+  surface: "#ffffff",
+  background: "#f9fafb",
+  text: "#1f2937",
+  muted: "#6b7280",
+};
 
 const ManageCategories = () => {
   const axiosSecure = useAxioseSecure();
   const queryClient = useQueryClient();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [currentId, setCurrentId] = useState(null);
-  const [formData, setFormData] = useState({
-    categoryName: "",
-    image: "",
-  });
+  const [formData, setFormData] = useState({ categoryName: "", image: "" });
 
-  // Fetch All Categories
+  // Fetch categories
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -26,7 +53,7 @@ const ManageCategories = () => {
     },
   });
 
-  // Add Category Mutation
+  // Mutations
   const addCategoryMutation = useMutation({
     mutationFn: async (newCategory) => {
       const res = await axiosSecure.post("/categories", newCategory);
@@ -35,11 +62,10 @@ const ManageCategories = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
       Swal.fire("✅ Success!", "New category added!", "success");
-      closeModal();
+      handleClose();
     },
   });
 
-  // Update Category Mutation
   const updateCategoryMutation = useMutation({
     mutationFn: async ({ id, updatedCategory }) => {
       const res = await axiosSecure.patch(`/categories/${id}`, updatedCategory);
@@ -48,11 +74,10 @@ const ManageCategories = () => {
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
       Swal.fire("✅ Updated!", "Category updated successfully!", "success");
-      closeModal();
+      handleClose();
     },
   });
 
-  // Delete Category Mutation
   const deleteCategoryMutation = useMutation({
     mutationFn: async (id) => {
       await axiosSecure.delete(`/categories/${id}`);
@@ -63,167 +88,135 @@ const ManageCategories = () => {
     },
   });
 
-  // Handle Delete
   const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You want to delete this category?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "var(--color-primary)",
+      confirmButtonColor: palette.primary,
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
-      if (result.isConfirmed) {
-        deleteCategoryMutation.mutate(id);
-      }
+      if (result.isConfirmed) deleteCategoryMutation.mutate(id);
     });
   };
 
-  // Handle Form Submit
+  const handleOpenAdd = () => {
+    setIsEdit(false);
+    setCurrentId(null);
+    setFormData({ categoryName: "", image: "" });
+    setOpen(true);
+  };
+
+  const handleOpenEdit = (category) => {
+    setIsEdit(true);
+    setCurrentId(category._id);
+    setFormData({ categoryName: category.categoryName, image: category.image });
+    setOpen(true);
+  };
+
+  const handleClose = () => setOpen(false);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isEdit) {
-      updateCategoryMutation.mutate({
-        id: currentId,
-        updatedCategory: formData,
-      });
+      updateCategoryMutation.mutate({ id: currentId, updatedCategory: formData });
     } else {
       addCategoryMutation.mutate(formData);
     }
   };
 
-  // Open Add Modal
-  const openAddModal = () => {
-    setIsEdit(false);
-    setCurrentId(null);
-    setFormData({ categoryName: "", image: "" });
-    setIsModalOpen(true);
-  };
-
-  // Open Edit Modal
-  const openEditModal = (category) => {
-    setIsEdit(true);
-    setCurrentId(category._id);
-    setFormData({ categoryName: category.categoryName, image: category.image });
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setFormData({ categoryName: "", image: "" });
-  };
-
-  if (isLoading) return <Loader></Loader>;
+  if (isLoading) return <Loader />;
 
   return (
-    <div className="p-6 bg-[var(--color-bg)] min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-[var(--color-primary)]">Manage Categories</h2>
-        <button
-          className="px-4 py-2 bg-[var(--color-primary)] text-white rounded-lg shadow hover:bg-indigo-700 transition"
-          onClick={openAddModal}
+    <Box sx={{ p: 4, backgroundColor: palette.background, minHeight: "100vh" }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Typography variant="h4" fontWeight="bold" color={palette.primary}>
+          Manage Categories
+        </Typography>
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: palette.primary }}
+          onClick={handleOpenAdd}
         >
           + Add Category
-        </button>
-      </div>
+        </Button>
+      </Box>
 
-      {/* Categories Table */}
-      <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr className="bg-[var(--color-primary)] text-white">
-              <th className="p-3 text-left">#</th>
-              <th className="p-3 text-left">Image</th>
-              <th className="p-3 text-left">Category Name</th>
-              <th className="p-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+      <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+        <Table>
+          <TableHead sx={{ backgroundColor: palette.primary }}>
+            <TableRow>
+              <TableCell sx={{ color: "#fff" }}>#</TableCell>
+              <TableCell sx={{ color: "#fff" }}>Image</TableCell>
+              <TableCell sx={{ color: "#fff" }}>Category Name</TableCell>
+              <TableCell sx={{ color: "#fff", textAlign: "center" }}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {categories.map((cat, index) => (
-              <tr
-                key={cat._id}
-                className={`${
-                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                } hover:bg-[var(--color-bg)] transition`}
-              >
-                <td className="p-3">{index + 1}</td>
-                <td className="p-3">
-                  <img
-                    src={cat.image}
-                    alt={cat.categoryName}
-                    className="w-12 h-12 rounded shadow"
-                  />
-                </td>
-                <td className="p-3 font-medium text-[var(--color-text)]">{cat.categoryName}</td>
-                <td className="p-3 text-center flex gap-3 justify-center">
-                  <button
-                    className="p-2 bg-[var(--color-secondary)] text-white rounded hover:bg-orange-600 transition"
-                    onClick={() => openEditModal(cat)}
+              <TableRow key={cat._id} sx={{ "&:hover": { backgroundColor: palette.surface } }}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>
+                  <Avatar src={cat.image} alt={cat.categoryName} />
+                </TableCell>
+                <TableCell>{cat.categoryName}</TableCell>
+                <TableCell align="center">
+                  <IconButton
+                    sx={{ color: palette.secondary }}
+                    onClick={() => handleOpenEdit(cat)}
                   >
-                    <FaEdit />
-                  </button>
-                  <button
-                    className="p-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                    <Edit />
+                  </IconButton>
+                  <IconButton
+                    sx={{ color: palette.error }}
                     onClick={() => handleDelete(cat._id)}
                   >
-                    <FaTrash />
-                  </button>
-                </td>
-              </tr>
+                    <Delete />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h3 className="text-xl font-bold mb-4 text-[var(--color-primary)]">
-              {isEdit ? "Edit Category" : "Add New Category"}
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Category Name"
-                className="input input-bordered w-full border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-primary)]"
-                value={formData.categoryName}
-                onChange={(e) =>
-                  setFormData({ ...formData, categoryName: e.target.value })
-                }
-                required
-              />
-              <input
-                type="text"
-                placeholder="Image URL"
-                className="input input-bordered w-full border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-primary)]"
-                value={formData.image}
-                onChange={(e) =>
-                  setFormData({ ...formData, image: e.target.value })
-                }
-                required
-              />
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
-                  onClick={closeModal}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[var(--color-primary)] text-white rounded hover:bg-indigo-700"
-                >
-                  {isEdit ? "Update" : "Add"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+        <DialogTitle sx={{ color: palette.primary }}>
+          {isEdit ? "Edit Category" : "Add New Category"}
+        </DialogTitle>
+        <DialogContent>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+            <TextField
+              label="Category Name"
+              variant="outlined"
+              value={formData.categoryName}
+              onChange={(e) => setFormData({ ...formData, categoryName: e.target.value })}
+              required
+              fullWidth
+            />
+            <TextField
+              label="Image URL"
+              variant="outlined"
+              value={formData.image}
+              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+              required
+              fullWidth
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} sx={{ color: palette.muted }}>
+            Cancel
+          </Button>
+          <Button type="submit" onClick={handleSubmit} sx={{ backgroundColor: palette.primary, color: "#fff", "&:hover": { backgroundColor: "#0f9c70" } }}>
+            {isEdit ? "Update" : "Add"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 
