@@ -35,42 +35,54 @@ export default function SellerDashboard() {
   }, [user, axiosSecure]);
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-r from-blue-50 to-purple-100 flex items-center justify-center">
-      <div className="max-w-4xl w-full bg-white shadow-2xl rounded-2xl p-8">
-        <h2 className="text-3xl font-extrabold text-center mb-8 text-gray-800">
+    <div className="min-h-screen p-[1.618rem] md:p-[2.618rem] bg-[var(--color-bg)] flex items-center justify-center">
+      <div className="max-w-5xl w-full bg-[var(--color-surface)] rounded-2xl shadow-2xl p-[2.618rem]">
+        <h2 className="text-[2.618rem] md:text-[3.618rem] font-extrabold text-center mb-[1.618rem] text-[var(--color-primary)]">
           Seller Dashboard
         </h2>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center space-y-3">
-            <FaSpinner className="animate-spin text-blue-600 text-4xl" />
-            <p className="text-gray-600 text-lg">Loading sales summary...</p>
+          <div className="flex flex-col items-center justify-center space-y-[1.618rem]">
+            <FaSpinner className="animate-spin text-[var(--color-secondary)] text-5xl" />
+            <p className="text-[var(--color-muted)] text-lg">Loading sales summary...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1.618rem]">
             {/* Paid Total */}
-            <div className="p-6 bg-green-50 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-center">
-              <FaMoneyBillWave className="text-green-600 text-4xl mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-gray-700">Paid Total</h3>
-              <p className="text-3xl font-bold text-green-700 mt-2">
+            <div className="p-[1.618rem] bg-green-50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 text-center">
+              <div className="bg-green-100 p-[1.618rem] rounded-full inline-block mb-[1.618rem]">
+                <FaMoneyBillWave className="text-green-700 text-4xl" />
+              </div>
+              <h3 className="text-lg md:text-xl font-semibold text-[var(--color-text)] mb-[0.618rem]">
+                Paid Total
+              </h3>
+              <p className="text-3xl md:text-[3.618rem] font-bold text-green-700">
                 ${summary.paidTotal?.toFixed(2)}
               </p>
             </div>
 
             {/* Pending Total */}
-            <div className="p-6 bg-yellow-50 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-center">
-              <FaDollarSign className="text-yellow-600 text-4xl mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-gray-700">Pending Total</h3>
-              <p className="text-3xl font-bold text-yellow-700 mt-2">
+            <div className="p-[1.618rem] bg-yellow-50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 text-center">
+              <div className="bg-yellow-100 p-[1.618rem] rounded-full inline-block mb-[1.618rem]">
+                <FaDollarSign className="text-yellow-700 text-4xl" />
+              </div>
+              <h3 className="text-lg md:text-xl font-semibold text-[var(--color-text)] mb-[0.618rem]">
+                Pending Total
+              </h3>
+              <p className="text-3xl md:text-[3.618rem] font-bold text-yellow-700">
                 ${summary.pendingTotal?.toFixed(2)}
               </p>
             </div>
 
             {/* Total Orders */}
-            <div className="p-6 bg-blue-50 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-center">
-              <FaShoppingCart className="text-blue-600 text-4xl mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-gray-700">Total Orders</h3>
-              <p className="text-3xl font-bold text-blue-700 mt-2">
+            <div className="p-[1.618rem] bg-blue-50 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 text-center">
+              <div className="bg-blue-100 p-[1.618rem] rounded-full inline-block mb-[1.618rem]">
+                <FaShoppingCart className="text-blue-700 text-4xl" />
+              </div>
+              <h3 className="text-lg md:text-xl font-semibold text-[var(--color-text)] mb-[0.618rem]">
+                Total Orders
+              </h3>
+              <p className="text-3xl md:text-[3.618rem] font-bold text-blue-700">
                 {summary.totalOrders}
               </p>
             </div>
