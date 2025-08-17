@@ -9,22 +9,14 @@ export default function ManageUsers() {
   const queryClient = useQueryClient();
 
   // Fetch users
-  const {
-    data: users = [],
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: users = [], isLoading, error } = useQuery({
     queryKey: ["users"],
-    queryFn: async () => {
-      const res = await axiosSecure.get("/users");
-      return res.data;
-    },
+    queryFn: async () => (await axiosSecure.get("/users")).data,
   });
 
   // Update role mutation
   const updateRoleMutation = useMutation({
-    mutationFn: ({ id, role }) =>
-      axiosSecure.patch(`/users/role/${id}`, { role }),
+    mutationFn: ({ id, role }) => axiosSecure.patch(`/users/role/${id}`, { role }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       Swal.fire("✅ Updated!", "User role updated successfully.", "success");
@@ -56,9 +48,7 @@ export default function ManageUsers() {
       cancelButtonColor: "var(--color-muted)",
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
-      if (result.isConfirmed) {
-        deleteUserMutation.mutate(id);
-      }
+      if (result.isConfirmed) deleteUserMutation.mutate(id);
     });
   };
 
@@ -109,20 +99,13 @@ export default function ManageUsers() {
                 >
                   <td className="px-4 py-3">{name || "-"}</td>
                   <td className="px-4 py-3">{email}</td>
-                  <td className="px-4 py-3 capitalize font-medium text-[var(--color-secondary)]">
-                    {role}
-                  </td>
+                  <td className="px-4 py-3 capitalize font-medium text-[var(--color-secondary)]">{role}</td>
                   <td className="px-4 py-3">
                     <select
                       value={role}
-                      onChange={(e) =>
-                        updateRoleMutation.mutate({
-                          id: _id,
-                          role: e.target.value,
-                        })
-                      }
+                      onChange={(e) => updateRoleMutation.mutate({ id: _id, role: e.target.value })}
                       disabled={updateRoleMutation.isLoading}
-                      className="px-3 py-2 rounded-lg border border-[var(--color-border)] bg-white text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] font-medium"
+                      className="px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] font-medium"
                     >
                       <option value="user">User</option>
                       <option value="seller">Seller</option>

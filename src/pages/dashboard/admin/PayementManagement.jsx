@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
+import Loader from "../../../components/Loader";
 
 export default function PaymentManagement() {
   const [payments, setPayments] = useState([]);
@@ -35,8 +36,8 @@ export default function PaymentManagement() {
       text: "You want to mark this payment as paid.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "var(--color-primary)",
+      cancelButtonColor: "var(--color-muted)",
       confirmButtonText: "Yes, mark as paid!",
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -63,17 +64,21 @@ export default function PaymentManagement() {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-[var(--color-bg)]">
+    <div className="p-6 min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <h2 className="text-3xl font-bold mb-6 text-[var(--color-primary)]">
         Payment Management
       </h2>
+
       {loading ? (
         <p className="text-[var(--color-primary)] font-semibold">Loading payments...</p>
       ) : (
-        <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
+        <div
+          className="overflow-x-auto shadow-lg rounded-lg"
+          style={{ backgroundColor: "var(--color-surface)" }}
+        >
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-[var(--color-primary)] text-white">
+              <tr style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}>
                 <th className="p-3 text-left">Buyer Email</th>
                 <th className="p-3 text-left">Seller Email(s)</th>
                 <th className="p-3 text-left">Total Price</th>
@@ -87,7 +92,7 @@ export default function PaymentManagement() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="text-center p-4 text-gray-500 font-medium"
+                    className="text-center p-4 text-[var(--color-muted)] font-medium"
                   >
                     No payments found.
                   </td>
@@ -97,11 +102,11 @@ export default function PaymentManagement() {
                 <tr
                   key={payment._id}
                   className={`${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  } hover:bg-gray-100 transition`}
+                    index % 2 === 0 ? "bg-[var(--color-bg)]" : "bg-[var(--color-surface)]"
+                  } hover:bg-[var(--color-border)] transition`}
                 >
                   <td className="p-3">{payment.buyerEmail}</td>
-                  <td className="p-3 text-sm text-gray-700">
+                  <td className="p-3 text-sm text-[var(--color-text)]">
                     {Array.isArray(payment.sellerEmails)
                       ? payment.sellerEmails.join(", ")
                       : "N/A"}
@@ -113,8 +118,8 @@ export default function PaymentManagement() {
                     <span
                       className={`px-2 py-1 rounded text-white text-sm ${
                         payment.status === "paid"
-                          ? "bg-green-500"
-                          : "bg-yellow-500"
+                          ? "bg-[var(--color-success)]"
+                          : "bg-[var(--color-warning)]"
                       }`}
                     >
                       {payment.status}
@@ -135,7 +140,7 @@ export default function PaymentManagement() {
                           : "Mark as Paid"}
                       </button>
                     ) : (
-                      <span className="text-green-600 font-semibold">Paid</span>
+                      <span className="text-[var(--color-success)] font-semibold">Paid</span>
                     )}
                   </td>
                 </tr>

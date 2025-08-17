@@ -12,39 +12,48 @@ export default function FAQForm() {
     try {
       await axios.post("/faqs", { question, answer });
 
-      // ✅ SweetAlert success message
       Swal.fire({
         icon: "success",
         title: "FAQ Added!",
         text: "Your FAQ has been added successfully.",
-        confirmButtonColor: "#4f46e5", // Tailwind color example
+        confirmButtonColor: "var(--color-primary)",
       });
 
       setQuestion("");
       setAnswer("");
     } catch (err) {
       console.error("Error submitting FAQ:", err);
-
-      // ✅ SweetAlert error message
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Something went wrong while adding FAQ!",
-        confirmButtonColor: "#dc2626", // Tailwind red
+        confirmButtonColor: "var(--color-primary)",
       });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-lg my-10">
-      <h2 className="text-2xl font-bold mb-4">Add FAQ</h2>
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-xl mx-auto p-6 rounded-lg shadow-md my-10"
+      style={{
+        backgroundColor: "var(--color-surface)",
+        color: "var(--color-text)",
+      }}
+    >
+      <h2 className="text-2xl font-bold mb-4 text-[var(--color-primary)]">Add FAQ</h2>
 
       <label className="block mb-2 font-semibold">Question:</label>
       <input
         type="text"
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
-        className="w-full p-2 border rounded mb-4"
+        className="w-full p-2 mb-4 rounded"
+        style={{
+          border: "1px solid var(--color-border)",
+          backgroundColor: "var(--color-bg)",
+          color: "var(--color-text)",
+        }}
         required
       />
 
@@ -52,14 +61,29 @@ export default function FAQForm() {
       <textarea
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
-        className="w-full p-2 border rounded mb-4"
         rows={4}
+        className="w-full p-2 mb-4 rounded"
+        style={{
+          border: "1px solid var(--color-border)",
+          backgroundColor: "var(--color-bg)",
+          color: "var(--color-text)",
+        }}
         required
       />
 
       <button
         type="submit"
-        className="bg-[var(--color-primary)] text-white px-4 py-2 rounded hover:bg-[var(--navbar-hover)] transition"
+        className="px-4 py-2 rounded transition"
+        style={{
+          backgroundColor: "var(--color-primary)",
+          color: "#fff",
+        }}
+        onMouseOver={(e) =>
+          (e.currentTarget.style.backgroundColor = "var(--color-hover)")
+        }
+        onMouseOut={(e) =>
+          (e.currentTarget.style.backgroundColor = "var(--color-primary)")
+        }
       >
         Submit
       </button>

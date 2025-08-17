@@ -24,17 +24,6 @@ import Swal from "sweetalert2";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 import Loader from "../../../components/Loader";
 
-// MUI Theme colors using your palette
-const palette = {
-  primary: "#10b981", // Emerald Green
-  secondary: "#3b82f6", // Blue
-  error: "#ef4444",
-  surface: "#ffffff",
-  background: "#f9fafb",
-  text: "#1f2937",
-  muted: "#6b7280",
-};
-
 const ManageCategories = () => {
   const axiosSecure = useAxioseSecure();
   const queryClient = useQueryClient();
@@ -47,18 +36,12 @@ const ManageCategories = () => {
   // Fetch categories
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["categories"],
-    queryFn: async () => {
-      const res = await axiosSecure.get("/categories");
-      return res.data;
-    },
+    queryFn: async () => (await axiosSecure.get("/categories")).data,
   });
 
   // Mutations
   const addCategoryMutation = useMutation({
-    mutationFn: async (newCategory) => {
-      const res = await axiosSecure.post("/categories", newCategory);
-      return res.data;
-    },
+    mutationFn: (newCategory) => axiosSecure.post("/categories", newCategory),
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
       Swal.fire("✅ Success!", "New category added!", "success");
@@ -67,10 +50,8 @@ const ManageCategories = () => {
   });
 
   const updateCategoryMutation = useMutation({
-    mutationFn: async ({ id, updatedCategory }) => {
-      const res = await axiosSecure.patch(`/categories/${id}`, updatedCategory);
-      return res.data;
-    },
+    mutationFn: ({ id, updatedCategory }) =>
+      axiosSecure.patch(`/categories/${id}`, updatedCategory),
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
       Swal.fire("✅ Updated!", "Category updated successfully!", "success");
@@ -79,9 +60,7 @@ const ManageCategories = () => {
   });
 
   const deleteCategoryMutation = useMutation({
-    mutationFn: async (id) => {
-      await axiosSecure.delete(`/categories/${id}`);
-    },
+    mutationFn: (id) => axiosSecure.delete(`/categories/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
       Swal.fire("🗑 Deleted!", "Category removed!", "success");
@@ -94,8 +73,8 @@ const ManageCategories = () => {
       text: "You want to delete this category?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: palette.primary,
-      cancelButtonColor: "#d33",
+      confirmButtonColor: "var(--color-primary)",
+      cancelButtonColor: "var(--color-muted)",
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) deleteCategoryMutation.mutate(id);
@@ -130,23 +109,37 @@ const ManageCategories = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <Box sx={{ p: 4, backgroundColor: palette.background, minHeight: "100vh" }}>
+    <Box
+      sx={{
+        p: 4,
+        backgroundColor: "var(--color-bg)",
+        color: "var(--color-text)",
+        minHeight: "100vh",
+      }}
+    >
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-        <Typography variant="h4" fontWeight="bold" color={palette.primary}>
+        <Typography variant="h4" fontWeight="bold" color="var(--color-primary)">
           Manage Categories
         </Typography>
         <Button
           variant="contained"
-          sx={{ backgroundColor: palette.primary }}
+          sx={{ backgroundColor: "var(--color-primary)", color: "#fff" }}
           onClick={handleOpenAdd}
         >
           + Add Category
         </Button>
       </Box>
 
-      <TableContainer component={Paper} sx={{ overflowX: "auto" }}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          overflowX: "auto",
+          backgroundColor: "var(--color-surface)",
+          color: "var(--color-text)",
+        }}
+      >
         <Table>
-          <TableHead sx={{ backgroundColor: palette.primary }}>
+          <TableHead sx={{ backgroundColor: "var(--color-primary)" }}>
             <TableRow>
               <TableCell sx={{ color: "#fff" }}>#</TableCell>
               <TableCell sx={{ color: "#fff" }}>Image</TableCell>
@@ -156,7 +149,12 @@ const ManageCategories = () => {
           </TableHead>
           <TableBody>
             {categories.map((cat, index) => (
-              <TableRow key={cat._id} sx={{ "&:hover": { backgroundColor: palette.surface } }}>
+              <TableRow
+                key={cat._id}
+                sx={{
+                  "&:hover": { backgroundColor: "var(--color-bg)" },
+                }}
+              >
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
                   <Avatar src={cat.image} alt={cat.categoryName} />
@@ -164,13 +162,13 @@ const ManageCategories = () => {
                 <TableCell>{cat.categoryName}</TableCell>
                 <TableCell align="center">
                   <IconButton
-                    sx={{ color: palette.secondary }}
+                    sx={{ color: "var(--color-secondary)" }}
                     onClick={() => handleOpenEdit(cat)}
                   >
                     <Edit />
                   </IconButton>
                   <IconButton
-                    sx={{ color: palette.error }}
+                    sx={{ color: "var(--color-error)" }}
                     onClick={() => handleDelete(cat._id)}
                   >
                     <Delete />
@@ -184,18 +182,30 @@ const ManageCategories = () => {
 
       {/* Modal */}
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ color: palette.primary }}>
+        <DialogTitle sx={{ color: "var(--color-primary)" }}>
           {isEdit ? "Edit Category" : "Add New Category"}
         </DialogTitle>
         <DialogContent>
-          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}
+          >
             <TextField
               label="Category Name"
               variant="outlined"
               value={formData.categoryName}
-              onChange={(e) => setFormData({ ...formData, categoryName: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, categoryName: e.target.value })
+              }
               required
               fullWidth
+              InputProps={{
+                style: {
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-surface)",
+                },
+              }}
             />
             <TextField
               label="Image URL"
@@ -204,14 +214,28 @@ const ManageCategories = () => {
               onChange={(e) => setFormData({ ...formData, image: e.target.value })}
               required
               fullWidth
+              InputProps={{
+                style: {
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-surface)",
+                },
+              }}
             />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} sx={{ color: palette.muted }}>
+          <Button onClick={handleClose} sx={{ color: "var(--color-muted)" }}>
             Cancel
           </Button>
-          <Button type="submit" onClick={handleSubmit} sx={{ backgroundColor: palette.primary, color: "#fff", "&:hover": { backgroundColor: "#0f9c70" } }}>
+          <Button
+            type="submit"
+            onClick={handleSubmit}
+            sx={{
+              backgroundColor: "var(--color-primary)",
+              color: "#fff",
+              "&:hover": { backgroundColor: "#0f9c70" },
+            }}
+          >
             {isEdit ? "Update" : "Add"}
           </Button>
         </DialogActions>

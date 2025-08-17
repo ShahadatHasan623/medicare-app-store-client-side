@@ -16,7 +16,6 @@ export default function ManageBanner() {
     },
   });
 
-  // Toggle slider status
   const toggleSliderMutation = useMutation({
     mutationFn: (adId) =>
       axiosSecure.patch(`/advertisements/admin/toggle-slider/${adId}`),
@@ -29,19 +28,18 @@ export default function ManageBanner() {
     },
   });
 
-  if (isLoading)
-    return <Loader></Loader>;
+  if (isLoading) return <Loader />;
 
   return (
-    <div className="p-6 min-h-screen bg-[var(--color-bg)]">
+    <div className="p-6 min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <h2 className="text-3xl font-bold mb-6 text-[var(--color-primary)]">
         Manage Advertisement Banners
       </h2>
 
       {ads.length === 0 ? (
-        <p className="text-[var(--color-text)] font-medium">No advertisements found.</p>
+        <p className="font-medium">No advertisements found.</p>
       ) : (
-        <div className="overflow-x-auto bg-white shadow-lg rounded-lg border border-gray-200">
+        <div className="overflow-x-auto rounded-lg shadow-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
           <table className="min-w-full border-collapse">
             <thead>
               <tr className="bg-[var(--color-primary)] text-white">
@@ -58,8 +56,8 @@ export default function ManageBanner() {
                 <tr
                   key={ad._id}
                   className={`${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  } hover:bg-[var(--color-bg)] transition`}
+                    index % 2 === 0 ? "bg-[var(--color-surface)]" : "bg-[var(--color-bg)]"
+                  } hover:bg-[var(--color-border)] transition`}
                 >
                   <td className="p-3">
                     <img
@@ -68,16 +66,16 @@ export default function ManageBanner() {
                       className="w-20 h-16 object-cover rounded shadow"
                     />
                   </td>
-                  <td className="p-3 font-medium text-[var(--color-text)]">{ad.medicineName}</td>
-                  <td className="p-3 text-gray-600">{ad.description}</td>
-                  <td className="p-3 text-sm text-gray-700">{ad.sellerEmail}</td>
+                  <td className="p-3 font-medium">{ad.medicineName}</td>
+                  <td className="p-3 text-[var(--color-muted)]">{ad.description}</td>
+                  <td className="p-3 text-sm text-[var(--color-muted)]">{ad.sellerEmail}</td>
                   <td className="p-3 text-center">
                     {ad.isOnSlider ? (
-                      <span className="px-2 py-1 rounded bg-green-100 text-green-700 font-semibold text-sm">
+                      <span className="px-2 py-1 rounded bg-[var(--color-success)] text-white font-semibold text-sm">
                         Yes
                       </span>
                     ) : (
-                      <span className="px-2 py-1 rounded bg-red-100 text-red-700 font-semibold text-sm">
+                      <span className="px-2 py-1 rounded bg-[var(--color-error)] text-white font-semibold text-sm">
                         No
                       </span>
                     )}

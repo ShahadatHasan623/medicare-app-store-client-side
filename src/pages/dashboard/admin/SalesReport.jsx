@@ -16,7 +16,6 @@ export default function SalesReport() {
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 6;
 
-  // Fetch sales report
   const { data: sales = [], isLoading } = useQuery({
     queryKey: ["salesReport", startDate, endDate],
     queryFn: async () => {
@@ -27,7 +26,6 @@ export default function SalesReport() {
     },
   });
 
-  // Table columns
   const columns = [
     { name: "Medicine", selector: (row) => row.medicineName, sortable: true, wrap: true },
     { name: "Seller", selector: (row) => row.sellerEmail, sortable: true, wrap: true },
@@ -39,7 +37,6 @@ export default function SalesReport() {
     { name: "Date", selector: (row) => new Date(row.date).toLocaleDateString(), sortable: true },
   ];
 
-  // Pagination logic
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = sales.slice(indexOfFirstRow, indexOfLastRow);
@@ -47,7 +44,6 @@ export default function SalesReport() {
   const handleNext = () => currentPage < totalPages && setCurrentPage(currentPage + 1);
   const handlePrev = () => currentPage > 1 && setCurrentPage(currentPage - 1);
 
-  // Export Functions
   const exportToExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(sales);
     const workbook = XLSX.utils.book_new();
@@ -81,53 +77,50 @@ export default function SalesReport() {
   if (isLoading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] px-4 md:px-10 py-6 md:py-10">
-      {/* Header */}
-      <h2 className="text-[2.618rem] md:text-[3.618rem] font-extrabold text-[var(--color-primary)] mb-[1.618rem] md:mb-[2.618rem] text-center">
+    <div className="min-h-screen px-4 md:px-5 py-6 md:py-10 bg-[var(--color-bg)] text-[var(--color-text)]">
+      <h2 className="text-[2.618rem] md:text-[3.618rem] font-extrabold text-[var(--color-primary)] mb-[2rem] text-center">
         Sales Report
       </h2>
 
-      {/* Filter & Export Buttons */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-[1.618rem] mb-[1.618rem] flex-wrap">
-        <div className="flex flex-wrap gap-[1rem]">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6 flex-wrap">
+        <div className="flex flex-wrap gap-2">
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-[var(--color-primary)]"
+            className="border border-[var(--color-border)] rounded px-3 py-2 bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
           />
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-[var(--color-primary)]"
+            className="border border-[var(--color-border)] rounded px-3 py-2 bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
           />
         </div>
-        <div className="flex flex-wrap gap-[1rem] justify-start md:justify-end">
+        <div className="flex flex-wrap gap-2 justify-start md:justify-end">
           <CSVLink
             data={sales}
             filename="sales_report.csv"
-            className="px-4 py-2 bg-[var(--color-secondary)] text-white rounded hover:bg-blue-700 transition"
+            className="px-4 py-2 bg-[var(--color-secondary)] text-white rounded hover:opacity-90 transition"
           >
             Export CSV
           </CSVLink>
           <button
             onClick={exportToExcel}
-            className="px-4 py-2 bg-[var(--color-primary)] text-white rounded hover:bg-green-700 transition"
+            className="px-4 py-2 bg-[var(--color-primary)] text-white rounded hover:opacity-90 transition"
           >
             Export Excel
           </button>
           <button
             onClick={exportToPDF}
-            className="px-4 py-2 bg-[var(--color-error)] text-white rounded hover:bg-red-700 transition"
+            className="px-4 py-2 bg-[var(--color-error)] text-white rounded hover:opacity-90 transition"
           >
             Export PDF
           </button>
         </div>
       </div>
 
-      {/* Data Table */}
-      <div className="overflow-x-auto rounded-lg shadow-lg mb-[1.618rem]">
+      <div className="overflow-x-auto rounded-lg shadow-lg mb-6">
         <DataTable
           columns={columns}
           data={currentRows}
@@ -144,12 +137,11 @@ export default function SalesReport() {
         />
       </div>
 
-      {/* Pagination */}
-      <div className="flex flex-col md:flex-row justify-center items-center gap-[1.618rem]">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-4">
         <button
           onClick={handlePrev}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 transition"
+          className="px-4 py-2 bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] rounded hover:bg-[var(--color-bg)] disabled:opacity-50 transition"
         >
           Prev
         </button>
@@ -159,7 +151,7 @@ export default function SalesReport() {
         <button
           onClick={handleNext}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 transition"
+          className="px-4 py-2 bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] rounded hover:bg-[var(--color-bg)] disabled:opacity-50 transition"
         >
           Next
         </button>
