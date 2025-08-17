@@ -35,7 +35,7 @@ export default function SellerDashboard() {
   }, [user, axiosSecure]);
 
   return (
-    <div className="min-h-screen p-[1.618rem] md:p-[2.618rem] bg-[var(--color-bg)] flex items-center justify-center">
+    <div className="min-h-screen p-[1.618rem] md:p-[1.5rem] bg-[var(--color-bg)] flex items-center justify-center">
       <div className="max-w-5xl w-full bg-[var(--color-surface)] rounded-2xl shadow-2xl p-[2.618rem]">
         <h2 className="text-[2.618rem] md:text-[3.618rem] font-extrabold text-center mb-[1.618rem] text-[var(--color-primary)]">
           Seller Dashboard

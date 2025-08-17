@@ -30,15 +30,7 @@ export default function MyMedicines() {
     discount: 0,
   });
 
-  // Static category list
-  const categories = [
-    "Tablet",
-    "Capsule",
-    "Syrup",
-    "Injection",
-    "Cream",
-    "Drops",
-  ];
+  const categories = ["Tablet", "Capsule", "Syrup", "Injection", "Cream", "Drops"];
 
   // Fetch medicines with pagination
   const { data: medicinesResponse, isLoading } = useQuery({
@@ -52,9 +44,7 @@ export default function MyMedicines() {
     enabled: !!user?.email,
   });
 
-  const medicines = Array.isArray(medicinesResponse?.data)
-    ? medicinesResponse.data
-    : [];
+  const medicines = Array.isArray(medicinesResponse?.data) ? medicinesResponse.data : [];
   const currentPage = medicinesResponse?.currentPage || 1;
   const totalPages = medicinesResponse?.totalPages || 1;
 
@@ -118,7 +108,6 @@ export default function MyMedicines() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const medicineData = {
       ...formData,
       price: parseFloat(formData.price),
@@ -173,7 +162,7 @@ export default function MyMedicines() {
   return (
     <div className="p-6 bg-[var(--color-bg)] min-h-screen rounded-md">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <h2 className="text-2xl font-bold text-[var(--color-primary)]">
           Manage Medicines
         </h2>
@@ -184,7 +173,7 @@ export default function MyMedicines() {
             setEditingId(null);
             setShowModal(true);
           }}
-          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-opacity-90 flex items-center gap-2"
+          className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-lg hover:bg-[var(--color-primary)]/90 flex items-center gap-2 transition"
         >
           <FaPlus /> Add Medicine
         </button>
@@ -194,10 +183,10 @@ export default function MyMedicines() {
       {isLoading ? (
         <p className="text-center text-[var(--color-text)]">Loading medicines...</p>
       ) : medicines.length === 0 ? (
-        <p className="text-center text-gray-500">No medicines found.</p>
+        <p className="text-center text-[var(--color-muted)]">No medicines found.</p>
       ) : (
         <>
-          <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
+          <div className="overflow-x-auto bg-[var(--color-surface)] rounded-lg shadow-md">
             <table className="min-w-full text-sm">
               <thead className="bg-[var(--color-primary)] text-white">
                 <tr>
@@ -236,21 +225,21 @@ export default function MyMedicines() {
                     <td className="px-4 py-2">{med.company}</td>
                     <td className="px-4 py-2">{med.unit}</td>
                     <td className="px-4 py-2 text-[var(--color-secondary)] font-semibold">
-                      ৳{med.price}
+                      ${med.price}
                     </td>
                     <td className="px-4 py-2">{med.discount}%</td>
                     <td className="px-4 py-2">{med.stock}</td>
                     <td className="px-4 py-2 text-center flex justify-center gap-2">
                       <button
                         onClick={() => handleEdit(med)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full"
+                        className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition"
                         title="Edit"
                       >
                         <FaEdit />
                       </button>
                       <button
                         onClick={() => handleDelete(med._id)}
-                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
+                        className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition"
                         title="Delete"
                       >
                         <FaTrash />
@@ -263,7 +252,7 @@ export default function MyMedicines() {
           </div>
 
           {/* Pagination */}
-          <div className="btn-group mt-4 flex justify-center gap-2">
+          <div className="btn-group mt-4 flex flex-wrap justify-center gap-2">
             <button
               className="btn btn-outline"
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
@@ -271,22 +260,18 @@ export default function MyMedicines() {
             >
               Previous
             </button>
-
             {[...Array(totalPages)].map((_, idx) => {
               const pageNumber = idx + 1;
               return (
                 <button
                   key={pageNumber}
-                  className={`btn btn-outline ${
-                    pageNumber === currentPage ? "btn-active" : ""
-                  }`}
+                  className={`btn btn-outline ${pageNumber === currentPage ? "btn-active" : ""}`}
                   onClick={() => setPage(pageNumber)}
                 >
                   {pageNumber}
                 </button>
               );
             })}
-
             <button
               className="btn btn-outline"
               onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
@@ -298,14 +283,13 @@ export default function MyMedicines() {
         </>
       )}
 
-      {/* Add/Edit Medicine Modal */}
+      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 shadow-2xs bg-opacity-40 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-30 p-4 overflow-y-auto">
           <form
             onSubmit={handleSubmit}
-            className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-8 relative"
+            className="bg-[var(--color-surface)] rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 md:p-8 relative"
           >
-            {/* Close Button */}
             <button
               type="button"
               onClick={() => {
@@ -314,51 +298,51 @@ export default function MyMedicines() {
                 setEditingId(null);
                 resetForm();
               }}
-              className="absolute top-4 right-4 text-gray-500 hover:text-red-600 text-3xl font-bold leading-none"
+              className="absolute top-4 right-4 text-[var(--color-muted)] hover:text-[var(--color-error)] text-3xl font-bold leading-none"
               aria-label="Close Modal"
             >
               &times;
             </button>
 
-            <h2 className="text-3xl font-semibold mb-8 text-center text-[var(--color-primary)]">
+            <h2 className="text-2xl md:text-3xl font-semibold mb-6 md:mb-8 text-center text-[var(--color-primary)]">
               {isEditMode ? "Edit Medicine" : "Add New Medicine"}
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Item Name */}
-              <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">Item Name</span>
-                <input
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="input input-bordered"
-                  placeholder="Enter medicine name"
-                  required
-                />
-              </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {[
+                { label: "Item Name", name: "name", type: "text" },
+                { label: "Generic Name", name: "genericName", type: "text" },
+                { label: "Company", name: "company", type: "text" },
+                { label: "Unit (mg/ml)", name: "unit", type: "text" },
+                { label: "Price (৳)", name: "price", type: "number" },
+                { label: "Stock", name: "stock", type: "number" },
+                { label: "Discount %", name: "discount", type: "number" },
+              ].map((field) => (
+                <label className="flex flex-col" key={field.name}>
+                  <span className="mb-2 font-medium text-[var(--color-text)]">
+                    {field.label}
+                  </span>
+                  <input
+                    name={field.name}
+                    type={field.type}
+                    value={formData[field.name]}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full border-[var(--color-border)] focus:border-[var(--color-primary)] focus:ring focus:ring-[var(--color-primary)]/30"
+                    placeholder={`Enter ${field.label.toLowerCase()}`}
+                    min={field.name === "price" || field.name === "stock" ? 0 : undefined}
+                    max={field.name === "discount" ? 100 : undefined}
+                    required
+                  />
+                </label>
+              ))}
 
-              {/* Generic Name */}
               <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">Generic Name</span>
-                <input
-                  name="genericName"
-                  value={formData.genericName}
-                  onChange={handleInputChange}
-                  className="input input-bordered"
-                  placeholder="Enter generic name"
-                  required
-                />
-              </label>
-
-              {/* Category */}
-              <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">Category</span>
+                <span className="mb-2 font-medium text-[var(--color-text)]">Category</span>
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  className="select select-bordered"
+                  className="select select-bordered w-full border-[var(--color-border)] focus:border-[var(--color-primary)] focus:ring focus:ring-[var(--color-primary)]/30"
                   required
                 >
                   <option value="" disabled>
@@ -372,99 +356,25 @@ export default function MyMedicines() {
                 </select>
               </label>
 
-              {/* Company */}
-              <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">Company</span>
-                <input
-                  name="company"
-                  value={formData.company}
-                  onChange={handleInputChange}
-                  className="input input-bordered"
-                  placeholder="Enter company name"
-                  required
-                />
-              </label>
-
-              {/* Unit */}
-              <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">Unit (mg/ml)</span>
-                <input
-                  name="unit"
-                  value={formData.unit}
-                  onChange={handleInputChange}
-                  className="input input-bordered"
-                  placeholder="e.g. 500mg"
-                  required
-                />
-              </label>
-
-              {/* Price */}
-              <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">Price (৳)</span>
-                <input
-                  name="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={handleInputChange}
-                  className="input input-bordered"
-                  placeholder="Enter price"
-                  min={0}
-                  step="0.01"
-                  required
-                />
-              </label>
-
-              {/* Stock */}
-              <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">Stock</span>
-                <input
-                  name="stock"
-                  type="number"
-                  value={formData.stock}
-                  onChange={handleInputChange}
-                  className="input input-bordered"
-                  placeholder="Enter stock quantity"
-                  min={0}
-                  required
-                />
-              </label>
-
-              {/* Discount */}
-              <label className="flex flex-col">
-                <span className="mb-2 font-medium text-gray-700">Discount %</span>
-                <input
-                  name="discount"
-                  type="number"
-                  value={formData.discount}
-                  onChange={handleInputChange}
-                  className="input input-bordered"
-                  placeholder="Enter discount if any"
-                  min={0}
-                  max={100}
-                />
-              </label>
-
-              {/* Image URL */}
-              <label className="flex flex-col col-span-1 md:col-span-2">
-                <span className="mb-2 font-medium text-gray-700">Image URL</span>
+              <label className="flex flex-col md:col-span-2">
+                <span className="mb-2 font-medium text-[var(--color-text)]">Image URL</span>
                 <input
                   name="image"
                   value={formData.image}
                   onChange={handleInputChange}
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full border-[var(--color-border)] focus:border-[var(--color-primary)] focus:ring focus:ring-[var(--color-primary)]/30"
                   placeholder="Paste image URL here"
                   required
                 />
               </label>
 
-              {/* Description */}
-              <label className="flex flex-col col-span-1 md:col-span-2">
-                <span className="mb-2 font-medium text-gray-700">Description</span>
+              <label className="flex flex-col md:col-span-2">
+                <span className="mb-2 font-medium text-[var(--color-text)]">Description</span>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="textarea textarea-bordered w-full"
+                  className="textarea textarea-bordered w-full border-[var(--color-border)] focus:border-[var(--color-primary)] focus:ring focus:ring-[var(--color-primary)]/30"
                   rows={4}
                   placeholder="Write a short description"
                   required
@@ -475,9 +385,9 @@ export default function MyMedicines() {
             <button
               type="submit"
               disabled={addMedicineMutation.isLoading || updateMedicineMutation.isLoading}
-              className="mt-8 w-full bg-[var(--color-primary)] text-white font-semibold py-3 rounded-lg hover:bg-opacity-90 transition"
+              className="mt-6 w-full bg-[var(--color-primary)] text-white font-semibold py-3 rounded-lg hover:bg-[var(--color-primary)]/90 transition"
             >
-              {(addMedicineMutation.isLoading || updateMedicineMutation.isLoading)
+              {addMedicineMutation.isLoading || updateMedicineMutation.isLoading
                 ? isEditMode
                   ? "Updating..."
                   : "Adding..."

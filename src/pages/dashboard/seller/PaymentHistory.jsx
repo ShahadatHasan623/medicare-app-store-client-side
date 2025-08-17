@@ -44,7 +44,7 @@ export default function PaymentHistory() {
     );
 
   return (
-    <section className="min-h-screen p-[1.618rem] md:p-[2.618rem] bg-[var(--color-bg)]">
+    <section className="min-h-screen p-[1.618rem] md:p-[1.5rem] bg-[var(--color-bg)]">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-[2.618rem] md:text-[3.618rem] font-extrabold mb-[1.618rem] text-[var(--color-primary)] text-center">
           My Payment History
