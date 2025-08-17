@@ -20,55 +20,62 @@ export default function AdminHome() {
     },
   });
 
-  if (isLoading)
-    return <Loader></Loader>;
-
+  if (isLoading) return <Loader />;
   if (isError)
     return (
-      <div className="p-6 max-w-4xl mx-auto text-center text-red-600 text-lg font-semibold">
+      <div className="p-6 max-w-4xl mx-auto text-center text-[var(--color-error)] text-lg font-semibold">
         Error fetching summary: {error.message}
       </div>
     );
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-r from-blue-50 to-purple-50">
-      <h2 className="text-3xl font-extrabold text-gray-800 mb-8 text-center">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-bg)] px-4 sm:px-6 lg:px-12 py-12">
+      {/* Header */}
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[var(--color-text)] mb-12 tracking-tight text-center">
         Admin Dashboard Summary
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+
+      {/* Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-6xl w-full">
         {/* Paid Total Card */}
-        <div className="p-6 bg-green-50 rounded-2xl shadow-lg border border-green-200 hover:shadow-2xl transition-all duration-300">
+        <div className="relative bg-[var(--color-surface)] rounded-2xl shadow-md hover:shadow-xl border border-[var(--color-border)] p-8 transition-transform duration-300 hover:scale-[1.03]">
           <div className="flex flex-col items-center text-center">
-            <FaMoneyBillWave className="text-green-600 text-5xl mb-3" />
-            <h2 className="text-2xl font-semibold text-green-800">Total Paid</h2>
-            <p className="text-5xl font-bold text-green-900 mt-2">
+            <div className="bg-[var(--color-success)]/20 rounded-full p-5 shadow-md mb-5">
+              <FaMoneyBillWave className="text-[var(--color-success)] text-5xl" />
+            </div>
+            <h3 className="text-2xl font-semibold text-[var(--color-success)] mb-2">
+              Total Paid
+            </h3>
+            <p className="text-4xl sm:text-5xl font-bold text-[var(--color-text)] mb-3">
               $
               {summary && typeof summary.paidTotal === "number"
                 ? summary.paidTotal.toFixed(2)
                 : "0.00"}
             </p>
-            <div className="mt-2 text-green-700 font-medium">
+            <span className="text-[var(--color-muted)] font-medium text-lg">
               💰 Revenue received
-            </div>
+            </span>
           </div>
         </div>
 
         {/* Pending Total Card */}
-        <div className="p-6 bg-yellow-50 rounded-2xl shadow-lg border border-yellow-200 hover:shadow-2xl transition-all duration-300">
+        <div className="relative bg-[var(--color-surface)] rounded-2xl shadow-md hover:shadow-xl border border-[var(--color-border)] p-8 transition-transform duration-300 hover:scale-[1.03]">
           <div className="flex flex-col items-center text-center">
-            <FaDollarSign className="text-yellow-600 text-5xl mb-3" />
-            <h2 className="text-2xl font-semibold text-yellow-800">
+            <div className="bg-[var(--color-warning)]/20 rounded-full p-5 shadow-md mb-5">
+              <FaDollarSign className="text-[var(--color-warning)] text-5xl" />
+            </div>
+            <h3 className="text-2xl font-semibold text-[var(--color-warning)] mb-2">
               Total Pending
-            </h2>
-            <p className="text-5xl font-bold text-yellow-900 mt-2">
+            </h3>
+            <p className="text-4xl sm:text-5xl font-bold text-[var(--color-text)] mb-3">
               $
               {summary && typeof summary.pendingTotal === "number"
                 ? summary.pendingTotal.toFixed(2)
                 : "0.00"}
             </p>
-            <div className="mt-2 text-yellow-700 font-medium">
+            <span className="text-[var(--color-muted)] font-medium text-lg">
               ⏳ Payments pending
-            </div>
+            </span>
           </div>
         </div>
       </div>

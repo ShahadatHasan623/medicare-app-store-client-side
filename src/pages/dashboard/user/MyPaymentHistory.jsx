@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { FaMoneyCheckAlt, FaRegClock, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import {
+  FaMoneyCheckAlt,
+  FaRegClock,
+  FaCheckCircle,
+  FaTimesCircle,
+} from "react-icons/fa";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 import useAuth from "../../../hooks/useAuth";
 import Loader from "../../../components/Loader";
@@ -18,55 +23,70 @@ const MyPaymentHistory = () => {
   });
 
   if (isLoading) {
-    return <Loader></Loader>;
+    return <Loader />;
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h1 className="text-4xl font-extrabold text-center mb-6 text-blue-700 flex items-center justify-center gap-2">
-        <FaMoneyCheckAlt className="text-green-600" /> My Payment History
+    <div className="max-w-6xl mx-auto p-4 md:p-6">
+      {/* Title */}
+      <h1 className="text-2xl md:text-4xl font-extrabold text-center mb-6 text-[var(--color-primary)] flex items-center justify-center gap-2">
+        <FaMoneyCheckAlt className="text-[var(--color-secondary)]" />
+        My Payment History
       </h1>
 
       {payments.length === 0 ? (
-        <div className="text-center text-gray-500 text-lg">
-          <FaRegClock className="mx-auto text-4xl text-gray-400 mb-2" />
+        <div className="text-center text-[var(--color-muted)] text-lg">
+          <FaRegClock className="mx-auto text-5xl text-gray-400 mb-2" />
           No payment history found.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl shadow-xl border border-gray-200">
-          <table className="table w-full">
-            <thead className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
+        <div className="overflow-x-auto rounded-xl shadow-lg border border-[var(--color-border)]">
+          <table className="w-full text-left">
+            {/* Table Head */}
+            <thead className="bg-[var(--color-primary)] text-[var(--navbar-text)]">
               <tr>
-                <th className="py-3 px-4 text-sm md:text-base font-semibold">Date</th>
-                <th className="py-3 px-4 text-sm md:text-base font-semibold">Transaction ID</th>
-                <th className="py-3 px-4 text-sm md:text-base font-semibold">Amount</th>
-                <th className="py-3 px-4 text-sm md:text-base font-semibold">Status</th>
+                <th className="py-3 px-4 text-sm md:text-base font-semibold">
+                  Date
+                </th>
+                <th className="py-3 px-4 text-sm md:text-base font-semibold">
+                  Transaction ID
+                </th>
+                <th className="py-3 px-4 text-sm md:text-base font-semibold">
+                  Amount
+                </th>
+                <th className="py-3 px-4 text-sm md:text-base font-semibold text-center">
+                  Status
+                </th>
               </tr>
             </thead>
+
+            {/* Table Body */}
             <tbody>
               {payments.map((p, index) => (
                 <tr
                   key={p._id}
-                  className={`hover:bg-blue-50 transition-colors ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  }`}
+                  className={`transition-colors ${
+                    index % 2 === 0
+                      ? "bg-[var(--color-surface)]"
+                      : "bg-[var(--color-bg)]"
+                  } hover:bg-[var(--navbar-hover)]/20`}
                 >
-                  <td className="py-3 px-4 text-gray-600 text-sm md:text-base">
+                  <td className="py-3 px-4 text-[var(--color-text)] text-sm md:text-base">
                     {new Date(p.date).toLocaleString()}
                   </td>
-                  <td className="py-3 px-4 text-gray-600 text-sm md:text-base">
+                  <td className="py-3 px-4 text-[var(--color-text)] text-sm md:text-base break-words">
                     {p.transactionId || "N/A"}
                   </td>
-                  <td className="py-3 px-4 font-semibold text-blue-600 text-sm md:text-base">
+                  <td className="py-3 px-4 font-semibold text-[var(--color-secondary)] text-sm md:text-base">
                     ${p.amount.toFixed(2)}
                   </td>
-                  <td className="py-3 px-4 text-sm md:text-base">
+                  <td className="py-3 px-4 text-center">
                     {p.status === "paid" ? (
-                      <span className="flex items-center justify-center gap-1 text-green-600 font-semibold">
+                      <span className="inline-flex items-center gap-1 text-[var(--color-success)] font-semibold">
                         <FaCheckCircle /> Paid
                       </span>
                     ) : (
-                      <span className="flex items-center justify-center gap-1 text-red-600 font-semibold">
+                      <span className="inline-flex items-center gap-1 text-[var(--color-error)] font-semibold capitalize">
                         <FaTimesCircle /> {p.status}
                       </span>
                     )}
