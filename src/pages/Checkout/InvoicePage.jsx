@@ -191,9 +191,6 @@ export default function InvoicePage() {
                 <span>Subtotal</span>
                 <span className="font-semibold">${invoiceData.totalPrice.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-gray-500 dark:text-gray-400">
-                <span className="font-semibold">$0.00</span>
-              </div>
               <div className="flex justify-between items-center pt-3 border-t dark:border-gray-700">
                 <span className="text-gray-900 dark:text-white font-bold">Grand Total</span>
                 <span className="text-2xl font-black text-blue-600 dark:text-blue-400">
