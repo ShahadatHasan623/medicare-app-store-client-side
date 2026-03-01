@@ -55,7 +55,7 @@ const Categories = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 md:grid-cols-3 gap-5">
-        {categories.slice(0, 6).map((category) => (
+        {categories.map((category) => (
           <div
             key={category._id}
             onClick={() => navigate(`/categories/${category._id}`)}
