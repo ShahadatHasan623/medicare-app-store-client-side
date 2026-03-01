@@ -1,8 +1,12 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FaDollarSign, FaMoneyBillWave } from "react-icons/fa";
+import { FaDollarSign, FaMoneyBillWave, FaChartPie, FaChartBar } from "react-icons/fa";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 import Loader from "../../../components/Loader";
+import {
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid
+} from 'recharts';
 
 export default function AdminHome() {
   const axiosSecure = useAxioseSecure();
@@ -21,63 +25,102 @@ export default function AdminHome() {
   });
 
   if (isLoading) return <Loader />;
-  if (isError)
-    return (
-      <div className="p-6 max-w-4xl mx-auto text-center text-[var(--color-error)] text-lg font-semibold">
-        Error fetching summary: {error.message}
-      </div>
-    );
+  if (isError) return (
+    <div className="p-6 text-center text-red-500 font-semibold">
+      Error fetching summary: {error.message}
+    </div>
+  );
+
+  // চার্টের জন্য ডাটা ফরম্যাট করা
+  const chartData = [
+    { name: 'Paid', value: summary?.paidTotal || 0, color: '#10B981' }, // Emerald-500
+    { name: 'Pending', value: summary?.pendingTotal || 0, color: '#F59E0B' }, // Amber-500
+  ];
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-bg)] px-4 sm:px-6 lg:px-12 py-12">
-      {/* Header */}
-      <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[var(--color-text)] mb-12 tracking-tight text-center">
-        Admin Dashboard Summary
+    <div className="min-h-screen bg-gray-50 px-4 lg:px-12 py-10">
+      <h2 className="text-3xl font-bold text-slate-800 mb-10 text-center tracking-tight">
+        Admin Revenue Analytics
       </h2>
 
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-6xl w-full">
-        {/* Paid Total Card */}
-        <div className="relative bg-[var(--color-surface)] rounded-2xl shadow-md hover:shadow-xl border border-[var(--color-border)] p-8 transition-transform duration-300 hover:scale-[1.03]">
-          <div className="flex flex-col items-center text-center">
-            <div className="bg-[var(--color-success)]/20 rounded-full p-5 shadow-md mb-5">
-              <FaMoneyBillWave className="text-[var(--color-success)] text-5xl" />
-            </div>
-            <h3 className="text-2xl font-semibold text-[var(--color-success)] mb-2">
-              Total Paid
-            </h3>
-            <p className="text-4xl sm:text-5xl font-bold text-[var(--color-text)] mb-3">
-              $
-              {summary && typeof summary.paidTotal === "number"
-                ? summary.paidTotal.toFixed(2)
-                : "0.00"}
-            </p>
-            <span className="text-[var(--color-muted)] font-medium text-lg">
-              💰 Revenue received
-            </span>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto mb-12">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex items-center gap-5">
+          <div className="p-4 bg-emerald-100 rounded-xl text-emerald-600">
+            <FaMoneyBillWave size={30} />
+          </div>
+          <div>
+            <p className="text-gray-500 text-sm font-medium">Total Paid</p>
+            <h3 className="text-2xl font-bold text-slate-800">${summary?.paidTotal?.toFixed(2) || "0.00"}</h3>
           </div>
         </div>
 
-        {/* Pending Total Card */}
-        <div className="relative bg-[var(--color-surface)] rounded-2xl shadow-md hover:shadow-xl border border-[var(--color-border)] p-8 transition-transform duration-300 hover:scale-[1.03]">
-          <div className="flex flex-col items-center text-center">
-            <div className="bg-[var(--color-warning)]/20 rounded-full p-5 shadow-md mb-5">
-              <FaDollarSign className="text-[var(--color-warning)] text-5xl" />
-            </div>
-            <h3 className="text-2xl font-semibold text-[var(--color-warning)] mb-2">
-              Total Pending
-            </h3>
-            <p className="text-4xl sm:text-5xl font-bold text-[var(--color-text)] mb-3">
-              $
-              {summary && typeof summary.pendingTotal === "number"
-                ? summary.pendingTotal.toFixed(2)
-                : "0.00"}
-            </p>
-            <span className="text-[var(--color-muted)] font-medium text-lg">
-              ⏳ Payments pending
-            </span>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-amber-100 flex items-center gap-5">
+          <div className="p-4 bg-amber-100 rounded-xl text-amber-600">
+            <FaDollarSign size={30} />
+          </div>
+          <div>
+            <p className="text-gray-500 text-sm font-medium">Total Pending</p>
+            <h3 className="text-2xl font-bold text-slate-800">${summary?.pendingTotal?.toFixed(2) || "0.00"}</h3>
           </div>
         </div>
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        
+        {/* Pie Chart Card */}
+        <div className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
+          <div className="flex items-center gap-2 mb-6">
+            <FaChartPie className="text-emerald-500" />
+            <h3 className="font-bold text-slate-700">Revenue Distribution</h3>
+          </div>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Bar Chart Card */}
+        <div className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
+          <div className="flex items-center gap-2 mb-6">
+            <FaChartBar className="text-blue-500" />
+            <h3 className="font-bold text-slate-700">Financial Comparison</h3>
+          </div>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip cursor={{fill: '#F8FAFC'}} />
+                <Bar dataKey="value" radius={[10, 10, 0, 0]}>
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} opacity={0.8} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
       </div>
     </div>
   );

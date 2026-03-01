@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import useAxios from '../../../hooks/useAxios';
 import { useCart } from '../../../utils/CartContext';
+import Loader from '../../../components/Loader';
 
 export default function Promotions({ category = "" }) {
   const axios = useAxios();
@@ -30,9 +31,7 @@ export default function Promotions({ category = "" }) {
 
   if (isLoading)
     return (
-      <p className="text-center py-20 text-lg text-[var(--color-muted)] animate-pulse">
-        Loading Promotions...
-      </p>
+      <Loader></Loader>
     );
 
   if (error)

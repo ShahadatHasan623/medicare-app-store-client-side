@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import useAxioseSecure from "../../../hooks/useAxioseSecure";
 import Loader from "../../../components/Loader";
+import { FaCheckCircle, FaClock, FaHistory, FaEnvelope } from "react-icons/fa";
 
 export default function PaymentManagement() {
   const [payments, setPayments] = useState([]);
@@ -18,7 +19,7 @@ export default function PaymentManagement() {
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Failed to fetch payments",
+        title: "Access Denied",
         text: error.message,
       });
     } finally {
@@ -32,13 +33,13 @@ export default function PaymentManagement() {
 
   const markAsPaid = (id) => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "You want to mark this payment as paid.",
-      icon: "warning",
+      title: "Confirm Payment?",
+      text: "Has the customer paid for these medicines?",
+      icon: "question",
       showCancelButton: true,
-      confirmButtonColor: "var(--color-primary)",
-      cancelButtonColor: "var(--color-muted)",
-      confirmButtonText: "Yes, mark as paid!",
+      confirmButtonColor: "#10B981",
+      cancelButtonColor: "#64748b",
+      confirmButtonText: "Yes, Mark Paid",
     }).then(async (result) => {
       if (result.isConfirmed) {
         setUpdatingId(id);
@@ -50,12 +51,10 @@ export default function PaymentManagement() {
                 p._id === id ? { ...p, status: "paid" } : p
               )
             );
-            Swal.fire("Updated!", "Payment marked as paid.", "success");
-          } else {
-            Swal.fire("Oops!", "No changes made.", "info");
+            Swal.fire("Success", "Transaction finalized.", "success");
           }
         } catch {
-          Swal.fire("Error!", "Failed to update payment status.", "error");
+          Swal.fire("Error!", "Failed to update database.", "error");
         } finally {
           setUpdatingId(null);
         }
@@ -63,92 +62,100 @@ export default function PaymentManagement() {
     });
   };
 
-  return (
-    <div className="p-6 min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
-      <h2 className="text-3xl font-bold mb-6 text-[var(--color-primary)]">
-        Payment Management
-      </h2>
+  if (loading) return <Loader />;
 
-      {loading ? (
-        <p className="text-[var(--color-primary)] font-semibold">Loading payments...</p>
-      ) : (
-        <div
-          className="overflow-x-auto shadow-lg rounded-lg"
-          style={{ backgroundColor: "var(--color-surface)" }}
-        >
-          <table className="w-full border-collapse">
+  return (
+    <div className="p-4 md:p-10 min-h-screen bg-slate-50">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+          <h2 className="text-3xl font-extrabold text-slate-800 flex items-center gap-3">
+            <FaHistory className="text-emerald-500" /> Payment History
+          </h2>
+          <p className="text-slate-500 mt-1">Manage and verify all medical transactions</p>
+        </div>
+        <div className="bg-white px-6 py-3 rounded-2xl shadow-sm border border-emerald-100">
+          <span className="text-sm font-medium text-slate-500">Total Transactions: </span>
+          <span className="text-xl font-bold text-emerald-600">{payments.length}</span>
+        </div>
+      </div>
+
+      {/* Table Container */}
+      <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
             <thead>
-              <tr style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}>
-                <th className="p-3 text-left">Buyer Email</th>
-                <th className="p-3 text-left">Seller Email(s)</th>
-                <th className="p-3 text-left">Total Price</th>
-                <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left">Date</th>
-                <th className="p-3 text-left">Action</th>
+              <tr className="bg-slate-800 text-white">
+                <th className="p-5 font-semibold text-sm uppercase tracking-wider">Buyer Detail</th>
+                <th className="p-5 font-semibold text-sm uppercase tracking-wider">Sellers</th>
+                <th className="p-5 font-semibold text-sm uppercase tracking-wider">Amount</th>
+                <th className="p-5 font-semibold text-sm uppercase tracking-wider text-center">Status</th>
+                <th className="p-5 font-semibold text-sm uppercase tracking-wider">Date</th>
+                <th className="p-5 font-semibold text-sm uppercase tracking-wider text-right">Action</th>
               </tr>
             </thead>
-            <tbody>
-              {payments.length === 0 && (
+            <tbody className="divide-y divide-slate-100">
+              {payments.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={6}
-                    className="text-center p-4 text-[var(--color-muted)] font-medium"
-                  >
-                    No payments found.
+                  <td colSpan={6} className="text-center py-20 text-slate-400">
+                    No payment records found in the system.
                   </td>
                 </tr>
+              ) : (
+                payments.map((payment) => (
+                  <tr key={payment._id} className="hover:bg-emerald-50/30 transition-colors group">
+                    <td className="p-5">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-emerald-100 p-2 rounded-full text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                          <FaEnvelope size={12} />
+                        </div>
+                        <span className="font-medium text-slate-700">{payment.buyerEmail}</span>
+                      </div>
+                    </td>
+                    <td className="p-5">
+                      <p className="text-sm text-slate-500 max-w-xs truncate">
+                        {Array.isArray(payment.sellerEmails) ? payment.sellerEmails.join(", ") : "N/A"}
+                      </p>
+                    </td>
+                    <td className="p-5 font-bold text-slate-800">
+                      ${payment.totalPrice?.toFixed(2)}
+                    </td>
+                    <td className="p-5 text-center">
+                      {payment.status === "paid" ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-600">
+                          <FaCheckCircle /> PAID
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-600">
+                          <FaClock /> PENDING
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-5 text-slate-500 text-sm italic">
+                      {new Date(payment.date).toLocaleDateString('en-GB')}
+                    </td>
+                    <td className="p-5 text-right">
+                      {(payment.status === "pending" || payment.status === "unpaid") ? (
+                        <button
+                          disabled={updatingId === payment._id}
+                          onClick={() => markAsPaid(payment._id)}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-emerald-100 transition-all active:scale-95 disabled:opacity-50"
+                        >
+                          {updatingId === payment._id ? "Processing..." : "Confirm Payment"}
+                        </button>
+                      ) : (
+                        <span className="text-emerald-500 font-bold text-sm bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100">
+                          Verified
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                ))
               )}
-              {payments.map((payment, index) => (
-                <tr
-                  key={payment._id}
-                  className={`${
-                    index % 2 === 0 ? "bg-[var(--color-bg)]" : "bg-[var(--color-surface)]"
-                  } hover:bg-[var(--color-border)] transition`}
-                >
-                  <td className="p-3">{payment.buyerEmail}</td>
-                  <td className="p-3 text-sm text-[var(--color-text)]">
-                    {Array.isArray(payment.sellerEmails)
-                      ? payment.sellerEmails.join(", ")
-                      : "N/A"}
-                  </td>
-                  <td className="p-3 font-semibold text-[var(--color-secondary)]">
-                    ${payment.totalPrice?.toFixed(2)}
-                  </td>
-                  <td className="p-3">
-                    <span
-                      className={`px-2 py-1 rounded text-white text-sm ${
-                        payment.status === "paid"
-                          ? "bg-[var(--color-success)]"
-                          : "bg-[var(--color-warning)]"
-                      }`}
-                    >
-                      {payment.status}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    {new Date(payment.date).toLocaleDateString()}
-                  </td>
-                  <td className="p-3">
-                    {(payment.status === "pending" || payment.status === "unpaid") ? (
-                      <button
-                        disabled={updatingId === payment._id}
-                        onClick={() => markAsPaid(payment._id)}
-                        className="bg-[var(--color-secondary)] text-white px-4 py-1 rounded hover:opacity-90 transition disabled:opacity-50"
-                      >
-                        {updatingId === payment._id
-                          ? "Updating..."
-                          : "Mark as Paid"}
-                      </button>
-                    ) : (
-                      <span className="text-[var(--color-success)] font-semibold">Paid</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
             </tbody>
           </table>
         </div>
-      )}
+      </div>
     </div>
   );
 }

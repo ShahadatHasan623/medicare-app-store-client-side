@@ -43,7 +43,7 @@ const BannerSlider = () => {
     );
 
   return (
-    <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-0">
+    <div className="max-w-full mx-auto sm:px-6 lg:px-0">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}

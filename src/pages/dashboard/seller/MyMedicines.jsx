@@ -181,7 +181,7 @@ export default function MyMedicines() {
 
       {/* Medicine Table */}
       {isLoading ? (
-        <p className="text-center text-[var(--color-text)]">Loading medicines...</p>
+        <p className="text-center text-[var(--color-text)]">Loading Medicines...</p>
       ) : medicines.length === 0 ? (
         <p className="text-center text-[var(--color-muted)]">No medicines found.</p>
       ) : (
