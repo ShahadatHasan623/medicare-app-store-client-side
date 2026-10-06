@@ -4,8 +4,11 @@ import {
   FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram,
 } from "react-icons/fa";
 import NavbarClock from "./NavbarClock";
+import { useTranslation } from "react-i18next"; // ✅
 
 const TopBar = () => {
+  const { t } = useTranslation(); // ✅
+
   const socials = [
     { icon: FaFacebookF, label: "Facebook", hover: "hover:bg-[#1877F2]" },
     { icon: FaTwitter, label: "Twitter", hover: "hover:bg-[#1DA1F2]" },
@@ -15,7 +18,7 @@ const TopBar = () => {
 
   return (
     <div className="relative w-full select-none bg-slate-900 text-white">
-   
+      {/* 🌈 Top gradient line */}
       <div className="h-[2px] w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400" />
 
       <div className="mx-auto flex h-9 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
@@ -30,16 +33,17 @@ const TopBar = () => {
             <FaEnvelope className="text-[9px] text-emerald-400" />
             support@medicare.com
           </span>
-          {/* Mobile fallback tagline */}
+
+          {/* ✅ Mobile fallback tagline — translated */}
           <span className="truncate font-semibold tracking-wide text-emerald-300 sm:hidden">
-            Your Health, Our Priority
+            {t("tagline")}
           </span>
         </div>
 
-        {/* 🚚 Center: delivery notice — বড় স্ক্রিনে */}
+        {/* 🚚 Center: delivery notice — ✅ translated */}
         <span className="hidden items-center gap-1.5 text-[11px] font-semibold text-white/50 md:flex">
           <FaTruck className="animate-pulse text-[10px] text-cyan-400" />
-          Free delivery on orders over ৳500
+          {t("freeDelivery")}
         </span>
 
         {/* 🔗 Right: socials + clock */}

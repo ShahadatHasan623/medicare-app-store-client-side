@@ -19,10 +19,12 @@ import useAuth from "../hooks/useAuth";
 import { useCart } from "../utils/CartContext";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSelector from "./LanguageSelector";
+import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();  
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [scrolled, setScrolled] = useState(false);
@@ -54,24 +56,25 @@ const Navbar = () => {
 
   const handleSignOut = () => {
     if (signOutUser) signOutUser();
-    Swal.fire({ title: "Logout Successfully", icon: "success", draggable: true, timer: 1500 });
+    // ✅ translated Swal
+    Swal.fire({ title: t("logoutSuccess"), icon: "success", draggable: true, timer: 1500 });
     navigate("/");
     setAnchorElUser(null);
     setDrawerOpen(false);
   };
 
   const links = [
-    { name: "Home", path: "/", icon: <FaHome /> },
-    { name: "Shop", path: "/shop", icon: <FaStore /> },
-    { name: "Categories", path: "/categories", icon: <FaThLarge /> },
-    { name: "FAQ", path: "/faq-list", icon: <FaQuestionCircle /> },
-    { name: "About", path: "/about-page", icon: <FaInfoCircle /> },
-    user ? { name: "Dashboard", path: "/dashboard", icon: <FaTachometerAlt /> } : null,
+    { name: t("home"), path: "/", icon: <FaHome /> },
+    { name: t("shop"), path: "/shop", icon: <FaStore /> },
+    { name: t("categories"), path: "/categories", icon: <FaThLarge /> },
+    { name: t("faq"), path: "/faq-list", icon: <FaQuestionCircle /> },
+    { name: t("about"), path: "/about-page", icon: <FaInfoCircle /> },
+    user ? { name: t("dashboard"), path: "/dashboard", icon: <FaTachometerAlt /> } : null,
   ].filter(Boolean);
 
   return (
     <>
-      <header className="sticky top-0 z-50 ">
+      <header className="sticky top-0 z-50">
         {/* 🌈 Top gradient accent line */}
         <div className="h-[3px] w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400" />
 
@@ -84,7 +87,7 @@ const Navbar = () => {
             {/* Logo + Drawer Button */}
             <div className="flex items-center gap-3">
               <button
-                aria-label="Open menu"
+                aria-label={t("openMenu")}
                 className="grid h-10 w-10 place-items-center rounded-xl bg-white/10 ring-1 ring-white/20 transition-all duration-300 hover:bg-white/20 hover:scale-105 active:scale-95 lg:hidden"
                 onClick={() => setDrawerOpen(true)}
               >
@@ -115,7 +118,6 @@ const Navbar = () => {
                         {link.icon}
                       </span>
                       {link.name}
-                      {/* Animated underline (hover e) */}
                       <span
                         className={`pointer-events-none absolute inset-x-3 bottom-1 h-[2.5px] origin-center rounded-full bg-gradient-to-r from-emerald-400 to-teal-300 transition-transform duration-300 ${
                           active ? "scale-x-0" : "scale-x-0 group-hover:scale-x-100"
@@ -131,8 +133,8 @@ const Navbar = () => {
             <div className="flex items-center gap-2.5">
               <ThemeToggle />
 
-              {/* 🛒 Cart — glass button + ping badge */}
-              <Link to="/cart" aria-label="Cart" className="group relative">
+              {/* 🛒 Cart */}
+              <Link to="/cart" aria-label={t("cart")} className="group relative">
                 <div className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/20 backdrop-blur transition-all duration-300 group-hover:scale-105 group-hover:bg-white/20 active:scale-95">
                   <FaCartPlus className="text-lg" />
                 </div>
@@ -151,7 +153,8 @@ const Navbar = () => {
               {/* 👤 User Avatar */}
               {user ? (
                 <>
-                  <Tooltip title="Open settings">
+                  {/* ✅ translated tooltip */}
+                  <Tooltip title={t("openSettings")}>
                     <IconButton
                       onClick={handleOpenUserMenu}
                       sx={{ p: 0.5 }}
@@ -210,19 +213,20 @@ const Navbar = () => {
                       </Box>
                     </Box>
 
+                    {/* ✅ translated menu items */}
                     <MenuItem
                       onClick={() => { navigate("/update-profile"); handleCloseUserMenu(); }}
                       disableRipple
                       sx={{ gap: 1.5, py: 1.2, mt: 0.5, fontSize: 14 }}
                     >
-                      <FaUserEdit className="text-emerald-600" /> Profile
+                      <FaUserEdit className="text-emerald-600" /> {t("profile")}
                     </MenuItem>
                     <MenuItem
                       onClick={() => { navigate("/dashboard"); handleCloseUserMenu(); }}
                       disableRipple
                       sx={{ gap: 1.5, py: 1.2, fontSize: 14 }}
                     >
-                      <FaTachometerAlt className="text-emerald-600" /> Dashboard
+                      <FaTachometerAlt className="text-emerald-600" /> {t("dashboard")}
                     </MenuItem>
 
                     <Divider sx={{ my: 0.5 }} />
@@ -231,7 +235,7 @@ const Navbar = () => {
                       disableRipple
                       sx={{ gap: 1.5, py: 1.2, mb: 0.5, fontSize: 14, color: "error.main" }}
                     >
-                      <FaSignOutAlt /> Logout
+                      <FaSignOutAlt /> {t("logout")}
                     </MenuItem>
                   </Menu>
                 </>
@@ -241,7 +245,7 @@ const Navbar = () => {
                   className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-[1.03] hover:shadow-emerald-500/50 active:scale-95"
                 >
                   <FaSignInAlt className="text-sm transition-transform duration-300 group-hover:translate-x-0.5" />
-                  Join Us
+                  {t("joinUs")}   {/* ✅ translated */}
                 </Link>
               )}
             </div>
@@ -249,12 +253,11 @@ const Navbar = () => {
         </nav>
       </header>
 
-      {/* 📱 Mobile Drawer — fade overlay + slide panel */}
+      {/* 📱 Mobile Drawer */}
       <div
         className={`fixed inset-0 z-[60] lg:hidden ${drawerOpen ? "" : "pointer-events-none"}`}
         aria-hidden={!drawerOpen}
       >
-        {/* Overlay */}
         <div
           className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
             drawerOpen ? "opacity-100" : "opacity-0"
@@ -262,7 +265,6 @@ const Navbar = () => {
           onClick={() => setDrawerOpen(false)}
         />
 
-        {/* Panel */}
         <aside
           className={`absolute right-0 top-0 flex h-full w-80 max-w-[85vw] flex-col bg-[var(--color-primary)] text-white shadow-2xl transition-transform duration-300 ease-out ${
             drawerOpen ? "translate-x-0" : "translate-x-full"
@@ -272,7 +274,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
             <MedicareLogo />
             <button
-              aria-label="Close menu"
+              aria-label={t("closeMenu")}
               onClick={() => setDrawerOpen(false)}
               className="grid h-9 w-9 place-items-center rounded-lg bg-white/10 transition hover:bg-white/20 hover:rotate-90 duration-300"
             >
@@ -324,7 +326,7 @@ const Navbar = () => {
             </ul>
           </nav>
 
-          {/* Drawer Footer — Auth Buttons */}
+          {/* Drawer Footer — ✅ translated buttons */}
           <div className="border-t border-white/10 p-4">
             {user ? (
               <div className="flex flex-col gap-2">
@@ -332,19 +334,19 @@ const Navbar = () => {
                   onClick={() => { navigate("/update-profile"); setDrawerOpen(false); }}
                   className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 py-2.5 text-sm font-bold shadow-md transition hover:shadow-lg active:scale-95"
                 >
-                  <FaUserEdit /> Profile
+                  <FaUserEdit /> {t("profile")}
                 </button>
                 <button
                   onClick={() => { navigate("/dashboard"); setDrawerOpen(false); }}
                   className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-2.5 text-sm font-bold shadow-md transition hover:shadow-lg active:scale-95"
                 >
-                  <FaTachometerAlt /> Dashboard
+                  <FaTachometerAlt /> {t("dashboard")}
                 </button>
                 <button
                   onClick={handleSignOut}
                   className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-500 py-2.5 text-sm font-bold shadow-md transition hover:shadow-lg active:scale-95"
                 >
-                  <FaSignOutAlt /> Logout
+                  <FaSignOutAlt /> {t("logout")}
                 </button>
               </div>
             ) : (
@@ -353,7 +355,7 @@ const Navbar = () => {
                 onClick={() => setDrawerOpen(false)}
                 className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-2.5 text-sm font-bold shadow-md transition hover:shadow-lg active:scale-95"
               >
-                <FaSignInAlt /> Join Us
+                <FaSignInAlt /> {t("joinUs")}
               </Link>
             )}
           </div>
