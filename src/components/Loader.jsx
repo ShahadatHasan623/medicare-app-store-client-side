@@ -1,6 +1,9 @@
-import React from 'react';
+import React from "react";
+import { useTranslation } from "react-i18next"; 
 
 const Loader = () => {
+  const { t } = useTranslation(); 
+
   return (
     <div className="relative flex min-h-screen select-none flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/70 to-cyan-50">
       {/* ✨ Custom animations */}
@@ -85,8 +88,9 @@ const Loader = () => {
           </span>
         </h1>
 
+        {/* ✅ translated loading text */}
         <p className="mt-3 flex items-center justify-center text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">
-          Loading Inventory
+          {t("loadingInventory")}
           <span className="ml-2 inline-flex gap-1">
             {[0, 1, 2].map((i) => (
               <span
