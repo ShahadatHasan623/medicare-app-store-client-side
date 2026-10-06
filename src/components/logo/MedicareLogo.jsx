@@ -41,7 +41,7 @@ const MedicareLogo = ({ compact = false }) => {
         <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent transition-all duration-300 group-hover:from-emerald-200 group-hover:to-cyan-200">
           Medi
         </span>
-        <span className="relative text-white">
+        <span className="relative text-black">
           Care
           {/* 🎯 Animated underline — hover এ স্লাইড করে আসে */}
           <span className="absolute -bottom-1 left-0 h-[2.5px] w-full origin-left scale-x-0 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400 transition-transform duration-300 group-hover:scale-x-100" />
