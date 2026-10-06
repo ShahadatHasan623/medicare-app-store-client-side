@@ -50,6 +50,12 @@ const resources = {
       saveChanges: "Save Changes",
       successTitle: "Profile Updated!",
       successText: "Your changes have been saved successfully.",
+      errorTitle: "Oops! Page Not Found",
+      errorDescription:
+        "The page you're looking for doesn't exist or was moved. Don't worry, let's get you back on track.",
+      goHome: "Go Home",
+      goBack: "Go Back",
+      quickLinks: "Or explore these pages",
     },
   },
   bn: {
@@ -93,6 +99,12 @@ const resources = {
       saveChanges: "সেভ করুন",
       successTitle: "প্রোফাইল আপডেট হয়েছে!",
       successText: "আপনার পরিবর্তনগুলো সফলভাবে সেভ হয়েছে।",
+      errorTitle: "উপস! পেজটি পাওয়া যায়নি",
+      errorDescription:
+        "আপনি যে পেজটি খুঁজছেন সেটি নেই অথবা সরিয়ে ফেলা হয়েছে। চিন্তা করবেন না, আবার ঠিক পথে ফিরে যাই।",
+      goHome: "হোমে ফিরুন",
+      goBack: "পেছনে যান",
+      quickLinks: "অথবা এই পেজগুলো দেখুন",
     },
   },
   es: {
@@ -136,6 +148,12 @@ const resources = {
       saveChanges: "Guardar Cambios",
       successTitle: "¡Perfil Actualizado!",
       successText: "Tus cambios se han guardado con éxito.",
+      errorTitle: "¡Ups! Página No Encontrada",
+      errorDescription:
+        "La página que buscas no existe o fue movida. No te preocupes, te llevamos de vuelta al camino.",
+      goHome: "Ir al Inicio",
+      goBack: "Volver",
+      quickLinks: "O explora estas páginas",
     },
   },
 };
