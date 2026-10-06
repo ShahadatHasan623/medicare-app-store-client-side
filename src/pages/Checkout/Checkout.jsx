@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { 
-  FaUser, FaMapMarkerAlt, FaShoppingCart, FaPhoneAlt, 
-  FaCalendarAlt, FaCity, FaMap, FaHashtag, FaArrowRight, FaCreditCard 
+import {
+  FaUser, FaMapMarkerAlt, FaShoppingCart, FaPhoneAlt,
+  FaCalendarAlt, FaArrowRight, FaCreditCard, FaLock,
+  FaCheck, FaShieldAlt, FaBoxOpen, FaTag, FaArrowLeft, FaTruck,
 } from "react-icons/fa";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -10,6 +11,8 @@ import PaymentForm from "./PaymentForm";
 import useAuth from "../../hooks/useAuth";
 import { useNavigate } from "react-router";
 import useAxioseSecure from "../../hooks/useAxioseSecure";
+import { ReTitle } from "re-title";
+import { useTranslation } from "react-i18next";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -17,6 +20,7 @@ export default function Checkout() {
   const axiosSecure = useAxioseSecure();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -38,13 +42,20 @@ export default function Checkout() {
   }, []);
 
   const subtotal = cart.reduce((sum, item) => sum + (item.quantity ?? 0) * (item.price ?? 0), 0);
-  const totalDiscount = cart.reduce(
-    (sum, item) => sum + (item.quantity ?? 0) * ((item.originalPrice ?? 0) - (item.price ?? 0)),
-    0
-  );
+
+  /* 🏷️ Discount — originalPrice thakle seta, na thakle discount % theke */
+  const totalDiscount = cart.reduce((sum, item) => {
+    if (item.originalPrice)
+      return sum + (item.quantity ?? 0) * ((item.originalPrice ?? 0) - (item.price ?? 0));
+    if (item.discount)
+      return sum + (item.quantity ?? 0) * ((item.price ?? 0) * (item.discount ?? 0)) / 100;
+    return sum;
+  }, 0);
+
   const totalAmount = subtotal * 100;
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleContinueToPayment = (e) => {
     e.preventDefault();
@@ -71,168 +82,430 @@ export default function Checkout() {
 
       const res = await axiosSecure.post("/payments", paymentInfo);
       if (res.data.insertedId || res.data.acknowledged) {
-        Swal.fire({ 
-            icon: "success", 
-            title: "Order Confirmed!", 
-            background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#fff',
-            color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+        Swal.fire({
+          icon: "success",
+          title: t("orderConfirmed"),
+          confirmButtonColor: "#10b981",
+          timer: 2000,
+          timerProgressBar: true,
+          background: document.documentElement.classList.contains("dark") ? "#1f2937" : "#fff",
+          color: document.documentElement.classList.contains("dark") ? "#fff" : "#000",
         });
         localStorage.removeItem("cartData");
         navigate(`/invoice/${res.data.insertedId}`);
       }
     } catch {
-      Swal.fire("Error", "Failed to save payment info", "error");
+      Swal.fire("Error", t("paymentFailed"), "error");
     }
   };
 
+  /* 🎨 Shared input class */
+  const inputCls =
+    "w-full rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)] py-3 pl-11 pr-4 text-sm font-medium text-[var(--color-text)] outline-none transition-all duration-300 placeholder:text-gray-400 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-900/40";
+
+  const plainInputCls =
+    "w-full rounded-xl border-2 border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm font-medium text-[var(--color-text)] outline-none transition-all duration-300 placeholder:text-gray-400 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-900/40";
+
+  /* 🚫 Empty cart guard */
+  if (!cart || cart.length === 0) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--color-bg)] px-4 text-center">
+        <ReTitle title={t("checkoutDocTitle")} />
+        <span className="mb-6 grid h-24 w-24 place-items-center rounded-[28px] bg-gradient-to-br from-emerald-400/40 to-cyan-400/40 p-[2px] shadow-xl">
+          <span className="grid h-full w-full place-items-center rounded-[26px] bg-[var(--color-surface)]">
+            <FaShoppingCart className="text-4xl text-emerald-500" />
+          </span>
+        </span>
+        <h2 className="text-2xl font-black text-[var(--color-text)]">{t("emptyTitle")}</h2>
+        <button
+          onClick={() => navigate("/shop")}
+          className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-7 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/30 transition hover:shadow-emerald-500/50 active:scale-95"
+        >
+          {t("goToShop")} <FaArrowRight className="text-xs" />
+        </button>
+      </div>
+    );
+  }
+
+  /* 📍 Step indicator data */
+  const steps = [
+    { id: 1, label: t("stepShipping"), icon: <FaMapMarkerAlt /> },
+    { id: 2, label: t("stepPayment"), icon: <FaCreditCard /> },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4 md:px-8 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto">
-        
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-black text-gray-800 dark:text-white flex justify-center items-center gap-3">
-             <span className="p-3 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-200 dark:shadow-none">
-                <FaShoppingCart size={24}/>
-             </span>
-             Secure Checkout
-          </h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-3">Finish your order by providing delivery details</p>
-        </div>
+    <>
+      <style>{`
+        @keyframes fade-up {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up { animation: fade-up .5s cubic-bezier(.16,1,.3,1) both; }
+      `}</style>
 
-        {!showPayment ? (
-          <form onSubmit={handleContinueToPayment} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Left Column: Form */}
-            <div className="lg:col-span-8 space-y-6">
-              
-              {/* Personal Info */}
-              <div className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <h3 className="text-xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-3">
-                  <FaUser className="text-blue-600" /> Personal Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-600 dark:text-gray-300 ml-1">Full Name</label>
-                    <div className="relative">
-                      <FaUser className="absolute left-4 top-3.5 text-gray-400" />
-                      <input name="fullName" value={formData.fullName} onChange={handleChange} placeholder="John Doe" 
-                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900 outline-none transition-all" required />
+      <div className="min-h-screen bg-[var(--color-bg)] px-4 py-10 transition-colors duration-300 sm:px-6 md:px-8">
+        <div className="mx-auto max-w-7xl">
+          <ReTitle title={t("checkoutDocTitle")} />
+
+          {/* ================= 📝 Header ================= */}
+          <div className="animate-fade-up mb-8 text-center">
+            <h2 className="flex flex-wrap items-center justify-center gap-3 text-2xl font-black text-[var(--color-text)] sm:text-3xl md:text-4xl">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30">
+                <FaLock className="text-xl" />
+              </span>
+              {t("secureCheckout")}
+            </h2>
+            <p className="mt-3 text-sm text-[var(--color-muted)] sm:text-base">
+              {t("checkoutSubtitle")}
+            </p>
+          </div>
+
+          {/* ================= 📍 Step Indicator ================= */}
+          <div className="animate-fade-up mx-auto mb-10 flex max-w-md items-center">
+            {steps.map((step, i) => {
+              const active = showPayment ? step.id === 2 : step.id === 1;
+              const done = showPayment && step.id === 1;
+              return (
+                <React.Fragment key={step.id}>
+                  <div className="flex flex-col items-center gap-1.5">
+                    <span
+                      className={`grid h-11 w-11 place-items-center rounded-full text-sm font-bold transition-all duration-500 ${
+                        done
+                          ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/40"
+                          : active
+                          ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/40 ring-4 ring-emerald-500/20"
+                          : "bg-[var(--color-surface)] text-[var(--color-muted)] ring-1 ring-[var(--color-border)]"
+                      }`}
+                    >
+                      {done ? <FaCheck /> : step.icon}
+                    </span>
+                    <span
+                      className={`text-[10px] font-bold uppercase tracking-wider sm:text-xs ${
+                        active || done ? "text-emerald-600" : "text-[var(--color-muted)]"
+                      }`}
+                    >
+                      {step.label}
+                    </span>
+                  </div>
+                  {i < steps.length - 1 && (
+                    <div className="relative mx-3 mb-5 h-[3px] flex-1 overflow-hidden rounded-full bg-[var(--color-border)]">
+                      <div
+                        className={`h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-700 ${
+                          showPayment ? "w-full" : "w-0"
+                        }`}
+                      />
                     </div>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+
+          {!showPayment ? (
+            /* ================= 📦 Step 1: Form ================= */
+            <form
+              onSubmit={handleContinueToPayment}
+              className="animate-fade-up grid grid-cols-1 gap-8 lg:grid-cols-12"
+            >
+              {/* Left: Form cards */}
+              <div className="space-y-6 lg:col-span-8">
+                {/* 👤 Personal Details */}
+                <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg shadow-black/5">
+                  <div className="flex items-center gap-2.5 bg-gradient-to-r from-emerald-500/10 to-transparent px-6 py-4">
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                      <FaUser />
+                    </span>
+                    <h3 className="text-lg font-black text-[var(--color-text)]">
+                      {t("personalDetails")}
+                    </h3>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-600 dark:text-gray-300 ml-1">Email (Fixed)</label>
-                    <input value={formData.email} disabled className="w-full px-4 py-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 cursor-not-allowed" />
+
+                  <div className="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
+                    {/* Full Name */}
+                    <label className="block space-y-1.5">
+                      <span className="ml-1 text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
+                        {t("fullName")} *
+                      </span>
+                      <div className="relative">
+                        <FaUser className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                          name="fullName"
+                          value={formData.fullName}
+                          onChange={handleChange}
+                          placeholder={t("namePlaceholder")}
+                          className={inputCls}
+                          required
+                        />
+                      </div>
+                    </label>
+
+                    {/* Email — fixed */}
+                    <label className="block space-y-1.5">
+                      <span className="ml-1 text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
+                        {t("emailFixed")}
+                      </span>
+                      <input
+                        value={formData.email}
+                        disabled
+                        className="w-full cursor-not-allowed rounded-xl border-2 border-dashed border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-sm font-medium text-[var(--color-muted)]"
+                      />
+                    </label>
+
+                    {/* Phone */}
+                    <label className="block space-y-1.5">
+                      <span className="ml-1 text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
+                        {t("phoneLabel")} *
+                      </span>
+                      <div className="relative">
+                        <FaPhoneAlt className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          placeholder="+880 1XXX-XXXXXX"
+                          className={inputCls}
+                          required
+                        />
+                      </div>
+                    </label>
+
+                    {/* DOB */}
+                    <label className="block space-y-1.5">
+                      <span className="ml-1 text-xs font-bold uppercase tracking-wider text-[var(--color-muted)]">
+                        {t("birthDate")} *
+                      </span>
+                      <div className="relative">
+                        <FaCalendarAlt className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                          name="dob"
+                          type="date"
+                          value={formData.dob}
+                          onChange={handleChange}
+                          className={inputCls}
+                          required
+                        />
+                      </div>
+                    </label>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-600 dark:text-gray-300 ml-1">Phone Number</label>
+                </div>
+
+                {/* 📍 Shipping Address */}
+                <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg shadow-black/5">
+                  <div className="flex items-center gap-2.5 bg-gradient-to-r from-cyan-500/10 to-transparent px-6 py-4">
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-cyan-500/15 text-cyan-600">
+                      <FaMapMarkerAlt />
+                    </span>
+                    <h3 className="text-lg font-black text-[var(--color-text)]">
+                      {t("shippingAddress")}
+                    </h3>
+                  </div>
+
+                  <div className="space-y-5 p-6">
                     <div className="relative">
-                      <FaPhoneAlt className="absolute left-4 top-3.5 text-gray-400" />
-                      <input name="phone" value={formData.phone} onChange={handleChange} placeholder="+880" 
-                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900 outline-none" required />
+                      <FaMapMarkerAlt className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        placeholder={t("streetAddress")}
+                        className={inputCls}
+                        required
+                      />
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-600 dark:text-gray-300 ml-1">Birth Date</label>
-                    <div className="relative">
-                      <FaCalendarAlt className="absolute left-4 top-3.5 text-gray-400" />
-                      <input name="dob" type="date" value={formData.dob} onChange={handleChange} 
-                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white outline-none" required />
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                      <input
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        placeholder={t("cityLabel")}
+                        className={plainInputCls}
+                        required
+                      />
+                      <input
+                        name="state"
+                        value={formData.state}
+                        onChange={handleChange}
+                        placeholder={t("stateLabel")}
+                        className={plainInputCls}
+                        required
+                      />
+                      <input
+                        name="zip"
+                        value={formData.zip}
+                        onChange={handleChange}
+                        placeholder={t("zipLabel")}
+                        className={plainInputCls}
+                        required
+                      />
                     </div>
                   </div>
                 </div>
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  className="group flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 py-4 text-lg font-bold text-white shadow-xl shadow-emerald-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/40 active:scale-[0.98]"
+                >
+                  <FaCreditCard />
+                  {t("goToPayment")}
+                  <FaArrowRight className="text-sm opacity-70 transition-transform duration-300 group-hover:translate-x-1" />
+                </button>
               </div>
 
-              {/* Address */}
-              <div className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <h3 className="text-xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-3">
-                  <FaMapMarkerAlt className="text-red-500" /> Shipping Address
-                </h3>
-                <div className="space-y-4">
-                  <input name="address" value={formData.address} onChange={handleChange} placeholder="Street Address" 
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900" required />
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input name="city" value={formData.city} onChange={handleChange} placeholder="City" className="w-full px-4 py-3 rounded-xl border dark:border-gray-600 dark:bg-gray-700 dark:text-white outline-none" required />
-                    <input name="state" value={formData.state} onChange={handleChange} placeholder="State" className="w-full px-4 py-3 rounded-xl border dark:border-gray-600 dark:bg-gray-700 dark:text-white outline-none" required />
-                    <input name="zip" value={formData.zip} onChange={handleChange} placeholder="Zip" className="w-full px-4 py-3 rounded-xl border dark:border-gray-600 dark:bg-gray-700 dark:text-white outline-none" required />
+              {/* Right: Summary */}
+              <div className="lg:col-span-4">
+                <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl shadow-emerald-900/10 lg:sticky lg:top-24">
+                  {/* Gradient header */}
+                  <div className="flex items-center gap-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 px-6 py-4">
+                    <FaShoppingCart className="text-white" />
+                    <h3 className="text-base font-black tracking-wide text-white sm:text-lg">
+                      {t("cartSummary")}
+                    </h3>
+                    <span className="ml-auto rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-bold text-white">
+                      {cart.length}
+                    </span>
                   </div>
-                </div>
-              </div>
 
-              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-all flex justify-center items-center gap-2 transform active:scale-95">
-                Go to Payment <FaArrowRight />
-              </button>
-            </div>
-
-            {/* Right Column: Summary */}
-            <div className="lg:col-span-4">
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 sticky top-24">
-                <h3 className="text-lg font-bold mb-6 text-gray-800 dark:text-white border-b dark:border-gray-700 pb-4">Cart Summary</h3>
-                <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                  {cart.map((item) => (
-                    <div key={item._id} className="flex gap-3">
-                      <img src={item.image} className="w-12 h-12 rounded-lg bg-gray-50 dark:bg-gray-700 object-contain p-1" />
-                      <div className="flex-1">
-                        <h4 className="text-sm font-bold dark:text-white truncate">{item.name}</h4>
-                        <div className="flex justify-between text-xs mt-1">
-                          <span className="text-gray-500 dark:text-gray-400">Qty: {item.quantity}</span>
-                          <span className="font-bold text-blue-600 dark:text-blue-400">৳{item.price}</span>
+                  {/* Items */}
+                  <div className="custom-scrollbar max-h-60 space-y-4 overflow-y-auto p-5">
+                    {cart.map((item) => (
+                      <div key={item._id} className="flex items-center gap-3">
+                        <div className="shrink-0 rounded-xl bg-gradient-to-tr from-emerald-400/40 to-cyan-400/40 p-[2px]">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="h-12 w-12 rounded-[10px] bg-white object-contain p-1"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="truncate text-sm font-bold text-[var(--color-text)]">
+                            {item.name}
+                          </h4>
+                          <div className="mt-0.5 flex justify-between text-xs">
+                            <span className="text-[var(--color-muted)]">
+                              {t("qty")}: {item.quantity}
+                            </span>
+                            <span className="font-bold text-emerald-600">
+                              ৳{(item.price * item.quantity).toFixed(2)}
+                            </span>
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </div>
+
+                  {/* Totals */}
+                  <div className="space-y-3 border-t border-dashed border-[var(--color-border)] p-5">
+                    <div className="flex justify-between text-sm font-semibold text-[var(--color-muted)]">
+                      <span>{t("subtotal")}</span>
+                      <span className="tabular-nums">৳{subtotal.toFixed(2)}</span>
                     </div>
-                  ))}
+                    {totalDiscount > 0 && (
+                      <div className="flex justify-between text-sm font-semibold text-emerald-600">
+                        <span className="flex items-center gap-1.5">
+                          <FaTag className="text-xs" /> {t("discount")}
+                        </span>
+                        <span className="tabular-nums">- ৳{totalDiscount.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between border-t border-[var(--color-border)] pt-3">
+                      <span className="text-base font-black uppercase tracking-wide text-[var(--color-text)]">
+                        {t("total")}
+                      </span>
+                      <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-2xl font-black tabular-nums text-transparent">
+                        ৳{subtotal.toFixed(2)}
+                      </span>
+                    </div>
+
+                    {/* 🚚 Free delivery progress */}
+                    <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-2.5 text-[11px] font-bold text-emerald-600 ring-1 ring-emerald-500/20">
+                      <FaTruck className="animate-pulse" />
+                      {t("freeDeliveryNote")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          ) : (
+            /* ================= 💳 Step 2: Payment ================= */
+            <div className="animate-fade-up mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
+              {/* Review card */}
+              <div className="overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg shadow-black/5">
+                <div className="flex items-center gap-2.5 border-b border-[var(--color-border)] bg-gradient-to-r from-emerald-500/10 to-transparent px-6 py-4">
+                  <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                    <FaMapMarkerAlt />
+                  </span>
+                  <h3 className="text-lg font-black text-[var(--color-text)]">
+                    {t("reviewInfo")}
+                  </h3>
                 </div>
 
-                <div className="space-y-3 pt-4 border-t border-dashed dark:border-gray-600">
-                  <div className="flex justify-between text-gray-500 dark:text-gray-400">
-                    <span>Subtotal</span>
-                    <span>৳{subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-green-600 dark:text-green-400 font-medium">
-                    <span>Discount</span>
-                    <span>- ৳{totalDiscount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-xl font-black text-gray-900 dark:text-white pt-3 border-t dark:border-gray-700">
-                    <span>Total</span>
-                    <span>৳{subtotal.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        ) : (
-          /* Payment Section */
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-6 dark:text-white">Review Info</h3>
-              <div className="space-y-3 bg-gray-50 dark:bg-gray-900/50 p-5 rounded-2xl border dark:border-gray-700">
-                <p className="text-sm text-gray-500 dark:text-gray-400 uppercase text-[10px] font-bold">Shipping To</p>
-                <p className="font-bold dark:text-white">{formData.fullName}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{formData.address}, {formData.city}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{formData.phone}</p>
-                <div className="pt-4 border-t dark:border-gray-700 mt-4 flex justify-between items-center">
-                    <span className="font-bold dark:text-white text-lg">Total</span>
-                    <span className="text-2xl font-black text-blue-600 dark:text-blue-400">৳{subtotal.toFixed(2)}</span>
-                </div>
-              </div>
-              <button onClick={() => setShowPayment(false)} className="mt-4 text-blue-600 dark:text-blue-400 font-semibold text-sm hover:underline">← Change Address</button>
-            </div>
+                <div className="p-6">
+                  <div className="space-y-2.5 rounded-2xl bg-[var(--color-bg)] p-5 ring-1 ring-[var(--color-border)]">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--color-muted)]">
+                      {t("shippingTo")}
+                    </p>
+                    <p className="text-base font-black text-[var(--color-text)]">
+                      {formData.fullName}
+                    </p>
+                    <p className="text-sm text-[var(--color-muted)]">
+                      {formData.address}, {formData.city}
+                    </p>
+                    <p className="flex items-center gap-2 text-sm text-[var(--color-muted)]">
+                      <FaPhoneAlt className="text-xs text-emerald-500" />
+                      {formData.phone}
+                    </p>
 
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-xl border-2 border-blue-500 ring-8 ring-blue-500/5">
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white">
-                <FaCreditCard className="text-blue-600"/> Secure Payment
-              </h3>
-              {/* Stripe Elements */}
-              <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl mb-6 border dark:border-gray-700">
-                <Elements stripe={stripePromise}>
-                    <PaymentForm amount={totalAmount} onPaymentSuccess={handlePaymentSuccess} />
-                </Elements>
+                    <div className="mt-4 flex items-center justify-between border-t border-dashed border-[var(--color-border)] pt-4">
+                      <span className="text-base font-black text-[var(--color-text)]">
+                        {t("total")}
+                      </span>
+                      <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-2xl font-black tabular-nums text-transparent">
+                        ৳{subtotal.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setShowPayment(false)}
+                    className="group mt-4 inline-flex items-center gap-2 text-sm font-bold text-emerald-600 transition hover:text-emerald-700"
+                  >
+                    <FaArrowLeft className="text-xs transition-transform duration-300 group-hover:-translate-x-1" />
+                    {t("changeAddress")}
+                  </button>
+                </div>
               </div>
-              <p className="text-[10px] text-center text-gray-400 uppercase tracking-widest">Encrypted by Stripe & SSL</p>
+
+              {/* Stripe payment card */}
+              <div className="rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-[2px] shadow-2xl shadow-emerald-500/25">
+                <div className="rounded-[22px] bg-[var(--color-surface)] p-6 sm:p-8">
+                  <h3 className="mb-6 flex items-center gap-2.5 text-lg font-black text-[var(--color-text)]">
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-500/15 text-emerald-600">
+                      <FaCreditCard />
+                    </span>
+                    {t("securePayment")}
+                  </h3>
+
+                  <div className="mb-5 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-4">
+                    <Elements stripe={stripePromise}>
+                      <PaymentForm
+                        amount={totalAmount}
+                        onPaymentSuccess={handlePaymentSuccess}
+                      />
+                    </Elements>
+                  </div>
+
+                  <p className="flex items-center justify-center gap-1.5 text-center text-[10px] font-bold uppercase tracking-widest text-[var(--color-muted)]">
+                    <FaShieldAlt className="text-emerald-500" />
+                    {t("encryptedBy")}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
